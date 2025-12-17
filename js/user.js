@@ -366,7 +366,9 @@
       `;
     }
     
-    // 发起关系申请（简易弹窗流程）
+    // 发起关系申请（使用弹窗面板选择关系类型）
+    window._pendingRelationshipTargetId = null; // 暂存目标用户ID
+    
     window.applyRelationship = async function(targetUserId){
       if (!window.currentUser) {
         alert('请先登录');
@@ -378,21 +380,32 @@
         return;
       }
     
-      const typeInput = prompt('选择关系类型：\n1) Lifelong Relationship\n2) The Best Partner\n3) Sincere Friend\n4) Further Communication');
-      const mapInput = {
-        '1':'lifelong','lifelong':'lifelong',
-        '2':'partner','partner':'partner',
-        '3':'friend','friend':'friend',
-        '4':'communication','communication':'communication'
-      };
-      const relType = mapInput[(typeInput || '').trim().toLowerCase()];
-      if (!relType) {
-        alert('未选择有效的关系类型');
+      window._pendingRelationshipTargetId = targetUserId;
+      
+      // 显示关系类型选择弹窗
+      const overlay = document.getElementById('relationshipPromptOverlay');
+      const panel = document.getElementById('relationshipPrompt');
+      if (overlay && panel) {
+        overlay.classList.add('active');
+        panel.classList.add('active');
+      }
+    }
+    
+    // 关系类型选择完成后（在面板中被调用）
+    window.submitRelationshipRequest = async function(relType){
+      const targetUserId = window._pendingRelationshipTargetId;
+      if (!targetUserId) {
+        alert('缺少目标用户ID');
         return;
       }
-    
-      const message = prompt('请输入申请留言（必填）：');
-      if (!message || !message.trim()) {
+      
+      if (!relType) {
+        alert('请先选择关系类型');
+        return;
+      }
+      
+      const message = document.getElementById('relationshipMessage').value.trim();
+      if (!message) {
         alert('申请留言不能为空');
         return;
       }
@@ -408,14 +421,42 @@
         fromAvatar: window.currentUser.avatar || null,
         toUserId: targetUserId,
         type: relType,
-        message: message.trim()
+        message: message
       });
     
       if (ok && ok.ok) {
         alert('申请已发送，等待对方处理');
+        closeRelationshipPrompt();
       } else {
         alert(ok.msg || '申请失败');
       }
+    }
+    
+    window.closeRelationshipPrompt = function(){
+      const overlay = document.getElementById('relationshipPromptOverlay');
+      const panel = document.getElementById('relationshipPrompt');
+      if (overlay) overlay.classList.remove('active');
+      if (panel) panel.classList.remove('active');
+      window._pendingRelationshipTargetId = null;
+      window._selectedRelationType = null;
+      document.getElementById('relationshipMessage').value = '';
+      // 清除所有按钮的选中状态
+      const btns = document.querySelectorAll('.relationship-type-btn');
+      btns.forEach(b => b.classList.remove('selected'));
+    }
+    
+    // 选择关系类型
+    window.selectRelationshipType = function(type){
+      window._selectedRelationType = type;
+      // 更新按钮选中状态
+      const btns = document.querySelectorAll('.relationship-type-btn');
+      btns.forEach(b => {
+        if (b.getAttribute('data-type') === type) {
+          b.classList.add('selected');
+        } else {
+          b.classList.remove('selected');
+        }
+      });
     }
     
     // 处理收到的关系申请
@@ -555,33 +596,14 @@
   
   // ============ 用户留言板界面 ============
   
-  window.showUserMessages = async function(userId){
-    window.currentViewingUserId = userId; // 保存当前查看的用户ID
-    currentModalView = 'messages'; // 切换到留言板界面
-    await (typeof syncIndex === 'function' ? syncIndex(userId) : Promise.resolve());
-    
-    const user = await window.getUserById(userId);
-    if (!user) {
-      alert('用户不存在');
-      return;
-    }
-    
-    if (!window.getMessagesForUser) {
-      alert('消息系统未加载');
-      return;
-    }
-    
-    const messages = await window.getMessagesForUser(userId);
-    const myMessage = window.currentUser && window.currentUser.id !== userId ? 
-      await window.getMessageBetween(window.currentUser.id, userId) : null;
-
+  // 渲染用户留言板 HTML（供实时监听回调复用）
+  function renderUserMessagesView(user, userId, messages){
     let messagesHtml = '<div class="user-messages-section">';
     messagesHtml += '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">';
     messagesHtml += '<h3 style="margin: 0;">📬 ' + user.nickname + ' 的留言板</h3>';
     messagesHtml += '<button class="back-to-profile-btn" onclick="showUserPage(\'' + userId + '\')">&larr; 返回资料</button>';
     messagesHtml += '</div><div class="messages-board">';
 
-    // 显示所有留言
     if (messages && messages.length > 0) {
       messages.forEach(msg => {
         const timeStr = window.formatTime ? window.formatTime(msg.timestamp) : '不久前';
@@ -604,10 +626,10 @@
 
     messagesHtml += '</div>';
 
-    // 显示留言输入框（只有登录且不是自己的页面才显示）
+    // 发送框 / 编辑框（仅当我访问别人页面时显示）
     if (window.currentUser && window.currentUser.id !== userId) {
+      const myMessage = (messages || []).find(m => m.fromUserId === window.currentUser.id && m.toUserId === userId) || null;
       if (myMessage) {
-        // 编辑模式
         messagesHtml += `
           <div class="message-compose">
             <textarea id="messageContent" maxlength="500">${myMessage.content}</textarea>
@@ -618,7 +640,6 @@
           </div>
         `;
       } else {
-        // 新留言模式
         messagesHtml += `
           <div class="message-compose">
             <textarea id="messageContent" placeholder="写下你的留言..." maxlength="500"></textarea>
@@ -632,15 +653,52 @@
 
     messagesHtml += '</div>';
 
-    document.getElementById('userContent').innerHTML = messagesHtml;
+    const mount = document.getElementById('userContent');
+    if (mount) mount.innerHTML = messagesHtml;
     document.getElementById('userModalOverlay').classList.add('active');
     document.getElementById('userModal').classList.add('active');
+  }
+
+  window.showUserMessages = async function(userId){
+    window.currentViewingUserId = userId; // 保存当前查看的用户ID
+    currentModalView = 'messages'; // 切换到留言板界面
+    await (typeof syncIndex === 'function' ? syncIndex(userId) : Promise.resolve());
+    
+    const user = await window.getUserById(userId);
+    if (!user) {
+      alert('用户不存在');
+      return;
+    }
+    
+    // 若存在旧的监听，先解绑
+    if (window._userMessagesUnsub) {
+      try { window._userMessagesUnsub(); } catch(_){}
+      window._userMessagesUnsub = null;
+    }
+
+    // 建立实时监听：别人给该用户的所有留言（按时间倒序）
+    if (window.db) {
+      const q = window.db.collection('messages')
+        .where('toUserId', '==', userId)
+        .orderBy('timestamp', 'desc');
+      window._userMessagesUnsub = q.onSnapshot((snap)=>{
+        const messages = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderUserMessagesView(user, userId, messages);
+      }, (err)=>{
+        console.error('[user] 用户留言板监听失败:', err);
+      });
+    }
   }
 
   window.closeUserModal = function(){
     document.getElementById('userModalOverlay').classList.remove('active');
     document.getElementById('userModal').classList.remove('active');
     currentModalView = 'profile';
+    // 关闭用户留言板的实时监听
+    if (window._userMessagesUnsub) {
+      try { window._userMessagesUnsub(); } catch(_){}
+      window._userMessagesUnsub = null;
+    }
   }
   
   // 获取当前界面状态
@@ -990,8 +1048,12 @@
       // 显示右侧抽屉标签
       if (sidebarTab) sidebarTab.style.display = 'flex';
       
-      // 更新留言角标
-      if (window.updateMessageBadge) window.updateMessageBadge();
+      // 更新留言角标：优先启用实时监听，否则回退一次性查询
+      if (window.startMessageBadgeListener) {
+        window.startMessageBadgeListener(window.currentUser.id);
+      } else if (window.updateMessageBadge) {
+        window.updateMessageBadge();
+      }
       
       // 更新下拉菜单内容
       updateDropdownContent();
@@ -1004,6 +1066,9 @@
         if (quizButton) quizButton.style.display = 'none';
         // 隐藏右侧抽屉标签
         if (sidebarTab) sidebarTab.style.display = 'none';
+
+      // 停止未读角标监听
+      if (window.stopMessageBadgeListener) window.stopMessageBadgeListener();
     }
   }
   

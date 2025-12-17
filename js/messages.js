@@ -1,5 +1,49 @@
 // 留言系统模块
 (function(){
+  // ============ 实时监听（可选启用）============
+  // 未读角标监听的取消句柄
+  let _unreadUnsub = null;
+  
+  // 启动未读角标实时监听（根据 toUserId 与 isRead=false）
+  window.startMessageBadgeListener = function(userId){
+    try {
+      if (!window.db || !userId) return;
+      if (_unreadUnsub) { try { _unreadUnsub(); } catch(_){} _unreadUnsub = null; }
+      const q = window.db.collection('messages')
+        .where('toUserId', '==', userId)
+        .where('isRead', '==', false);
+      _unreadUnsub = q.onSnapshot((snap)=>{
+        const count = snap.size;
+        const badge = document.getElementById('cornerBadge');
+        if (!badge) return;
+        if (count > 0) {
+          badge.textContent = count > 99 ? '99+' : String(count);
+          badge.style.display = 'flex';
+        } else {
+          badge.style.display = 'none';
+        }
+      }, (err)=>{
+        console.error('[messages] 未读角标监听失败:', err);
+      });
+    } catch (e) {
+      console.error('[messages] startMessageBadgeListener error:', e);
+    }
+  };
+
+  // 停止未读角标监听
+  window.stopMessageBadgeListener = function(){
+    if (_unreadUnsub) {
+      try { _unreadUnsub(); } catch(_){}
+      _unreadUnsub = null;
+    }
+  };
+
+  // 如果页面加载时已经有当前用户，立即启动角标监听
+  try {
+    if (window.currentUser && window.startMessageBadgeListener) {
+      window.startMessageBadgeListener(window.currentUser.id);
+    }
+  } catch (_) {}
   
   // ============ Firestore 留言操作 ============
   
@@ -54,7 +98,9 @@
     try {
       await window.db.collection('messages').doc(messageId).update({
         content,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        // 留言被更新后，对接收者来说应作为“新内容”提醒
+        isRead: false
       });
     } catch (error) {
       console.error('更新留言失败:', error);

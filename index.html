@@ -254,6 +254,48 @@
     </div>
   </div>
 
+  <!-- 关系申请弹窗（选择关系类型 + 输入留言） -->
+  <div class="relationship-prompt-overlay" id="relationshipPromptOverlay" onclick="closeRelationshipPrompt()"></div>
+  <div class="relationship-prompt" id="relationshipPrompt">
+    <h3>建立关系</h3>
+    <p style="font-size: 14px; color: #888; margin-bottom: 20px;">请选择一个关系类型：</p>
+    
+    <!-- 关系类型选择按钮 -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+      <button class="relationship-type-btn" onclick="selectRelationshipType('lifelong')" data-type="lifelong">
+        <div style="font-size: 28px; margin-bottom: 6px;">💫</div>
+        <div style="font-size: 14px; font-weight: 600;">Lifelong</div>
+        <div style="font-size: 12px; color: #888;">Relationship</div>
+      </button>
+      <button class="relationship-type-btn" onclick="selectRelationshipType('partner')" data-type="partner">
+        <div style="font-size: 28px; margin-bottom: 6px;">🤝</div>
+        <div style="font-size: 14px; font-weight: 600;">The Best</div>
+        <div style="font-size: 12px; color: #888;">Partner</div>
+      </button>
+      <button class="relationship-type-btn" onclick="selectRelationshipType('friend')" data-type="friend">
+        <div style="font-size: 28px; margin-bottom: 6px;">👭</div>
+        <div style="font-size: 14px; font-weight: 600;">Sincere</div>
+        <div style="font-size: 12px; color: #888;">Friend</div>
+      </button>
+      <button class="relationship-type-btn" onclick="selectRelationshipType('communication')" data-type="communication">
+        <div style="font-size: 28px; margin-bottom: 6px;">💬</div>
+        <div style="font-size: 14px; font-weight: 600;">Further</div>
+        <div style="font-size: 12px; color: #888;">Communication</div>
+      </button>
+    </div>
+
+    <!-- 留言输入框 -->
+    <p style="font-size: 14px; color: #888; margin-bottom: 8px;">申请留言（必填）：</p>
+    <textarea id="relationshipMessage" placeholder="说说你为什么想与对方建立这种关系..." 
+              style="width: 100%; height: 80px; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #f5f5f5; font-family: 'Lato', sans-serif; resize: vertical; margin-bottom: 16px;"></textarea>
+
+    <!-- 操作按钮 -->
+    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+      <button onclick="closeRelationshipPrompt()" style="padding: 10px 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #ccc; border-radius: 8px; cursor: pointer; font-size: 14px;">取消</button>
+      <button onclick="submitRelationshipRequest(window._selectedRelationType)" style="padding: 10px 20px; background: rgba(212,175,55,0.2); border: 1px solid rgba(212,175,55,0.4); color: #d4af37; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">发送申请</button>
+    </div>
+  </div>
+
   <!-- App Scripts: 注意顺序，非模块，全局暴露 -->
   <script src="./js/config.js"></script>
   <script src="./js/data.js"></script>
