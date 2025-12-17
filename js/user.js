@@ -72,20 +72,30 @@
 
   // 渲染头像（用于显示）
   window.renderAvatar = function(avatar, nickname){
-    if (!avatar || avatar.type === 'default') {
+    // 检查是否应该显示首字母头像：
+    // 1. avatar 不存在
+    // 2. avatar.type 是 'default'
+    // 3. avatar.type 是空字符串或无效值
+    if (!avatar || avatar.type === 'default' || !avatar.type || avatar.type.trim() === '') {
       const defaultAvatar = generateDefaultAvatar(nickname);
         return `<div class="default-avatar" style="color: ${defaultAvatar.color}">${defaultAvatar.value}</div>`;
     }
     
     const avatarMap = {
       wave: '🌊', tomato: '🍅', lightning: '⚡', star: '⭐',
-      saturn: '🪐', comet: '☄️', alien: '👽', devil: '👿', wing: '🪽',
+      saturn: '🪐', comet: '☄️', alien: '👽', devil: '👿', wing: '🪽', potato: '🥔',
       // 兼容旧数据
       wonderwoman: '⚡', captainmarvel: '⭐'
     };
     
-    const emoji = avatarMap[avatar.type] || '👤';
-    return `<div class="avatar-emoji">${emoji}</div>`;
+    // 如果找到对应的emoji就显示，找不到就显示首字母头像（而不是默认人形图标）
+    if (avatarMap[avatar.type]) {
+      return `<div class="avatar-emoji">${avatarMap[avatar.type]}</div>`;
+    } else {
+      // 无效的 avatar.type，回退到首字母头像
+      const defaultAvatar = generateDefaultAvatar(nickname);
+      return `<div class="default-avatar" style="color: ${defaultAvatar.color}">${defaultAvatar.value}</div>`;
+    }
   }
 
   // ============ 登录 ============
@@ -195,7 +205,7 @@
     }
 
     // 获取选择的头像
-    const selectedAvatarType = document.getElementById('selectedAvatar').value;
+    const selectedAvatarType = document.getElementById('selectedAvatar').value.trim();
     const avatar = selectedAvatarType 
       ? { type: selectedAvatarType } 
       : generateDefaultAvatar(nickname);
