@@ -1,29 +1,79 @@
 // 留言系统模块
 (function(){
-  // ============ 实时监听（可选启用）============
-  // 未读角标监听的取消句柄
-  let _unreadUnsub = null;
-  
-  // 启动未读角标实时监听（根据 toUserId 与 isRead=false）
+  // ============ 实时监听（统一角标）============
+  let _unreadUnsub = null;           // 留言未读监听
+  let _relPendingUnsub1 = null;      // 关系 pending 监听
+  let _relPendingUnsub2 = null;      // 关系 dissolve_pending 监听
+  let _unreadMsgCount = 0;
+  let _pendingRelCount = 0;
+
+  function updateCornerBadgeDom(){
+    const total = _unreadMsgCount + _pendingRelCount;
+    const badge = document.getElementById('cornerBadge');
+    if (!badge) return;
+    if (total > 0) {
+      badge.textContent = total > 99 ? '99+' : String(total);
+      badge.style.display = 'flex';
+    } else {
+      badge.style.display = 'none';
+    }
+    // 同步下拉菜单细分计数
+    const msgEl = document.getElementById('dropdownMsgCount');
+    const relEl = document.getElementById('dropdownRelCount');
+    if (msgEl) msgEl.textContent = _unreadMsgCount;
+    if (relEl) relEl.textContent = _pendingRelCount;
+  }
+
+  // 启动统一角标监听
   window.startMessageBadgeListener = function(userId){
     try {
       if (!window.db || !userId) return;
+      // 清理旧监听
       if (_unreadUnsub) { try { _unreadUnsub(); } catch(_){} _unreadUnsub = null; }
-      const q = window.db.collection('messages')
+      if (_relPendingUnsub1) { try { _relPendingUnsub1(); } catch(_){} _relPendingUnsub1 = null; }
+      if (_relPendingUnsub2) { try { _relPendingUnsub2(); } catch(_){} _relPendingUnsub2 = null; }
+
+      // 未读留言
+      const qMsg = window.db.collection('messages')
         .where('toUserId', '==', userId)
         .where('isRead', '==', false);
-      _unreadUnsub = q.onSnapshot((snap)=>{
-        const count = snap.size;
-        const badge = document.getElementById('cornerBadge');
-        if (!badge) return;
-        if (count > 0) {
-          badge.textContent = count > 99 ? '99+' : String(count);
-          badge.style.display = 'flex';
-        } else {
-          badge.style.display = 'none';
-        }
+      _unreadUnsub = qMsg.onSnapshot((snap)=>{
+        _unreadMsgCount = snap.size;
+        updateCornerBadgeDom();
       }, (err)=>{
         console.error('[messages] 未读角标监听失败:', err);
+      });
+
+      // 待处理关系（建立）
+      const qRel1 = window.db.collection('relationships')
+        .where('toUserId', '==', userId)
+        .where('status', '==', 'pending');
+      _relPendingUnsub1 = qRel1.onSnapshot((snap)=>{
+        const a = snap.size;
+        // 另一监听更新后统一计算
+        // 暂存合计在 _pendingRelCount 中由两个监听共同维护
+        // 这里先取另一监听的数 b，然后设置 _pendingRelCount = a + b
+        const b = (_relPendingUnsub2 && typeof _pendingRelCount === 'number') ? (_pendingRelCount - (typeof window.__relPendingB === 'number' ? window.__relPendingB : 0)) : 0;
+        window.__relPendingA = a;
+        const sum = a + (typeof window.__relPendingB === 'number' ? window.__relPendingB : 0);
+        _pendingRelCount = sum;
+        updateCornerBadgeDom();
+      }, (err)=>{
+        console.error('[relationships] 待处理(建立)监听失败:', err);
+      });
+
+      // 待处理关系（解除）
+      const qRel2 = window.db.collection('relationships')
+        .where('toUserId', '==', userId)
+        .where('status', '==', 'dissolve_pending');
+      _relPendingUnsub2 = qRel2.onSnapshot((snap)=>{
+        const b = snap.size;
+        window.__relPendingB = b;
+        const sum = (typeof window.__relPendingA === 'number' ? window.__relPendingA : 0) + b;
+        _pendingRelCount = sum;
+        updateCornerBadgeDom();
+      }, (err)=>{
+        console.error('[relationships] 待处理(解除)监听失败:', err);
       });
     } catch (e) {
       console.error('[messages] startMessageBadgeListener error:', e);
@@ -32,10 +82,14 @@
 
   // 停止未读角标监听
   window.stopMessageBadgeListener = function(){
-    if (_unreadUnsub) {
-      try { _unreadUnsub(); } catch(_){}
-      _unreadUnsub = null;
-    }
+    if (_unreadUnsub) { try { _unreadUnsub(); } catch(_){ } _unreadUnsub = null; }
+    if (_relPendingUnsub1) { try { _relPendingUnsub1(); } catch(_){ } _relPendingUnsub1 = null; }
+    if (_relPendingUnsub2) { try { _relPendingUnsub2(); } catch(_){ } _relPendingUnsub2 = null; }
+    window.__relPendingA = undefined;
+    window.__relPendingB = undefined;
+    _unreadMsgCount = 0;
+    _pendingRelCount = 0;
+    updateCornerBadgeDom();
   };
 
   // 如果页面加载时已经有当前用户，立即启动角标监听
@@ -197,15 +251,13 @@
   // 更新头像角标
   window.updateMessageBadge = async function(){
     if (!window.currentUser) return;
-    
-    const count = await window.getUnreadMessageCount(window.currentUser.id);
-    const badge = document.getElementById('cornerBadge');
-    if (count > 0) {
-      badge.textContent = count > 99 ? '99+' : count;
-      badge.style.display = 'flex';
-    } else {
-      badge.style.display = 'none';
-    }
+    const [msgCount, relCount] = await Promise.all([
+      window.getUnreadMessageCount(window.currentUser.id),
+      (typeof window.getPendingRelationshipCount === 'function' ? window.getPendingRelationshipCount(window.currentUser.id) : Promise.resolve(0))
+    ]);
+    _unreadMsgCount = msgCount || 0;
+    _pendingRelCount = relCount || 0;
+    updateCornerBadgeDom();
   }
   
   // 格式化时间

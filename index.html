@@ -40,11 +40,12 @@
   <!-- 用户下拉菜单 -->
   <div class="user-dropdown" id="userDropdown">
     <div class="user-dropdown-header">
-      <div class="dropdown-avatar" id="dropdownAvatar"></div>
-      <div class="dropdown-info">
-        <div class="dropdown-nickname" id="dropdownNickname"></div>
-        <div class="dropdown-style" id="dropdownStyle"></div>
-      </div>
+        <div class="dropdown-avatar" id="dropdownAvatar"></div>
+        <div class="dropdown-info" style="display:flex; align-items:center; gap:8px; justify-content:space-between; width:100%;">
+          <div class="dropdown-nickname" id="dropdownNickname"></div>
+          <!-- 名字右侧展示关系徽标（>2 折叠为 X个关系） -->
+          <div class="dropdown-relations" id="dropdownRelations"></div>
+        </div>
     </div>
     <div class="user-dropdown-body">
       <div class="dropdown-info-item">
@@ -54,11 +55,19 @@
         <strong>最喜欢的电影：</strong><span id="dropdownFilm"></span>
       </div>
       <div class="dropdown-badges" id="dropdownBadges"></div>
+        <!-- 电影风格移动到徽章下方一行展示 -->
+        <div class="dropdown-style-below" id="dropdownStyleBelow" style="margin-top:6px; color:#bbb; font-size:13px;"></div>
+        <!-- 细分计数：留言与关系待处理数量 -->
+        <div class="dropdown-counters" style="margin-top:8px; color:#bbb; font-size:12px; display:flex; gap:12px;">
+          <span>留言未读：<b id="dropdownMsgCount">0</b></span>
+          <span>关系待处理：<b id="dropdownRelCount">0</b></span>
+        </div>
     </div>
     <div class="user-dropdown-actions">
       <button class="dropdown-btn" onclick="showUserPage(window.currentUser.id)">👤 查看我的主页</button>
       <button class="dropdown-btn" onclick="editOwnProfile()">✏️ 编辑资料</button>
       <button class="dropdown-btn" onclick="showMyMessages()">📬 查看我的留言</button>
+        <button class="dropdown-btn" onclick="showRelationshipCenter()">🤝 关系处理</button>
       <button class="dropdown-btn" onclick="showAdminPrompt()">👑 管理员模式</button>
       <button class="dropdown-btn" onclick="logoutUser()">🚪 退出登录</button>
       <button class="dropdown-btn danger" onclick="deleteOwnAccount()">⚠️ 注销账户</button>
@@ -227,6 +236,16 @@
       <span class="modal-close" onclick="closeMyMessages()">&times;</span>
     </div>
     <div id="myMessagesList" class="messages-list"></div>
+  </div>
+
+  <!-- 关系中心页面（查看已建立与待处理、以及处理操作） -->
+  <div class="my-messages-overlay" id="relationshipCenterOverlay" onclick="closeRelationshipCenter()"></div>
+  <div class="my-messages-page" id="relationshipCenterPage">
+    <div class="messages-header">
+      <h2>关系中心</h2>
+      <span class="modal-close" onclick="closeRelationshipCenter()">&times;</span>
+    </div>
+    <div id="relationshipCenterContent" class="messages-list"></div>
   </div>
 
   <!-- 加载提示 -->

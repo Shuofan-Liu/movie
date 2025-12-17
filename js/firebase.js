@@ -204,25 +204,37 @@
     }
   }
 
-  // 仅获取待我处理的申请（我是 toUser 且 pending）
+  // 仅获取待我处理的申请（我是 toUser，建立/解除两类待处理）
   window.getPendingRelationshipRequests = async function(userId){
     if (!window.db || !userId) return [];
     try {
-      const snap = await db.collection('relationships')
-        .where('toUserId','==', userId)
-        .where('status','==','pending')
-        .get();
-      return snap.docs.map(d=>({ id: d.id, ...d.data() }));
+      // 为避免复合索引依赖，拆成两次查询再合并
+      const [buildSnap, dissolveSnap] = await Promise.all([
+        db.collection('relationships')
+          .where('toUserId','==', userId)
+          .where('status','==','pending')
+          .get(),
+        db.collection('relationships')
+          .where('toUserId','==', userId)
+          .where('status','==','dissolve_pending')
+          .get()
+      ]);
+      const list = [];
+      buildSnap.forEach(d=>list.push({ id: d.id, ...d.data() }));
+      dissolveSnap.forEach(d=>list.push({ id: d.id, ...d.data() }));
+      return list;
     } catch (err) {
       console.error('[firebase] 获取关系申请失败', err);
       return [];
     }
   }
 
-  // 响应申请（接受/拒绝）
+  // 响应关系（建立或解除的接受/拒绝/同意解除/拒绝解除等）
+  // 允许状态：accepted, rejected, dissolve_pending, dissolved, dissolve_rejected
   window.respondRelationship = async function(relId, status){
     if (!window.db || !relId || !status) return false;
-    if (!['accepted','rejected'].includes(status)) return false;
+    const allowed = ['accepted','rejected','dissolve_pending','dissolved','dissolve_rejected'];
+    if (!allowed.includes(status)) return false;
     showLoading();
     try {
       await db.collection('relationships').doc(relId).update({
@@ -235,6 +247,39 @@
       console.error('[firebase] 更新关系失败', err);
       hideLoading();
       return false;
+    }
+  }
+
+  // 发起解除关系（将已建立的关系置为解除待处理）
+  window.requestDissolveRelationship = async function(relId){
+    if (!window.db || !relId) return false;
+    showLoading();
+    try {
+      await db.collection('relationships').doc(relId).update({
+        status: 'dissolve_pending',
+        respondedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      hideLoading();
+      return true;
+    } catch (err) {
+      console.error('[firebase] 发起解除失败', err);
+      hideLoading();
+      return false;
+    }
+  }
+
+  // 获取待处理关系数量（建立 + 解除）
+  window.getPendingRelationshipCount = async function(userId){
+    if (!window.db || !userId) return 0;
+    try {
+      const [a, b] = await Promise.all([
+        db.collection('relationships').where('toUserId','==', userId).where('status','==','pending').get(),
+        db.collection('relationships').where('toUserId','==', userId).where('status','==','dissolve_pending').get()
+      ]);
+      return a.size + b.size;
+    } catch (err) {
+      console.error('[firebase] 获取待处理关系数量失败', err);
+      return 0;
     }
   }
 
