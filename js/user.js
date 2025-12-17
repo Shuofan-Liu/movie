@@ -365,15 +365,15 @@
     const acceptedHtml = accepted.length ? accepted.map(r=>{
       const o = otherOf(r);
       const tip = statusTip(r, userId);
-      const tipHtml = tip ? `<div style="color:#ffb347; font-size:12px;">${tip}</div>` : '';
+      const tipHtml = tip ? `<span class="relationship-tip">${tip}</span>` : '';
       const disableDissolveBtn = r.status === 'dissolve_pending' && o.initiatedByMe; // 我发起解除，等待对方时按钮仍可提示
       return `
-        <div class="message-item" style="display:flex; align-items:center; gap:12px;">
+        <div class="message-item relationship-row">
           <div class="message-from" onclick="showUserPage('${o.id}')">
             <div class="message-from-avatar">${window.renderAvatar(o.avatar, o.name)}</div>
             <div class="message-from-name">${o.name}</div>
           </div>
-          <div style="flex:1; color:#d4af37; font-size:14px;">${relationTitle(r)}${tipHtml}</div>
+          <div class="relationship-title">${relationTitle(r)}${tipHtml}</div>
           <button class="view-messages-btn" onclick="requestDissolve('${r.id}')" ${disableDissolveBtn ? '' : ''}>解除关系</button>
         </div>
       `;
