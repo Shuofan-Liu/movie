@@ -18,10 +18,24 @@
       badge.style.display = 'none';
     }
     // 同步下拉菜单细分计数
-    const msgEl = document.getElementById('dropdownMsgCount');
-    const relEl = document.getElementById('dropdownRelCount');
-    if (msgEl) msgEl.textContent = _unreadMsgCount;
-    if (relEl) relEl.textContent = _pendingRelCount;
+    const msgPill = document.getElementById('dropdownMsgPill');
+    const relPill = document.getElementById('dropdownRelPill');
+    if (msgPill) {
+      if (_unreadMsgCount > 0) {
+        msgPill.style.display = 'inline-block';
+        msgPill.textContent = _unreadMsgCount > 99 ? '99+' : _unreadMsgCount;
+      } else {
+        msgPill.style.display = 'none';
+      }
+    }
+    if (relPill) {
+      if (_pendingRelCount > 0) {
+        relPill.style.display = 'inline-block';
+        relPill.textContent = _pendingRelCount > 99 ? '99+' : _pendingRelCount;
+      } else {
+        relPill.style.display = 'none';
+      }
+    }
   }
 
   // 启动统一角标监听

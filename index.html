@@ -57,17 +57,12 @@
       <div class="dropdown-badges" id="dropdownBadges"></div>
         <!-- 电影风格移动到徽章下方一行展示 -->
         <div class="dropdown-style-below" id="dropdownStyleBelow" style="margin-top:6px; color:#bbb; font-size:13px;"></div>
-        <!-- 细分计数：留言与关系待处理数量 -->
-        <div class="dropdown-counters" style="margin-top:8px; color:#bbb; font-size:12px; display:flex; gap:12px;">
-          <span>留言未读：<b id="dropdownMsgCount">0</b></span>
-          <span>关系待处理：<b id="dropdownRelCount">0</b></span>
-        </div>
     </div>
     <div class="user-dropdown-actions">
-      <button class="dropdown-btn" onclick="showUserPage(window.currentUser.id)">👤 查看我的主页</button>
-      <button class="dropdown-btn" onclick="editOwnProfile()">✏️ 编辑资料</button>
-      <button class="dropdown-btn" onclick="showMyMessages()">📬 查看我的留言</button>
-        <button class="dropdown-btn" onclick="showRelationshipCenter()">🤝 关系处理</button>
+        <button class="dropdown-btn" onclick="showUserPage(window.currentUser.id)">👤 查看我的主页</button>
+        <button class="dropdown-btn" onclick="editOwnProfile()">✏️ 编辑资料</button>
+        <button class="dropdown-btn" onclick="showMyMessages()">📬 查看我的留言 <span id="dropdownMsgPill" style="display:none; margin-left:6px; padding:2px 6px; background:rgba(212,175,55,0.2); border:1px solid rgba(212,175,55,0.4); color:#d4af37; border-radius:10px; font-size:12px;"></span></button>
+        <button class="dropdown-btn" onclick="showRelationshipCenter()">🤝 关系处理 <span id="dropdownRelPill" style="display:none; margin-left:6px; padding:2px 6px; background:rgba(212,175,55,0.2); border:1px solid rgba(212,175,55,0.4); color:#d4af37; border-radius:10px; font-size:12px;"></span></button>
       <button class="dropdown-btn" onclick="showAdminPrompt()">👑 管理员模式</button>
       <button class="dropdown-btn" onclick="logoutUser()">🚪 退出登录</button>
       <button class="dropdown-btn danger" onclick="deleteOwnAccount()">⚠️ 注销账户</button>
