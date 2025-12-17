@@ -21,5 +21,13 @@ service cloud.firestore {
       allow create: if true; // 允许创建留言
       allow update, delete: if true; // 允许更新和删除
     }
+    
+    // 关系集合：允许创建和读取关系申请
+    match /relationships/{relationshipId} {
+      allow read: if true;  // 允许读取
+      allow create: if true; // 允许创建申请
+      allow update: if true; // 允许更新状态
+      allow delete: if true; // 允许删除
+    }
   }
 }
