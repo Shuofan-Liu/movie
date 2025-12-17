@@ -1,4 +1,21 @@
 {
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "**/.git/**",
+      "**/scripts/**",
+      "**/functions/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
   "functions": { "source": "functions" },
   "firestore": { 
     "rules": "firestore.rules",
