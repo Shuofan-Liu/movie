@@ -1523,7 +1523,9 @@
         }
         
         const styleTag = user.userStyle ? `<div style="font-size:11px;color:#888;margin-top:4px;">${user.userStyle}</div>` : '';
-        const relList = (relMap && relMap[user.id]) ? relMap[user.id] : [];
+        const relList = (user.id === (window.currentUser && window.currentUser.id))
+          ? acceptedList
+          : (relMap && relMap[user.id]) ? relMap[user.id] : [];
         const badgeHtml = renderRelationChip(relList, 'relation-chip-embedded');
         const avatarHtml = badgeHtml
           ? `<div class="avatar-with-badge">${window.renderAvatar(user.avatar, user.nickname)}${badgeHtml}</div>`
