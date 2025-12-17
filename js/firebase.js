@@ -235,10 +235,12 @@
     if (!window.db || !relId || !status) return false;
     const allowed = ['accepted','rejected','dissolve_pending','dissolved','dissolve_rejected'];
     if (!allowed.includes(status)) return false;
+    // 拒绝解除关系时应恢复为已建立状态
+    const normalizedStatus = status === 'dissolve_rejected' ? 'accepted' : status;
     showLoading();
     try {
       await db.collection('relationships').doc(relId).update({
-        status,
+        status: normalizedStatus,
         respondedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
       hideLoading();
@@ -251,12 +253,13 @@
   }
 
   // 发起解除关系（将已建立的关系置为解除待处理）
-  window.requestDissolveRelationship = async function(relId){
+  window.requestDissolveRelationship = async function(relId, reason){
     if (!window.db || !relId) return false;
     showLoading();
     try {
       await db.collection('relationships').doc(relId).update({
         status: 'dissolve_pending',
+        dissolveMessage: reason || '',
         respondedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
       hideLoading();
