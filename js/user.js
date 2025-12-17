@@ -366,7 +366,20 @@
       const o = otherOf(r);
       const tip = statusTip(r, userId);
       const tipHtml = tip ? `<span class="relationship-tip">${tip}</span>` : '';
-      const disableDissolveBtn = r.status === 'dissolve_pending' && o.initiatedByMe; // 我发起解除，等待对方时按钮仍可提示
+      // 如果是dissolve_pending状态，检查是否由我发起：如果是，只显示等待提示，不显示按钮
+      let buttonHtml = '';
+      if (r.status === 'dissolve_pending') {
+        if (r.fromUserId === userId) {
+          // 我发起的解除，等待对方确认，不显示按钮
+          buttonHtml = '';
+        } else {
+          // 对方发起的解除，我不应该在这里看到（应该在待处理区）
+          buttonHtml = '';
+        }
+      } else {
+        // accepted状态，显示解除按钮
+        buttonHtml = `<button class="view-messages-btn" onclick="requestDissolve('${r.id}')">解除关系</button>`;
+      }
       return `
         <div class="message-item relationship-row">
           <div class="message-from" onclick="showUserPage('${o.id}')">
@@ -374,7 +387,7 @@
             <div class="message-from-name">${o.name}</div>
           </div>
           <div class="relationship-title">${relationTitle(r)}${tipHtml}</div>
-          <button class="view-messages-btn" onclick="requestDissolve('${r.id}')" ${disableDissolveBtn ? '' : ''}>解除关系</button>
+          ${buttonHtml}
         </div>
       `;
     }).join('') : '<p style="text-align:center;color:#888;padding:12px;">暂无已建立关系</p>';
@@ -388,13 +401,14 @@
         : `<button class="view-messages-btn" onclick="respondRel('${r.id}','accepted')">接受</button>
            <button class="view-messages-btn" onclick="respondRel('${r.id}','rejected')">拒绝</button>`;
       const tip = isDissolve ? '向你发起了解除关系' : '想与你建立关系';
+      const reasonDisplay = isDissolve && r.dissolveMessage ? ` · 理由：${r.dissolveMessage}` : '';
       return `
         <div class="message-item">
           <div class="message-from" onclick="showUserPage('${o.id}')">
             <div class="message-from-avatar">${window.renderAvatar(o.avatar, o.name)}</div>
             <div class="message-from-name">${o.name}</div>
           </div>
-          <div class="message-content">${relationTitle(r)} · ${tip}${r.message? ' · 留言：'+r.message : ''}</div>
+          <div class="message-content">${relationTitle(r)} · ${tip}${r.message? ' · 留言：'+r.message : ''}${reasonDisplay}</div>
           <div style="display:flex; gap:8px; margin-top:6px;">${actionHtml}</div>
         </div>
       `;
@@ -424,8 +438,32 @@
 
   window.requestDissolve = async function(relId){
     if (!window.requestDissolveRelationship) return;
-    const ok = await window.requestDissolveRelationship(relId);
+    // 打开解除原因输入弹窗
+    window._pendingDissolveRelId = relId;
+    const overlay = document.getElementById('dissolvePromptOverlay');
+    const panel = document.getElementById('dissolvePrompt');
+    if (overlay) overlay.classList.add('active');
+    if (panel) panel.classList.add('active');
+  }
+
+  window.closeDissolvePrompt = function(){
+    const overlay = document.getElementById('dissolvePromptOverlay');
+    const panel = document.getElementById('dissolvePrompt');
+    if (overlay) overlay.classList.remove('active');
+    if (panel) panel.classList.remove('active');
+    window._pendingDissolveRelId = null;
+    const input = document.getElementById('dissolveReasonInput');
+    if (input) input.value = '';
+  }
+
+  window.submitDissolveRequest = async function(){
+    const relId = window._pendingDissolveRelId;
+    if (!relId || !window.requestDissolveRelationship) return;
+    const input = document.getElementById('dissolveReasonInput');
+    const reason = input ? input.value.trim() : '';
+    const ok = await window.requestDissolveRelationship(relId, reason);
     if (!ok) { alert('发起解除失败'); return; }
+    closeDissolvePrompt();
     await window.updateMessageBadge();
     window.showRelationshipCenter();
   }
@@ -1314,6 +1352,32 @@
     const countHtml = data.count > 1 ? ` <span class="relation-chip-count">${data.count}</span>` : '';
     const cls = extraClass ? `relation-chip ${extraClass}` : 'relation-chip';
     return `<span class="${cls}">${data.emoji}${countHtml}</span>`;
+  }
+
+  // 实时更新右下角关系徽章（由消息监听器调用）
+  window.updateCornerRelationBadge = function(acceptedRelsList){
+    const badgeHolder = document.getElementById('cornerRelationBadge');
+    if (!badgeHolder) return;
+    
+    // 更新缓存
+    acceptedRelationsCache = acceptedRelsList || [];
+    if (window.currentUser) {
+      acceptedRelationsMap = buildAcceptedMap(acceptedRelationsCache, window.currentUser.id);
+      window.__dropdownAcceptedRelations = acceptedRelationsCache;
+    }
+    
+    const badgeHtml = renderRelationChip(acceptedRelationsCache, 'relation-chip-embedded');
+    if (badgeHtml) {
+      badgeHolder.style.display = 'inline-flex';
+      badgeHolder.innerHTML = badgeHtml;
+    } else {
+      badgeHolder.style.display = 'none';
+    }
+    
+    // 同步更新下拉菜单的关系显示
+    if (window.updateDropdownContent) {
+      window.updateDropdownContent(acceptedRelationsCache, acceptedRelationsMap);
+    }
   }
 
   async function updateUserCorner(){
