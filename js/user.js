@@ -701,11 +701,13 @@
       return;
     }
 
-    // 获取关系数据（接受的关系用于展示）
+    // 获取关系数据（接受的关系用于展示，同时用于判断按钮显示）
     let acceptedRelations = [];
+    let allRelationsForUser = [];
     if (window.getRelationshipsForUser) {
       const rels = await window.getRelationshipsForUser(userId);
-      acceptedRelations = (rels || []).filter(r => r.status === 'accepted');
+      allRelationsForUser = rels || [];
+      acceptedRelations = allRelationsForUser.filter(r => r.status === 'accepted');
     }
 
     const isOwn = window.currentUser && window.currentUser.id === userId;
@@ -761,6 +763,14 @@
       }
     }
 
+    // 已经存在的关系或待处理申请时隐藏“建立关系”按钮
+    const hasRelationWithViewer = window.currentUser && window.currentUser.id !== userId && (allRelationsForUser||[]).some(r => {
+      const ids = [r.fromUserId, r.toUserId];
+      if (!(ids.includes(userId) && ids.includes(window.currentUser.id))) return false;
+      return ['pending', 'accepted', 'dissolve_pending'].includes(r.status);
+    });
+    const canApplyRelation = window.currentUser && window.currentUser.id !== userId && !hasRelationWithViewer;
+
     const html = `
       <div class="user-header">
         <div class="user-avatar-display">${renderAvatar(user.avatar, user.nickname)}</div>
@@ -771,6 +781,7 @@
         </div>
         <div style="display:flex; gap:10px; flex-wrap: wrap;">
           <button class="view-messages-btn" onclick="showUserMessages('${userId}')">📬 查看留言</button>
+          ${canApplyRelation ? `<button class="view-messages-btn" onclick="applyRelationship('${userId}')">🤝 建立关系</button>` : ''}
         </div>
       </div>
 
