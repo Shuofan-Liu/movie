@@ -1,0 +1,14 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // 允许所有人读取（查看头像和图片）
+    match /{allPaths=**} {
+      allow read: if true;
+    }
+    
+    // 允许任何人上传到 users 目录（前端会限制文件大小和类型）
+    match /users/{userId}/{allPaths=**} {
+      allow write: if true;
+    }
+  }
+}

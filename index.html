@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Movie!</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="./css/styles.css" />
+
+  <!-- Firebase SDK (Compat) placed before app scripts) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+</head>
+<body>
+  <!-- 左上角用户入口 -->
+  <div class="user-corner" id="userCorner">
+    <!-- 未登录时显示火焰 -->
+    <div class="corner-flame" id="cornerFlame" onclick="showLoginModal()">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+        <path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/>
+      </svg>
+    </div>
+    
+    <!-- 登录后显示用户头像 -->
+    <div class="corner-avatar" id="cornerAvatar" onclick="toggleUserMenu()" style="display:none;">
+      <div class="corner-avatar-img" id="cornerAvatarImg"></div>
+      <div class="corner-badge" id="cornerBadge" style="display:none;">0</div>
+    </div>
+  </div>
+
+  <!-- 用户下拉菜单 -->
+  <div class="user-dropdown" id="userDropdown">
+    <div class="user-dropdown-header">
+      <div class="dropdown-avatar" id="dropdownAvatar"></div>
+      <div class="dropdown-info">
+        <div class="dropdown-nickname" id="dropdownNickname"></div>
+        <div class="dropdown-style" id="dropdownStyle"></div>
+      </div>
+    </div>
+    <div class="user-dropdown-body">
+      <div class="dropdown-info-item">
+        <strong>最喜欢的导演：</strong><span id="dropdownDirector"></span>
+      </div>
+      <div class="dropdown-info-item">
+        <strong>最喜欢的电影：</strong><span id="dropdownFilm"></span>
+      </div>
+      <div class="dropdown-badges" id="dropdownBadges"></div>
+    </div>
+    <div class="user-dropdown-actions">
+      <button class="dropdown-btn" onclick="showUserPage(window.currentUser.id)">👤 查看我的主页</button>
+      <button class="dropdown-btn" onclick="editOwnProfile()">✏️ 编辑资料</button>
+      <button class="dropdown-btn" onclick="showMyMessages()">📬 查看我的留言</button>
+      <button class="dropdown-btn" onclick="showAdminPrompt()">👑 管理员模式</button>
+      <button class="dropdown-btn" onclick="logoutUser()">🚪 退出登录</button>
+      <button class="dropdown-btn danger" onclick="deleteOwnAccount()">⚠️ 注销账户</button>
+    </div>
+  </div>
+
+  <!-- 电影胶片背景 -->
+  <div class="film-strip-background" id="filmBackground"></div>
+
+  <!-- 流动诗意排版的导演名字 -->
+  <div class="directors-layer" id="directorsLayer"></div>
+
+  <!-- 右下角测验按钮（仅登录后显示） -->
+  <div class="quiz-icon-button" id="quizIconButton" onclick="startQuiz()" title="开始测验" style="display:none;">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+      <path d="M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/>
+    </svg>
+  </div>
+
+  <!-- 导演弹窗 -->
+  <div class="modal" id="directorModal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeModal()">&times;</span>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- 测验覆盖层 -->
+  <div class="quiz-overlay" id="quizOverlay">
+    <!-- 测验页面 -->
+    <div id="quizPage" class="quiz-container">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <div class="question-number" id="questionNumber">问题 1 / 5</div>
+      <div class="question-text" id="questionText"></div>
+      <div class="question-image hidden" id="questionImage"><img id="questionImg" alt="question" /></div>
+      <div id="answerContainer">
+        <input id="answerInput" class="answer-input" placeholder="请输入答案" />
+        <div id="optionsContainer" class="options-container hidden"></div>
+      </div>
+      <button class="quiz-button" onclick="handleNext()">下一题</button>
+      <button class="quiz-button" onclick="closeQuiz()">关闭</button>
+    </div>
+  </div>
+
+  <!-- 登录/注册模态框 -->
+  <div class="login-modal-overlay" id="loginModalOverlay" onclick="closeLoginModal()"></div>
+  <div class="login-modal" id="loginModal">
+    <span class="modal-close" onclick="closeLoginModal()">&times;</span>
+    
+    <!-- 登录/注册选择 -->
+    <div id="loginChoice" class="login-choice">
+      <h2>Welcome!</h2>
+      <button class="choice-button" onclick="showRegisterForm()">🔥 第一次来？</button>
+      <button class="choice-button" onclick="showLoginForm()">✨ 已经来过？</button>
+    </div>
+
+    <!-- 登录表单 -->
+    <div id="loginForm" class="auth-form hidden">
+      <h2>登录</h2>
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label for="loginNickname">昵称</label>
+          <input id="loginNickname" type="text" required placeholder="输入你的昵称" />
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">密码</label>
+          <input id="loginPassword" type="password" required placeholder="输入你的密码" />
+        </div>
+        <button type="submit" class="submit-button">登录</button>
+        <button type="button" class="back-button" onclick="showLoginChoice()">返回</button>
+      </form>
+    </div>
+
+    <!-- 注册表单 -->
+    <div id="registerForm" class="auth-form hidden">
+      <h2>注册</h2>
+      <form onsubmit="handleRegister(event)" id="regForm">
+        <!-- 头像选择器 -->
+        <div class="form-group">
+          <label>选择头像 *</label>
+          <small>点击选择，未选择将自动生成首字母头像</small>
+          <div class="avatar-selector" id="avatarSelector">
+            <div class="avatar-option" data-avatar="wave" title="浪潮">🌊</div>
+            <div class="avatar-option" data-avatar="tomato" title="番茄">🍅</div>
+            <div class="avatar-option" data-avatar="lightning" title="闪电">⚡</div>
+            <div class="avatar-option" data-avatar="star" title="星星">⭐</div>
+            <div class="avatar-option" data-avatar="saturn" title="土星">🪐</div>
+            <div class="avatar-option" data-avatar="comet" title="彗星">☄️</div>
+            <div class="avatar-option" data-avatar="alien" title="外星人">👽</div>
+            <div class="avatar-option" data-avatar="devil" title="恶魔">👿</div>
+            <div class="avatar-option" data-avatar="wing" title="翅膀">🪽</div>
+            <div class="avatar-option" data-avatar="potato" title="土豆">🥔</div>
+          </div>
+          <input type="hidden" id="selectedAvatar" value="" />
+        </div>
+
+        <!-- 昵称 -->
+        <div class="form-group">
+          <label for="regNickname">昵称 *</label>
+          <input id="regNickname" type="text" required placeholder="输入你的昵称" />
+        </div>
+
+        <!-- 密码 -->
+        <div class="form-group">
+          <label for="regPassword">密码 *</label>
+          <input id="regPassword" type="password" required placeholder="至少4个字符" />
+        </div>
+        <div class="form-group">
+          <label for="regPasswordConfirm">确认密码 *</label>
+          <input id="regPasswordConfirm" type="password" required placeholder="再次输入密码" />
+        </div>
+
+        <!-- 最喜欢的女导演 -->
+        <div class="form-group">
+          <label for="favoriteDirector">最喜欢的女导演 *</label>
+          <input id="favoriteDirector" type="text" required placeholder="如：阿涅斯·瓦尔达" />
+        </div>
+
+        <!-- 最喜欢的女性电影 -->
+        <div class="form-group">
+          <label for="favoriteFilm">最喜欢的女性电影 *</label>
+          <input id="favoriteFilm" type="text" required placeholder="如：燃烧女子的肖像" />
+        </div>
+
+        <!-- 最近看的电影（可选） -->
+        <div class="form-group">
+          <label for="recentFilm">最近看的一部电影（可选）</label>
+          <input id="recentFilm" type="text" placeholder="如：阿涅斯论瓦尔达" />
+        </div>
+
+        <!-- 分享想法（可选） -->
+        <div class="form-group">
+          <label for="thoughts">分享你最近好玩的想法（可选）</label>
+          <textarea id="thoughts" rows="3" placeholder="写下你的想法..."></textarea>
+        </div>
+
+        <button type="submit" class="submit-button">注册</button>
+        <button type="button" class="back-button" onclick="showLoginChoice()">返回</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 用户页面模态框 -->
+  <div class="user-modal-overlay" id="userModalOverlay" onclick="closeUserModal()"></div>
+  <div class="user-modal" id="userModal">
+    <span class="modal-close" onclick="closeUserModal()">&times;</span>
+    <!-- 左右切换按钮 -->
+    <div class="user-chevron prev" onclick="userChevronPrev()" aria-label="上一位">&lt;</div>
+    <div class="user-chevron next" onclick="userChevronNext()" aria-label="下一位">&gt;</div>
+    <div id="userContent" class="user-content"></div>
+  </div>
+
+  <!-- 用户列表侧边栏 -->
+  <div class="users-sidebar-overlay" id="usersSidebarOverlay" onclick="closeUsersSidebar()"></div>
+  <div class="users-sidebar" id="usersSidebar">
+    <div id="usersSidebarGrid" class="sidebar-users-grid"></div>
+  </div>
+  <!-- 右侧标签按钮：点击切换侧边栏 -->
+  <div class="users-sidebar-tab" id="usersSidebarTab" onclick="toggleUsersSidebarTab()" title="用户列表">&lt;</div>
+
+  <!-- 我的留言页面 -->
+  <div class="my-messages-overlay" id="myMessagesOverlay" onclick="closeMyMessages()"></div>
+  <div class="my-messages-page" id="myMessagesPage">
+    <div class="messages-header">
+      <h2>我收到的留言</h2>
+      <span class="modal-close" onclick="closeMyMessages()">&times;</span>
+    </div>
+    <div id="myMessagesList" class="messages-list"></div>
+  </div>
+
+  <!-- 加载提示 -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">加载中...</div>
+    </div>
+  </div>
+
+  <!-- 徽章提示气泡 -->
+  <div class="badge-toast hidden" id="badgeToast">
+    <span class="badge-icon-toast" id="badgeToastIcon"></span>
+    <span id="badgeToastText"></span>
+  </div>
+
+  <!-- 管理员密码输入弹窗 -->
+  <div class="admin-prompt-overlay" id="adminPromptOverlay" onclick="closeAdminPrompt()"></div>
+  <div class="admin-prompt" id="adminPrompt">
+    <h3>输入管理员密码</h3>
+    <input type="password" id="adminPasswordInput" placeholder="密码" />
+    <div class="admin-prompt-buttons">
+      <button onclick="confirmAdminPassword()">确定</button>
+      <button onclick="closeAdminPrompt()">取消</button>
+    </div>
+  </div>
+
+  <!-- App Scripts: 注意顺序，非模块，全局暴露 -->
+  <script src="./js/config.js"></script>
+  <script src="./js/data.js"></script>
+  <script src="./js/firebase.js"></script>
+  <script src="./js/ui.js"></script>
+  <script src="./js/quiz.js"></script>
+  <script src="./js/user.js"></script>
+  <script src="./js/admin.js"></script>
+  <script src="./js/gestures.js"></script>
+  <script src="./js/messages.js"></script>
+  <script>
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function(){
+      if (window.initAvatarSelector) window.initAvatarSelector();
+      if (window.initGestures) window.initGestures();
+      if (window.initUserCorner) window.initUserCorner();
+      if (window.initUsersSidebarTab) window.initUsersSidebarTab();
+    });
+  </script>
+</body>
+</html>
