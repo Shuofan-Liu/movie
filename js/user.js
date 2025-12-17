@@ -58,9 +58,15 @@
     
     avatarOptions.forEach(option => {
       option.addEventListener('click', function(){
+        const alreadySelected = this.classList.contains('selected');
         avatarOptions.forEach(opt => opt.classList.remove('selected'));
-        this.classList.add('selected');
-        selectedInput.value = this.getAttribute('data-avatar');
+        if (alreadySelected) {
+          // 再次点击已选项：取消选择，回到首字母头像
+          selectedInput.value = '';
+        } else {
+          this.classList.add('selected');
+          selectedInput.value = this.getAttribute('data-avatar');
+        }
       });
     });
   }
@@ -665,7 +671,7 @@
       document.getElementById('relationshipCenterContent').innerHTML = html;
       document.getElementById('relationshipCenterOverlay').classList.add('active');
       document.getElementById('relationshipCenterPage').classList.add('active');
-      if (window.updateDropdownContent) window.updateDropdownContent();
+      if (window.updateDropdownContent) await window.updateDropdownContent();
     }
 
     window.closeRelationshipCenter = function(){
@@ -679,7 +685,7 @@
       const ok = await window.respondRelationship(relId, status);
       if (!ok) { alert('操作失败'); return; }
       await window.updateMessageBadge();
-      if (window.updateDropdownContent) window.updateDropdownContent();
+      if (window.updateDropdownContent) await window.updateDropdownContent();
       window.showRelationshipCenter();
     }
     window.requestDissolve = async function(relId){
@@ -688,7 +694,7 @@
       const ok = await window.requestDissolveRelationship(relId, reason.trim());
       if (!ok) { alert('发起解除失败'); return; }
       await window.updateMessageBadge();
-      if (window.updateDropdownContent) window.updateDropdownContent();
+      if (window.updateDropdownContent) await window.updateDropdownContent();
       window.showRelationshipCenter();
     }
     window.currentViewingUserId = userId; // 保存当前查看的用户ID
@@ -1108,17 +1114,15 @@
     
     avatarOptions.forEach(option => {
       option.addEventListener('click', function(){
-        // 移除所有选中状态
+        const alreadySelected = this.classList.contains('selected');
         avatarOptions.forEach(opt => opt.classList.remove('selected'));
-        // 添加当前选中
-        this.classList.add('selected');
-        selectedInput.value = this.getAttribute('data-avatar');
-      });
-      
-      // 双击取消选择（回到首字母头像）
-      option.addEventListener('dblclick', function(){
-        avatarOptions.forEach(opt => opt.classList.remove('selected'));
-        selectedInput.value = '';
+        if (alreadySelected) {
+          // 再次点击已选项：取消选择，回到首字母头像
+          selectedInput.value = '';
+        } else {
+          this.classList.add('selected');
+          selectedInput.value = this.getAttribute('data-avatar');
+        }
       });
     });
   }
@@ -1255,7 +1259,64 @@
     updateUserCorner();
   }
   
-  function updateUserCorner(){
+  // 缓存已建立关系（仅 accepted）
+  let acceptedRelationsCache = [];
+  let acceptedRelationsMap = {};
+
+  function relTimestampMs(rel){
+    const ts = rel && rel.createdAt;
+    if (!ts) return Number.MAX_SAFE_INTEGER;
+    if (typeof ts.toMillis === 'function') return ts.toMillis();
+    if (typeof ts.seconds === 'number') return ts.seconds * 1000 + (ts.nanoseconds||0)/1e6;
+    return Number.MAX_SAFE_INTEGER;
+  }
+
+  function buildAcceptedMap(list, currentUserId){
+    const map = {};
+    (list||[]).forEach(r=>{
+      const ids = [r.fromUserId, r.toUserId];
+      if (!ids.includes(currentUserId)) return;
+      const otherId = r.fromUserId === currentUserId ? r.toUserId : r.fromUserId;
+      if (!map[otherId]) map[otherId] = [];
+      map[otherId].push(r);
+    });
+    // 按创建时间排序，便于取最早一条
+    Object.keys(map).forEach(k=>{
+      map[k].sort((a,b)=> relTimestampMs(a) - relTimestampMs(b));
+    });
+    return map;
+  }
+
+  async function refreshAcceptedRelations(){
+    if (!window.currentUser || !window.getRelationshipsForUser) {
+      acceptedRelationsCache = [];
+      acceptedRelationsMap = {};
+      window.__dropdownAcceptedRelations = [];
+      return acceptedRelationsCache;
+    }
+    const rels = await window.getRelationshipsForUser(window.currentUser.id);
+    acceptedRelationsCache = (rels||[]).filter(r=>r.status === 'accepted').sort((a,b)=> relTimestampMs(a) - relTimestampMs(b));
+    acceptedRelationsMap = buildAcceptedMap(acceptedRelationsCache, window.currentUser.id);
+    window.__dropdownAcceptedRelations = acceptedRelationsCache;
+    return acceptedRelationsCache;
+  }
+
+  function relationBadgeData(list){
+    if (!list || list.length === 0) return null;
+    const primary = list[0];
+    const emoji = (window.RELATIONSHIP_TYPES[primary.type] && window.RELATIONSHIP_TYPES[primary.type].emoji) || '🤝';
+    return { emoji, count: list.length };
+  }
+
+  function renderRelationChip(list, extraClass){
+    const data = relationBadgeData(list);
+    if (!data) return '';
+    const countHtml = data.count > 1 ? ` <span class="relation-chip-count">${data.count}</span>` : '';
+    const cls = extraClass ? `relation-chip ${extraClass}` : 'relation-chip';
+    return `<span class="${cls}">${data.emoji}${countHtml}</span>`;
+  }
+
+  async function updateUserCorner(){
     const cornerFlame = document.getElementById('cornerFlame');
     const cornerAvatar = document.getElementById('cornerAvatar');
     const quizButton = document.getElementById('quizIconButton');
@@ -1267,6 +1328,25 @@
       if (cornerAvatar) cornerAvatar.style.display = 'flex';
       const avatarImg = document.getElementById('cornerAvatarImg');
       if (avatarImg) avatarImg.innerHTML = window.renderAvatar(window.currentUser.avatar, window.currentUser.nickname);
+      // 镶嵌关系徽章（仅 accepted）
+      const badgeHolderId = 'cornerRelationBadge';
+      let badgeHolder = document.getElementById(badgeHolderId);
+      if (!badgeHolder && cornerAvatar) {
+        badgeHolder = document.createElement('div');
+        badgeHolder.id = badgeHolderId;
+        badgeHolder.className = '';
+        cornerAvatar.appendChild(badgeHolder);
+      }
+      const accepted = await refreshAcceptedRelations();
+      const badgeHtml = renderRelationChip(accepted, 'relation-chip-embedded');
+      if (badgeHolder) {
+        if (badgeHtml) {
+          badgeHolder.style.display = 'inline-flex';
+          badgeHolder.innerHTML = badgeHtml;
+        } else {
+          badgeHolder.style.display = 'none';
+        }
+      }
       
       // 显示测验按钮
       if (quizButton) quizButton.style.display = 'flex';
@@ -1281,7 +1361,7 @@
       }
       
       // 更新下拉菜单内容
-      updateDropdownContent();
+      await updateDropdownContent(acceptedRelationsCache, acceptedRelationsMap);
     } else {
       // 未登录：显示火焰
       if (cornerFlame) cornerFlame.style.display = 'flex';
@@ -1323,22 +1403,23 @@
       const container = document.getElementById('dropdownRelations');
       if (!container) return;
       let panel = document.getElementById(panelId);
-      if (panel) { panel.remove(); panel = null; }
+      if (panel) { panel.remove(); panel = null; return; }
       const list = window.__dropdownAcceptedRelations || [];
       if (!list.length) return;
       panel = document.createElement('div');
       panel.id = panelId;
-      panel.style.position = 'absolute';
-      panel.style.top = '24px';
-      panel.style.left = '0';
+      panel.style.position = 'fixed';
+      const rect = container.getBoundingClientRect();
+      panel.style.top = `${rect.bottom + 8}px`;
+      panel.style.left = `${Math.max(12, Math.min(rect.left, window.innerWidth - 220))}px`;
       panel.style.zIndex = '9999';
       panel.style.background = 'rgba(20,20,20,0.95)';
       panel.style.border = '1px solid rgba(212,175,55,0.4)';
       panel.style.borderRadius = '8px';
       panel.style.padding = '8px';
       panel.style.boxShadow = '0 6px 20px rgba(0,0,0,0.4)';
-      panel.style.minWidth = '180px';
-      panel.style.maxHeight = '220px';
+      panel.style.minWidth = '200px';
+      panel.style.maxHeight = '260px';
       panel.style.overflowY = 'auto';
       panel.innerHTML = list.map(r=>{
         const byMe = r.fromUserId === window.currentUser.id;
@@ -1354,8 +1435,7 @@
           </div>
         </div>`;
       }).join('');
-      container.style.position = 'relative';
-      container.appendChild(panel);
+      document.body.appendChild(panel);
       // 点击外部关闭
       const closeHandler = (e)=>{
         if (!panel.contains(e.target) && !container.contains(e.target)) {
@@ -1366,7 +1446,7 @@
       setTimeout(()=> document.addEventListener('click', closeHandler), 50);
     }
 
-    function updateDropdownContent(){
+    async function updateDropdownContent(preAccepted, preMap){
     if (!window.currentUser) return;
     
     const dropdownAvatar = document.getElementById('dropdownAvatar');
@@ -1396,27 +1476,20 @@
     }
     if (dropdownBadges) dropdownBadges.innerHTML = badgesHtml || '<span style="color:#888;">暂无徽章</span>';
 
-    // 关系徽标（名字右侧，>2 折叠）
+    // 关系徽标（名字右侧，点击展开列表）
     if (dropdownRelations) {
       dropdownRelations.textContent = '';
-      (async ()=>{
-        let pairBadges = '';
-        if (window.getRelationshipsForUser) {
-          const rels = await window.getRelationshipsForUser(window.currentUser.id);
-          const accepted = (rels||[]).filter(r=>r.status==='accepted');
-          window.__dropdownAcceptedRelations = accepted;
-          if (accepted.length > 0) {
-            const label = accepted.length > 2 ? `${accepted.length}个关系` : accepted.map(r=>{
-              const t = window.RELATIONSHIP_TYPES[r.type];
-              return `${t?t.emoji:'🤝'}`;
-            }).join('');
-            pairBadges = `<span class=\"badge-icon-small\" style=\"cursor:pointer;\" onclick=\"toggleDropdownRelationsPanel()\">${label}</span>`;
-          } else {
-            pairBadges = '';
-          }
-        }
-        dropdownRelations.innerHTML = pairBadges;
-      })();
+      const accepted = preAccepted && Array.isArray(preAccepted) ? preAccepted : await refreshAcceptedRelations();
+      const map = preMap || acceptedRelationsMap;
+      const badgeHtml = renderRelationChip(accepted, 'relation-chip-clickable');
+      if (badgeHtml) {
+        dropdownRelations.innerHTML = badgeHtml;
+        const chip = dropdownRelations.querySelector('.relation-chip-clickable');
+        if (chip) chip.onclick = toggleDropdownRelationsPanel;
+      } else {
+        dropdownRelations.innerHTML = '';
+      }
+      window.__dropdownAcceptedRelations = accepted;
     }
   }
   
@@ -1433,6 +1506,8 @@
   window.showUsersSidebar = async function(){
     const users = await window.getAllUsers();
     allUsersCache = users;
+    const acceptedList = await refreshAcceptedRelations();
+    const relMap = acceptedRelationsMap;
     
     if (!users || users.length === 0) {
       document.getElementById('usersSidebarGrid').innerHTML = '<p style="text-align:center;color:#888;padding:40px;">还没有用户注册</p>';
@@ -1448,10 +1523,15 @@
         }
         
         const styleTag = user.userStyle ? `<div style="font-size:11px;color:#888;margin-top:4px;">${user.userStyle}</div>` : '';
+        const relList = (relMap && relMap[user.id]) ? relMap[user.id] : [];
+        const badgeHtml = renderRelationChip(relList, 'relation-chip-embedded');
+        const avatarHtml = badgeHtml
+          ? `<div class="avatar-with-badge">${window.renderAvatar(user.avatar, user.nickname)}${badgeHtml}</div>`
+          : window.renderAvatar(user.avatar, user.nickname);
         
         return `
           <div class="user-card" onclick="showUserPage('${user.id}')">
-            <div class="user-card-avatar">${window.renderAvatar(user.avatar, user.nickname)}</div>
+            <div class="user-card-avatar">${avatarHtml}</div>
             <div class="user-card-name">${user.nickname}</div>
             ${styleTag}
             <div class="user-card-badges">${badgesHtml}</div>
