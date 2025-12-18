@@ -89,24 +89,6 @@
     if (danmakuMessages.length === 0) return;
 
     currentDisplayIndex = 0;
-
-    // 确保“重新播放”按钮始终存在
-    const header = document.querySelector('.danmaku-header .danmaku-controls');
-    if (header && !document.getElementById('danmakuReplayBtn')) {
-      const replayBtn = document.createElement('button');
-      replayBtn.id = 'danmakuReplayBtn';
-      replayBtn.title = '重新播放';
-      replayBtn.style = 'width:40px;height:40px;padding:0;display:flex;align-items:center;justify-content:center;background:var(--avatar-glow-color);border:1px solid var(--avatar-border-color);border-radius:50%;color:var(--avatar-border-color);cursor:pointer;transition:all 0.3s ease;';
-      replayBtn.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" style="width:20px;height:20px;"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6 0 1.3-.42 2.5-1.13 3.47l1.46 1.46C19.07 16.07 20 14.13 20 12c0-4.42-3.58-8-8-8zm-6.87.13L3.13 6.54C2.42 7.5 2 8.7 2 10c0 4.42 3.58 8 8 8v4l5-5-5-5v4c-3.31 0-6-2.69-6-6 0-1.3.42-2.5 1.13-3.47z"/></svg>';
-      replayBtn.onclick = function() {
-        const container = document.getElementById('danmakuContainer');
-        if (container) container.innerHTML = '';
-        startDanmakuDisplay();
-      };
-      header.appendChild(replayBtn);
-    }
-
-    currentDisplayIndex = 0;
     // 每1.5秒显示一条弹幕，只显示一次
     displayInterval = setInterval(() => {
       if (danmakuPaused) return;
@@ -117,6 +99,14 @@
         stopDanmakuDisplay();
       }
     }, 1500);
+  }
+
+  // 重新播放弹幕
+  window.replayDanmaku = function() {
+    const container = document.getElementById('danmakuContainer');
+    if (container) container.innerHTML = '';
+    stopDanmakuDisplay();
+    startDanmakuDisplay();
   }
 
   // 停止显示弹幕
