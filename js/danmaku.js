@@ -123,13 +123,31 @@
     const avatar = document.createElement('div');
     avatar.className = 'danmaku-avatar';
 
+    // 头像渲染逻辑与 renderAvatar 保持一致
+    const avatarMap = {
+      moon: '🌔', earth: '🌏', saturn: '🪐', comet: '☄️', rocket: '🚀', star: '⭐', lightning: '⚡', tornado: '🌪️', wave: '🌊',
+      chick: '🐤', penguin: '🐧', lion: '🦁', bear: '🐻', unicorn: '🦄', owl: '🦉', wolf: '🐺', seal: '🦭', shark: '🦈',
+      tomato: '🍅', potato: '🥔', avocado: '🥑', cheese: '🧀',
+      alien: '👽', devil: '👿', ninja: '🥷', ghost: '👻', invader: '👾', skull: '💀', robot: '🤖', wing: '🪽',
+      wonderwoman: '⚡', captainmarvel: '⭐'
+    };
+
     if (data.avatar) {
       if (typeof data.avatar === 'string') {
         avatar.textContent = data.avatar;
-      } else if (data.avatar.type === 'emoji') {
-        avatar.textContent = data.avatar.value || '?';
-      } else if (data.avatar.type === 'default') {
-        avatar.textContent = data.avatar.value || '?';
+      } else if (data.avatar.type === 'emoji' && data.avatar.value) {
+        avatar.textContent = data.avatar.value;
+      } else if (data.avatar.type === 'default' && data.avatar.value) {
+        avatar.textContent = data.avatar.value;
+        avatar.style.background = 'transparent';
+        avatar.style.color = 'var(--avatar-border-color)';
+      } else if (avatarMap[data.avatar.type]) {
+        avatar.textContent = avatarMap[data.avatar.type];
+      } else {
+        // 回退首字母
+        const nickname = data.nickname || '';
+        const firstChar = nickname.charAt(0).toUpperCase() || '?';
+        avatar.textContent = firstChar;
         avatar.style.background = 'transparent';
         avatar.style.color = 'var(--avatar-border-color)';
       }
