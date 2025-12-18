@@ -221,7 +221,6 @@
     item.appendChild(content);
 
     // 时间放在弹幕框下边框外左下角，作为兄弟节点插入
-    const container = document.getElementById('danmakuContainer');
     if (container) {
       container.appendChild(item);
       // 等待 item 渲染后再插入时间
@@ -237,8 +236,15 @@
       }, 0);
     }
 
-    container.appendChild(item);
+    // 添加交互事件
+    addDanmakuInteraction(item);
 
+    // 20秒后移除
+    setTimeout(() => {
+      if (item.parentNode) {
+        item.remove();
+      }
+    }, 20000);
     // 添加交互事件
     addDanmakuInteraction(item);
 
