@@ -90,12 +90,33 @@
 
     currentDisplayIndex = 0;
 
-    // 每1.5秒显示一条弹幕
+    // 每1.5秒显示一条弹幕，只显示一次
     displayInterval = setInterval(() => {
       if (danmakuPaused) return;
 
-      showDanmakuItem(danmakuMessages[currentDisplayIndex]);
-      currentDisplayIndex = (currentDisplayIndex + 1) % danmakuMessages.length;
+      if (currentDisplayIndex < danmakuMessages.length) {
+        showDanmakuItem(danmakuMessages[currentDisplayIndex]);
+        currentDisplayIndex++;
+      } else {
+        stopDanmakuDisplay();
+        // 显示“重新播放”按钮
+        const header = document.querySelector('.danmaku-header .danmaku-controls');
+        if (header && !document.getElementById('danmakuReplayBtn')) {
+          const replayBtn = document.createElement('button');
+          replayBtn.id = 'danmakuReplayBtn';
+          replayBtn.title = '重新播放';
+          replayBtn.style = 'width:40px;height:40px;padding:0;display:flex;align-items:center;justify-content:center;background:var(--avatar-glow-color);border:1px solid var(--avatar-border-color);border-radius:50%;color:var(--avatar-border-color);cursor:pointer;transition:all 0.3s ease;';
+          replayBtn.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" style="width:20px;height:20px;"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6 0 1.3-.42 2.5-1.13 3.47l1.46 1.46C19.07 16.07 20 14.13 20 12c0-4.42-3.58-8-8-8zm-6.87.13L3.13 6.54C2.42 7.5 2 8.7 2 10c0 4.42 3.58 8 8 8v4l5-5-5-5v4c-3.31 0-6-2.69-6-6 0-1.3.42-2.5 1.13-3.47z"/></svg>';
+          replayBtn.onclick = function() {
+            // 清空弹幕容器并重新播放
+            const container = document.getElementById('danmakuContainer');
+            if (container) container.innerHTML = '';
+            startDanmakuDisplay();
+            replayBtn.remove();
+          };
+          header.appendChild(replayBtn);
+        }
+      }
     }, 1500);
   }
 
@@ -155,6 +176,7 @@
       avatar.textContent = '?';
     }
 
+
     // 昵称
     const nickname = document.createElement('span');
     nickname.className = 'danmaku-nickname';
@@ -165,7 +187,43 @@
     content.className = 'danmaku-content';
     content.textContent = data.content || '';
 
-    item.appendChild(avatar);
+    // 时间
+    const time = document.createElement('div');
+    time.className = 'danmaku-time';
+    time.style.fontSize = '10px';
+    time.style.marginTop = '2px';
+    time.style.textAlign = 'center';
+    time.style.color = 'var(--avatar-border-color)'; // 跟随主题色
+    let dateObj = null;
+    if (data.timestamp && typeof data.timestamp.toDate === 'function') {
+      dateObj = data.timestamp.toDate();
+    } else if (data.timestamp instanceof Date) {
+      dateObj = data.timestamp;
+    } else if (typeof data.timestamp === 'number') {
+      dateObj = new Date(data.timestamp);
+    }
+    if (dateObj) {
+      // 格式：YYYY-MM-DD HH:mm:ss
+      const y = dateObj.getFullYear();
+      const m = String(dateObj.getMonth()+1).padStart(2,'0');
+      const d = String(dateObj.getDate()).padStart(2,'0');
+      const hh = String(dateObj.getHours()).padStart(2,'0');
+      const mm = String(dateObj.getMinutes()).padStart(2,'0');
+      const ss = String(dateObj.getSeconds()).padStart(2,'0');
+      time.textContent = `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+    } else {
+      time.textContent = '';
+    }
+
+    // 头像和时间包裹
+    const avatarWrap = document.createElement('div');
+    avatarWrap.style.display = 'flex';
+    avatarWrap.style.flexDirection = 'column';
+    avatarWrap.style.alignItems = 'center';
+    avatarWrap.appendChild(avatar);
+    avatarWrap.appendChild(time);
+
+    item.appendChild(avatarWrap);
     item.appendChild(nickname);
     item.appendChild(document.createTextNode(': '));
     item.appendChild(content);
