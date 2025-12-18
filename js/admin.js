@@ -58,7 +58,13 @@
   // 管理员专用操作，避免与用户版函数冲突
   window.adminDeleteSubmission = async function(id){
     if (!window.APP_STATE.isAdmin) { const ok = await promptAdminSecret(); if (!ok) return; }
-    const ok = confirm('确认删除这条留言吗？');
+    const ok = await showConfirmDialog({
+      title: '删除留言',
+      message: '确认删除这条留言吗？',
+      confirmText: '删除',
+      cancelText: '取消',
+      isDanger: true
+    });
     if (!ok) return;
     const success = await window.deleteSubmissionById?.(id);
     if (success) {

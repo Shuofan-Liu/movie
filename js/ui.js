@@ -114,6 +114,66 @@
   // 手势已移除：不再监听滚轮左右滑动
   // (intentionally left blank)
 
+  // 通用确认对话框（替代原生 confirm）
+  window.showConfirmDialog = function(options){
+    return new Promise((resolve) => {
+      const overlay = document.getElementById('confirmDialogOverlay');
+      const dialog = document.getElementById('confirmDialog');
+      const titleEl = document.getElementById('confirmDialogTitle');
+      const messageEl = document.getElementById('confirmDialogMessage');
+      const cancelBtn = document.getElementById('confirmDialogCancelBtn');
+      const confirmBtn = document.getElementById('confirmDialogConfirmBtn');
+
+      // 设置内容
+      titleEl.textContent = options.title || '确认操作';
+      messageEl.textContent = options.message || '确定要执行此操作吗？';
+      cancelBtn.textContent = options.cancelText || '取消';
+      confirmBtn.textContent = options.confirmText || '确定';
+
+      // 自定义确认按钮样式（危险操作用红色）
+      if (options.isDanger) {
+        confirmBtn.style.background = 'rgba(255,68,68,0.25)';
+        confirmBtn.style.borderColor = 'rgba(255,68,68,0.5)';
+        confirmBtn.style.color = '#ff4444';
+      } else {
+        confirmBtn.style.background = 'rgba(212,175,55,0.2)';
+        confirmBtn.style.borderColor = 'rgba(212,175,55,0.4)';
+        confirmBtn.style.color = '#d4af37';
+      }
+
+      // 显示对话框
+      overlay.classList.add('active');
+      dialog.classList.add('active');
+
+      // 关闭对话框的函数
+      const closeDialog = () => {
+        overlay.classList.remove('active');
+        dialog.classList.remove('active');
+        cancelBtn.onclick = null;
+        confirmBtn.onclick = null;
+        overlay.onclick = null;
+      };
+
+      // 取消按钮
+      cancelBtn.onclick = () => {
+        closeDialog();
+        resolve(false);
+      };
+
+      // 确认按钮
+      confirmBtn.onclick = () => {
+        closeDialog();
+        resolve(true);
+      };
+
+      // 点击遮罩层关闭（等同于取消）
+      overlay.onclick = () => {
+        closeDialog();
+        resolve(false);
+      };
+    });
+  };
+
   // 初始挂载
   document.addEventListener('DOMContentLoaded', function(){
     try {

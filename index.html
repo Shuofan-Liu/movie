@@ -82,9 +82,11 @@
     </svg>
   </div>
 
-  <!-- 右下角弹幕墙按钮（仅登录后显示） -->
+  <!-- 右下角弹幕墙按钮（仅登录后显示，电影风格icon） -->
   <div class="danmaku-icon-button" id="danmakuButton" onclick="toggleDanmakuWall()" title="留言墙" style="display:none;">
-    💬
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" style="width:35px;height:35px;">
+      <path d="M4 4h16v2H4zm0 4h16v2H4zm0 4h10v2H4zm0 4h10v2H4zm12 0v-2h2v2zm0-4v-2h2v2zm0-4V8h2v2zm0-4V4h2v2z"/>
+    </svg>
   </div>
 
   <!-- 导演弹窗 -->
@@ -334,12 +336,11 @@
 
   <!-- 弹幕墙覆盖层 -->
   <div class="danmaku-wall-overlay" id="danmakuWallOverlay">
-    <!-- 顶部控制栏 -->
-    <div class="danmaku-header">
-      <h2>💬 留言墙</h2>
-      <div class="danmaku-controls">
-        <button id="danmakuPauseBtn" onclick="toggleDanmakuPause()">⏸️ 暂停</button>
-        <span class="modal-close" onclick="closeDanmakuWall()">×</span>
+    <!-- 顶部控制栏（去除标题和分割线，仅icon按钮） -->
+    <div class="danmaku-header" style="border-bottom:none;background:transparent;padding:20px 40px 0 40px;">
+      <div class="danmaku-controls" style="gap:12px;">
+        <button id="danmakuPauseBtn" onclick="toggleDanmakuPause()" title="Pause/Play" style="width:40px;height:40px;padding:0;display:flex;align-items:center;justify-content:center;background:var(--avatar-glow-color);border:1px solid var(--avatar-border-color);border-radius:50%;color:var(--avatar-border-color);font-size:22px;"><span id="danmakuPauseIcon">⏸️</span></button>
+        <button class="modal-close" onclick="closeDanmakuWall()" title="Close" style="width:40px;height:40px;padding:0;display:flex;align-items:center;justify-content:center;background:var(--avatar-glow-color);border:1px solid var(--avatar-border-color);border-radius:50%;color:var(--avatar-border-color);font-size:22px;">×</button>
       </div>
     </div>
 

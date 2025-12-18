@@ -9,6 +9,31 @@
   --badge-glow-color: rgba(212,175,55,0.4);
   --badge-glow-size: 10px;
 }
+/* 基础重置 */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overflow-x: hidden; }
+hidden { display: none !important; }
+/* 电影海报背景层 */
+.film-strip-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: var(--film-opacity); display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(4, 1fr); grid-auto-flow: row dense; grid-auto-rows: 1fr; gap: 0; overflow: hidden; transition: opacity 2s ease; }
+.film-frame { position: relative; overflow: hidden; background: #000; }
+.film-frame img { width: 100%; height: 100%; object-fit: contain; object-position: center; opacity: 0.8; filter: var(--film-filter); transition: transform 0.3s ease, filter 2s ease; }
+.film-frame:hover img { transform: scale(1.05); opacity: 1; }
+/* 导演滚动层 */
+.directors-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; overflow: hidden; pointer-events: none; display: flex; justify-content: center; align-items: flex-start; }
+.credits-scroll { position: absolute; width: 100%; animation: scrollUp 90s linear infinite; pointer-events: auto; will-change: transform; }
+@keyframes scrollUp { 0% { transform: translateY(100vh); } 100% { transform: translateY(-100%); } }
+...
+/* 时间感知CSS变量 - 由timeTheme.js动态更新 */
+:root {
+  --avatar-border-color: #d4af37;
+  --avatar-glow-color: rgba(212,175,55,0.4);
+  --film-opacity: 0.3;
+  --film-filter: brightness(1) saturate(1);
+  --director-base-color: #f5f5f5;
+  --director-hover-color: #d4af37;
+  --badge-glow-color: rgba(212,175,55,0.4);
+  --badge-glow-size: 10px;
+}
 
 /* 基础重置 */
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -460,30 +485,30 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 
   /* 固定角标按钮尺寸与间距 */
   .quiz-icon-button,
-  .flame-icon-button,
-  .users-icon-button { width: 54px; height: 54px; bottom: 16px; }
-  .quiz-icon-button { left: 16px; }
-  .flame-icon-button { right: 96px; }
-  .users-icon-button { right: 176px; }
-
-  /* 模态框与登录窗缩进 */
-  .modal-content { margin: 40px auto; padding: 28px 22px; width: 90vw; }
-  .login-modal { width: 94vw; padding: 28px 22px; max-height: 88vh; }
-  .auth-form h2, .login-choice h2 { font-size: 26px; }
-  .choice-button { padding: 16px; font-size: 16px; }
-
-  /* 测验与弹窗文案缩放 */
-  .quiz-container { padding: 28px 20px; max-width: 95vw; }
-  .question-text { font-size: 22px; }
-  .answer-input { font-size: 18px; }
-
-  /* 侧边栏占满屏，滑出距离同步缩小 */
-  .sidebar-wall { width: 100vw; right: -100vw; padding: 28px 20px; }
-  .sidebar-wall.active { right: 0; }
-
-  /* 导演滚动文字间距与字号收窄 */
-  .director-row { gap: 28px; padding: 0 16px; margin-bottom: 48px; }
-  .director-name.size-xl { font-size: 26px; }
+  .danmaku-icon-button {
+    position: fixed;
+    bottom: 40px;
+    right: 30px;
+    width: 65px;
+    height: 65px;
+    background: var(--avatar-glow-color,rgba(212,175,55,0.15));
+    border: 2px solid var(--avatar-border-color,rgba(212,175,55,0.5));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    cursor: pointer;
+    z-index: 999;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+  }
+  .danmaku-icon-button:hover {
+    background: var(--avatar-glow-color,rgba(212,175,55,0.3));
+    border-color: var(--avatar-border-color,#d4af37);
+    transform: scale(1.1);
+    box-shadow: 0 0 30px var(--avatar-glow-color,rgba(212,175,55,0.4));
+  }
   .director-name.size-l { font-size: 20px; }
   .director-name.size-m { font-size: 16px; }
   .director-name.size-s { font-size: 13px; }

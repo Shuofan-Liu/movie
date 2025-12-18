@@ -85,10 +85,15 @@
       // 新建模式：先检查是否已有该昵称的留言
       const submissions = await window.getSubmissions?.() || [];
       const existingSubmission = submissions.find(s => s.nickname === nickname);
-      
+
       if (existingSubmission) {
         hideLoading();
-        const editExisting = confirm(`你已经有一条留言了！\n昵称：${nickname}\n\n点击"确定"编辑现有留言，点击"取消"使用不同昵称。`);
+        const editExisting = await showConfirmDialog({
+          title: '已有留言',
+          message: `你已经有一条留言了！\n昵称：${nickname}\n\n确定编辑现有留言吗？点击取消可使用不同昵称。`,
+          confirmText: '编辑留言',
+          cancelText: '取消'
+        });
         if (editExisting) {
           // 加载现有留言用于编辑
           window.editingId = existingSubmission.id;
@@ -316,11 +321,16 @@
     
     const password = prompt('请输入留言密码以删除：');
     if (password === null) return;
-    
-    if (!confirm(`确定要删除 "${submission.nickname}" 的留言吗？`)) {
-      return;
-    }
-    
+
+    const confirmed = await showConfirmDialog({
+      title: '删除留言',
+      message: `确定要删除 "${submission.nickname}" 的留言吗？`,
+      confirmText: '删除',
+      cancelText: '取消',
+      isDanger: true
+    });
+    if (!confirmed) return;
+
     showLoading();
     const success = await callUserDeleteSubmission(id, password.trim());
     hideLoading();

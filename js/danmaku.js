@@ -206,17 +206,14 @@
   // 暂停/继续弹幕
   window.toggleDanmakuPause = function() {
     danmakuPaused = !danmakuPaused;
-    const btn = document.getElementById('danmakuPauseBtn');
-
+    const icon = document.getElementById('danmakuPauseIcon');
     if (danmakuPaused) {
-      btn.textContent = '▶️ 继续';
-      // 暂停所有正在飘的弹幕
+      if (icon) icon.textContent = '▶️';
       document.querySelectorAll('.danmaku-item').forEach(item => {
         item.style.animationPlayState = 'paused';
       });
     } else {
-      btn.textContent = '⏸️ 暂停';
-      // 继续所有弹幕
+      if (icon) icon.textContent = '⏸️';
       document.querySelectorAll('.danmaku-item').forEach(item => {
         item.style.animationPlayState = 'running';
       });
@@ -304,16 +301,19 @@
     const avatar = window.currentUser.avatar;
     if (!avatar) {
       avatarDiv.textContent = '?';
+      avatarDiv.style.background = 'var(--avatar-bg,rgba(212,175,55,0.1))';
       return;
     }
 
     if (typeof avatar === 'string') {
       avatarDiv.textContent = avatar;
+      avatarDiv.style.background = 'var(--avatar-bg,rgba(212,175,55,0.1))';
     } else if (avatar.type === 'emoji') {
       avatarDiv.textContent = avatar.value || '?';
+      avatarDiv.style.background = 'var(--avatar-bg,rgba(212,175,55,0.1))';
     } else if (avatar.type === 'default') {
       avatarDiv.textContent = avatar.value || '?';
-      avatarDiv.style.background = avatar.color || '#d4af37';
+      avatarDiv.style.background = avatar.color || 'var(--avatar-bg,rgba(212,175,55,0.1))';
     }
   }
 
