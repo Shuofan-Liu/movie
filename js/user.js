@@ -1630,14 +1630,31 @@
       panel.style.minWidth = '200px';
       panel.style.maxHeight = '260px';
       panel.style.overflowY = 'auto';
-      panel.innerHTML = list.map((r, idx)=>{
-        const t = window.RELATIONSHIP_TYPES[r.type];
-        const badge = t ? t.emoji : '🤝';
-        return `<div class="relation-panel-item" data-idx="${idx}" style="display:flex; align-items:center; gap:8px; padding:6px 4px; cursor:pointer; border-radius:6px; transition:background 0.2s;">
-          <span style="font-size:20px;">${badge}</span>
-          <span style="color:var(--avatar-border-color); font-size:14px;">${(t&&t.name)||r.type}</span>
-        </div>`;
-      }).join('');
+      // 获取当前用户头像和昵称
+      const avatar = window.currentUser?.avatar;
+      const nickname = window.currentUser?.nickname || '';
+      const avatarHtml = window.renderAvatar ? window.renderAvatar(avatar, nickname) : '';
+      panel.innerHTML = `
+        <div>
+        ${list.map((r, idx)=>{
+          const t = window.RELATIONSHIP_TYPES[r.type];
+          const badge = t ? t.emoji : '🤝';
+          // 关系对方
+          const isFrom = r.fromUserId === (window.currentUser && window.currentUser.id);
+          const otherName = isFrom ? (r.toNickname || '对方') : (r.fromNickname || '对方');
+          const otherAvatar = isFrom ? r.toAvatar : r.fromAvatar;
+          const otherAvatarHtml = window.renderAvatar ? window.renderAvatar(otherAvatar, otherName) : '';
+          return `<div class="relation-panel-item" data-idx="${idx}" style="display:flex; align-items:center; gap:8px; padding:6px 4px; cursor:pointer; border-radius:6px; transition:background 0.2s;">
+            <span style="font-size:20px;">${badge}</span>
+            <span style="color:var(--avatar-border-color); font-size:14px;">${(t&&t.name)||r.type}</span>
+            <span style="margin-left:auto; display:flex; align-items:center; gap:6px;">
+              <span style="width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center;">${otherAvatarHtml}</span>
+              <span style="font-size:13px; color:#eee; max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${otherName}</span>
+            </span>
+          </div>`;
+        }).join('')}
+        </div>
+      `;
       // 绑定点击事件
       setTimeout(()=>{
         panel.querySelectorAll('.relation-panel-item').forEach(item=>{
@@ -1651,14 +1668,19 @@
         });
       }, 10);
       document.body.appendChild(panel);
-      // 点击外部关闭
-      const closeHandler = (e)=>{
-        if (!panel.contains(e.target) && !container.contains(e.target)) {
+      // 悬停控制消失
+      let hideTimer = null;
+      function tryHidePanel(e) {
+        const chip = container.querySelector('.relation-chip-clickable');
+        if (!panel.contains(e.relatedTarget) && (!chip || !chip.contains(e.relatedTarget))) {
           panel.remove();
-          document.removeEventListener('click', closeHandler);
+          container.removeEventListener('mouseleave', tryHidePanel);
+          panel.removeEventListener('mouseleave', tryHidePanel);
         }
-      };
-      setTimeout(()=> document.addEventListener('click', closeHandler), 50);
+      }
+      panel.addEventListener('mouseleave', tryHidePanel);
+      container.addEventListener('mouseleave', tryHidePanel);
+      panel.addEventListener('mouseenter', ()=>{ if(hideTimer) clearTimeout(hideTimer); });
     }
 
     async function updateDropdownContent(preAccepted, preMap){
