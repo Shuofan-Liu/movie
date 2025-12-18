@@ -144,18 +144,7 @@
         <div class="form-group">
           <label>选择头像 *</label>
           <small>点击选择，未选择将自动生成首字母头像</small>
-          <div class="avatar-selector" id="avatarSelector">
-            <div class="avatar-option" data-avatar="wave" title="浪潮">🌊</div>
-            <div class="avatar-option" data-avatar="tomato" title="番茄">🍅</div>
-            <div class="avatar-option" data-avatar="lightning" title="闪电">⚡</div>
-            <div class="avatar-option" data-avatar="star" title="星星">⭐</div>
-            <div class="avatar-option" data-avatar="saturn" title="土星">🪐</div>
-            <div class="avatar-option" data-avatar="comet" title="彗星">☄️</div>
-            <div class="avatar-option" data-avatar="alien" title="外星人">👽</div>
-            <div class="avatar-option" data-avatar="devil" title="恶魔">👿</div>
-            <div class="avatar-option" data-avatar="wing" title="翅膀">🪽</div>
-            <div class="avatar-option" data-avatar="potato" title="土豆">🥔</div>
-          </div>
+          <div class="avatar-selector" id="avatarSelector"></div>
           <input type="hidden" id="selectedAvatar" value="" />
         </div>
 
@@ -209,11 +198,11 @@
   <div class="user-modal-overlay" id="userModalOverlay" onclick="closeUserModal()"></div>
   <div class="user-modal" id="userModal">
     <span class="modal-close" onclick="closeUserModal()">&times;</span>
-    <!-- 左右切换按钮 -->
-    <div class="user-chevron prev" onclick="userChevronPrev()" aria-label="上一位">&lt;</div>
-    <div class="user-chevron next" onclick="userChevronNext()" aria-label="下一位">&gt;</div>
     <div id="userContent" class="user-content"></div>
   </div>
+  <!-- 左右切换按钮（独立于模态框，避免被overflow裁剪） -->
+  <div class="user-chevron prev" onclick="userChevronPrev()" aria-label="上一位">&lt;</div>
+  <div class="user-chevron next" onclick="userChevronNext()" aria-label="下一位">&gt;</div>
 
   <!-- 用户列表侧边栏 -->
   <div class="users-sidebar-overlay" id="usersSidebarOverlay" onclick="closeUsersSidebar()"></div>
@@ -274,27 +263,31 @@
     <h3>建立关系</h3>
     <p style="font-size: 14px; color: #888; margin-bottom: 20px;">请选择一个关系类型：</p>
     
-    <!-- 关系类型选择按钮 -->
+    <!-- 关系类型选择按钮（已替换为六种新关系） -->
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
-      <button class="relationship-type-btn" onclick="selectRelationshipType('lifelong')" data-type="lifelong">
-        <div style="font-size: 28px; margin-bottom: 6px;">💫</div>
-        <div style="font-size: 14px; font-weight: 600;">Lifelong</div>
-        <div style="font-size: 12px; color: #888;">Relationship</div>
+      <button class="relationship-type-btn" onclick="selectRelationshipType('eternal')" data-type="eternal">
+        <div style="font-size: 28px; margin-bottom: 6px;">🪢</div>
+        <div style="font-size: 14px; font-weight: 600;">Eternal Bond</div>
       </button>
-      <button class="relationship-type-btn" onclick="selectRelationshipType('partner')" data-type="partner">
-        <div style="font-size: 28px; margin-bottom: 6px;">🤝</div>
-        <div style="font-size: 14px; font-weight: 600;">The Best</div>
-        <div style="font-size: 12px; color: #888;">Partner</div>
+      <button class="relationship-type-btn" onclick="selectRelationshipType('backforth')" data-type="backforth">
+        <div style="font-size: 28px; margin-bottom: 6px;">🏸</div>
+        <div style="font-size: 14px; font-weight: 600;">Back and Forth</div>
       </button>
-      <button class="relationship-type-btn" onclick="selectRelationshipType('friend')" data-type="friend">
-        <div style="font-size: 28px; margin-bottom: 6px;">👭</div>
-        <div style="font-size: 14px; font-weight: 600;">Sincere</div>
-        <div style="font-size: 12px; color: #888;">Friend</div>
+      <button class="relationship-type-btn" onclick="selectRelationshipType('investor')" data-type="investor">
+        <div style="font-size: 28px; margin-bottom: 6px;">💸</div>
+        <div style="font-size: 14px; font-weight: 600;">Angel Investor</div>
       </button>
-      <button class="relationship-type-btn" onclick="selectRelationshipType('communication')" data-type="communication">
+      <button class="relationship-type-btn" onclick="selectRelationshipType('teddy')" data-type="teddy">
+        <div style="font-size: 28px; margin-bottom: 6px;">🧸</div>
+        <div style="font-size: 14px; font-weight: 600;">Needy Teddy</div>
+      </button>
+      <button class="relationship-type-btn" onclick="selectRelationshipType('time')" data-type="time">
+        <div style="font-size: 28px; margin-bottom: 6px;">⏳</div>
+        <div style="font-size: 14px; font-weight: 600;">Time Needed</div>
+      </button>
+      <button class="relationship-type-btn" onclick="selectRelationshipType('blah')" data-type="blah">
         <div style="font-size: 28px; margin-bottom: 6px;">💬</div>
-        <div style="font-size: 14px; font-weight: 600;">Further</div>
-        <div style="font-size: 12px; color: #888;">Communication</div>
+        <div style="font-size: 14px; font-weight: 600;">Blah Blah</div>
       </button>
     </div>
 
@@ -307,6 +300,30 @@
     <div style="display: flex; gap: 10px; justify-content: flex-end;">
       <button onclick="closeRelationshipPrompt()" style="padding: 10px 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #ccc; border-radius: 8px; cursor: pointer; font-size: 14px;">取消</button>
       <button onclick="submitRelationshipRequest(window._selectedRelationType)" style="padding: 10px 20px; background: rgba(212,175,55,0.2); border: 1px solid rgba(212,175,55,0.4); color: #d4af37; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">发送申请</button>
+    </div>
+  </div>
+
+  <!-- 解除关系弹窗（输入原因） -->
+  <div class="relationship-prompt-overlay" id="dissolvePromptOverlay" onclick="closeDissolvePrompt()"></div>
+  <div class="relationship-prompt" id="dissolvePrompt">
+    <h3>解除关系</h3>
+    <p style="font-size: 14px; color: #888; margin-bottom: 20px;">请说明解除关系的原因：</p>
+    <textarea id="dissolveReasonInput" placeholder="输入解除原因（可选）..." 
+      style="width: 100%; min-height: 100px; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #f5f5f5; font-size: 14px; resize: vertical; font-family: 'Lato', sans-serif; margin-bottom: 20px;"></textarea>
+    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+      <button onclick="closeDissolvePrompt()" style="padding: 10px 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #ccc; border-radius: 8px; cursor: pointer; font-size: 14px;">取消</button>
+      <button onclick="submitDissolveRequest()" style="padding: 10px 20px; background: rgba(255,68,68,0.2); border: 1px solid rgba(255,68,68,0.4); color: #ff4444; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">确认解除</button>
+    </div>
+  </div>
+
+  <!-- 删除账户确认弹窗 -->
+  <div class="admin-prompt-overlay" id="deleteAccountOverlay" onclick="closeDeleteAccountPrompt()"></div>
+  <div class="admin-prompt" id="deleteAccountPrompt">
+    <h3 style="color: #ff4444; font-size: 18px;">⚠️ 注销账户</h3>
+    <p id="deleteAccountMessage" style="color: #ccc; margin: 20px 0; line-height: 1.6;"></p>
+    <div style="display: flex; gap: 12px;">
+      <button onclick="closeDeleteAccountPrompt()" style="flex: 1; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #ccc; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">取消</button>
+      <button onclick="confirmDeleteAccount()" style="flex: 1; padding: 12px; background: rgba(255,68,68,0.25); border: 1px solid rgba(255,68,68,0.5); color: #ff4444; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">确认注销</button>
     </div>
   </div>
 

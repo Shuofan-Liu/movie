@@ -338,7 +338,7 @@
     const userStyle = classifyUserStyle();
     
     if (!window.currentUser) {
-      alert('测验完成！\n\n你的电影风格：' + (userStyle ? userStyle.name : '未知') + '\n\n请先登录以保存你的徽章和风格');
+      showInlineAlert('测验完成！你的电影风格：' + (userStyle ? userStyle.name : '未知') + '。请先登录以保存你的徽章和风格', 'info');
       closeQuiz();
       return;
     }
@@ -370,7 +370,7 @@
       // 显示徽章提示
       showBadgeToast();
       
-      alert(`恭喜完成测验！\n\n你的电影风格：${userStyle ? userStyle.name : '未知'}\n\n徽章和风格已保存到你的个人页面`);
+      showInlineAlert(`恭喜完成测验！你的电影风格：${userStyle ? userStyle.name : '未知'}。徽章和风格已保存到你的个人页面`, 'success');
       closeQuiz();
       
       // 可选：自动打开用户页面
@@ -380,7 +380,7 @@
         }
       }, 500);
     } else {
-      alert('保存失败，请稍后再试');
+      showInlineAlert('保存失败，请稍后再试', 'error');
     }
   }
 

@@ -16,7 +16,7 @@
         return !!(res && res.data && res.data.ok);
       } catch (err) {
         console.error('[userUpdateSubmission] failed', err);
-        alert(err?.message || '更新失败');
+        showInlineAlert(err?.message || '更新失败', 'error');
         return false;
       }
     }
@@ -31,7 +31,7 @@
         return !!(res && res.data && res.data.ok);
       } catch (err) {
         console.error('[userDeleteSubmission] failed', err);
-        alert(err?.message || '删除失败');
+        showInlineAlert(err?.message || '删除失败', 'error');
         return false;
       }
     }
@@ -60,7 +60,7 @@
     const password = el('password').value.trim();
 
     if (!nickname || !favorite || !dream) {
-      alert('请填写所有必填字段！');
+      showInlineAlert('请填写所有必填字段！', 'warn');
       return;
     }
 
@@ -77,7 +77,7 @@
       const existingSubmission = submissions.find(s => s.id === editingId);
       if (!existingSubmission) {
         hideLoading();
-        alert('留言不存在！');
+        showInlineAlert('留言不存在！', 'warn');
         return;
       }
       passwordToUse = existingSubmission.password;
@@ -107,26 +107,26 @@
       passwordToUse = prompt('请设置一个密码来保护你的留言：\n（用于以后修改和删除留言）');
       
       if (passwordToUse === null) {
-        alert('需要设置密码才能提交留言！');
+        showInlineAlert('需要设置密码才能提交留言！', 'warn');
         return;
       }
       
       passwordToUse = passwordToUse.trim();
       
       if (!passwordToUse) {
-        alert('密码不能为空！');
+        showInlineAlert('密码不能为空！', 'warn');
         return;
       }
       
       if (passwordToUse.length < 4) {
-        alert('密码至少需要4个字符！');
+        showInlineAlert('密码至少需要4个字符！', 'warn');
         return;
       }
       
       // 确认密码
       const confirmPassword = prompt('请再次输入密码确认：');
       if (confirmPassword !== passwordToUse) {
-        alert('两次输入的密码不一致！');
+        showInlineAlert('两次输入的密码不一致！', 'warn');
         return;
       }
       
@@ -176,7 +176,7 @@
     hideLoading();
     
     if (!success) {
-      alert('提交失败，请稍后再试');
+      showInlineAlert('提交失败，请稍后再试', 'error');
       return;
     }
 
@@ -304,13 +304,13 @@
     hideLoading();
     
     if (!submission) {
-      alert('留言不存在！');
+      showInlineAlert('留言不存在！', 'warn');
       return;
     }
     
     // 权限检查：只能删除自己的留言
     if (currentUser !== submission.nickname) {
-      alert('你只能删除自己的留言！');
+      showInlineAlert('你只能删除自己的留言！', 'warn');
       return;
     }
     
@@ -342,13 +342,13 @@
     hideLoading();
     
     if (!submission) {
-      alert('留言不存在！');
+      showInlineAlert('留言不存在！', 'warn');
       return;
     }
     
     // 权限检查：只能编辑自己的留言
     if (currentUser !== submission.nickname) {
-      alert('你只能编辑自己的留言！');
+      showInlineAlert('你只能编辑自己的留言！', 'warn');
       return;
     }
     

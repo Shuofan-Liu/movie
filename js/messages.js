@@ -4,6 +4,7 @@
   let _unreadUnsub = null;           // 留言未读监听
   let _relPendingUnsub1 = null;      // 关系 pending 监听
   let _relPendingUnsub2 = null;      // 关系 dissolve_pending 监听
+  let _relAcceptedUnsub = null;      // 关系 accepted 监听（用于右下角徽章）
   let _unreadMsgCount = 0;
   let _pendingRelCount = 0;
 
@@ -89,6 +90,22 @@
       }, (err)=>{
         console.error('[relationships] 待处理(解除)监听失败:', err);
       });
+
+      // 监听已建立关系（用于右下角关系徽章）
+      const qAccepted = window.db.collection('relationships')
+        .where('status', '==', 'accepted')
+        .orderBy('createdAt', 'asc');
+      _relAcceptedUnsub = qAccepted.onSnapshot((snap)=>{
+        // 过滤出与当前用户相关的关系
+        const allRels = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const myRels = allRels.filter(r => r.fromUserId === userId || r.toUserId === userId);
+        // 更新关系徽章显示
+        if (window.updateCornerRelationBadge) {
+          window.updateCornerRelationBadge(myRels);
+        }
+      }, (err)=>{
+        console.error('[relationships] 已建立关系监听失败:', err);
+      });
     } catch (e) {
       console.error('[messages] startMessageBadgeListener error:', e);
     }
@@ -98,6 +115,7 @@
   window.stopMessageBadgeListener = function(){
     if (_unreadUnsub) { try { _unreadUnsub(); } catch(_){ } _unreadUnsub = null; }
     if (_relPendingUnsub1) { try { _relPendingUnsub1(); } catch(_){ } _relPendingUnsub1 = null; }
+    if (_relAcceptedUnsub) { try { _relAcceptedUnsub(); } catch(_){ } _relAcceptedUnsub = null; }
     if (_relPendingUnsub2) { try { _relPendingUnsub2(); } catch(_){ } _relPendingUnsub2 = null; }
     window.__relPendingA = undefined;
     window.__relPendingB = undefined;
@@ -223,7 +241,7 @@
   // 显示"我的留言"页面
   window.showMyMessages = async function(){
     if (!window.currentUser) {
-      alert('请先登录');
+      showInlineAlert('请先登录', 'warn');
       return;
     }
     

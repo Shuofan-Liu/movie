@@ -112,6 +112,27 @@
     if (!window.db) return false;
     showLoading();
     try {
+      const deletePromises = [];
+      
+      // 删除用户相关的所有关系记录
+      const relQuery1 = await db.collection('relationships').where('fromUserId','==',id).get();
+      const relQuery2 = await db.collection('relationships').where('toUserId','==',id).get();
+      relQuery1.forEach(doc => deletePromises.push(doc.ref.delete()));
+      relQuery2.forEach(doc => deletePromises.push(doc.ref.delete()));
+      
+      // 删除用户发送/接收的所有留言
+      const msgQuery1 = await db.collection('messages').where('fromUserId','==',id).get();
+      const msgQuery2 = await db.collection('messages').where('toUserId','==',id).get();
+      msgQuery1.forEach(doc => deletePromises.push(doc.ref.delete()));
+      msgQuery2.forEach(doc => deletePromises.push(doc.ref.delete()));
+      
+      // 删除用户提交的guestbook记录
+      const submissionQuery = await db.collection('submissions').where('userId','==',id).get();
+      submissionQuery.forEach(doc => deletePromises.push(doc.ref.delete()));
+      
+      await Promise.all(deletePromises);
+      
+      // 删除用户记录
       await db.collection('users').doc(id).delete();
       hideLoading();
       return true;

@@ -97,6 +97,20 @@
     badgeTimer = setTimeout(()=> toast.classList.add('hidden'), 2500);
   }
 
+  // 统一的页面内提示（替代 alert）
+  // type: info | success | warn | error
+  window.showInlineAlert = function(message, type){
+    const toast = el('badgeToast');
+    if (!toast) return;
+    const t = (type || 'info').toLowerCase();
+    toast.classList.remove('info','success','warn','error','hidden');
+    if (['success','warn','error'].includes(t)) toast.classList.add(t); else toast.classList.add('info');
+    el('badgeToastIcon').textContent = '';
+    el('badgeToastText').textContent = message || '';
+    clearTimeout(badgeTimer);
+    badgeTimer = setTimeout(()=> toast.classList.add('hidden'), 2500);
+  }
+
   // 手势已移除：不再监听滚轮左右滑动
   // (intentionally left blank)
 

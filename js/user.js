@@ -6,10 +6,12 @@
 
   // 关系类型配置
   window.RELATIONSHIP_TYPES = {
-    lifelong: { key: 'lifelong', name: 'Lifelong Relationship', emoji: '💫' },
-    partner: { key: 'partner', name: 'The Best Partner', emoji: '🤝' },
-    friend: { key: 'friend', name: 'Sincere Friend', emoji: '👭' },
-    communication: { key: 'communication', name: 'Further Communication', emoji: '💬' }
+    eternal: { key: 'eternal', name: 'Eternal Bond', emoji: '🪢' },
+    backforth: { key: 'backforth', name: 'Back and Forth', emoji: '🏸' },
+    investor: { key: 'investor', name: 'Angel Investor', emoji: '💸' },
+    teddy: { key: 'teddy', name: 'Needy Teddy', emoji: '🧸' },
+    time: { key: 'time', name: 'Time Needed', emoji: '⏳' },
+    blah: { key: 'blah', name: 'Blah Blah', emoji: '💬' }
   };
 
   // ============ 模态框控制 ============
@@ -49,19 +51,20 @@
 
   // ============ 头像选择器 ============
   
-  // 初始化头像选择器
+  // 初始化头像选择器（注册页）：动态渲染 + 绑定事件
   window.initAvatarSelector = function(){
-    const avatarOptions = document.querySelectorAll('.avatar-option');
+    const containerId = 'avatarSelector';
     const selectedInput = document.getElementById('selectedAvatar');
-    
-    if (!avatarOptions || !selectedInput) return;
-    
+    if (!selectedInput) return;
+    window.renderAvatarOptions(containerId, '');
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const avatarOptions = container.querySelectorAll('.avatar-option');
     avatarOptions.forEach(option => {
       option.addEventListener('click', function(){
         const alreadySelected = this.classList.contains('selected');
         avatarOptions.forEach(opt => opt.classList.remove('selected'));
         if (alreadySelected) {
-          // 再次点击已选项：取消选择，回到首字母头像
           selectedInput.value = '';
         } else {
           this.classList.add('selected');
@@ -84,6 +87,59 @@
     };
   }
 
+  // 统一的头像目录（按“相邻分组”的顺序排列）
+  // 不显示分组标题，仅通过顺序体现类别的相邻性
+  window.AVATAR_CATALOG = [
+    // 太空/天气（Space/Weather）
+    { key: 'moon', emoji: '🌔' },
+    { key: 'earth', emoji: '🌏' },
+    { key: 'saturn', emoji: '🪐' },
+    { key: 'comet', emoji: '☄️' },
+    { key: 'rocket', emoji: '🚀' },
+    { key: 'star', emoji: '⭐' },
+    { key: 'lightning', emoji: '⚡' },
+    { key: 'tornado', emoji: '🌪️' },
+    { key: 'wave', emoji: '🌊' },
+
+    // 动物（Animals）
+    { key: 'chick', emoji: '🐤' },
+    { key: 'penguin', emoji: '🐧' },
+    { key: 'lion', emoji: '🦁' },
+    { key: 'bear', emoji: '🐻' },
+    { key: 'unicorn', emoji: '🦄' },
+    { key: 'owl', emoji: '🦉' },
+    { key: 'wolf', emoji: '🐺' },
+    { key: 'seal', emoji: '🦭' },
+    { key: 'shark', emoji: '🦈' },
+
+    // 食物（Food）
+    { key: 'tomato', emoji: '🍅' },
+    { key: 'potato', emoji: '🥔' },
+    { key: 'avocado', emoji: '🥑' },
+    { key: 'cheese', emoji: '🧀' },
+
+    // 角色/生物（Characters）
+    { key: 'alien', emoji: '👽' },
+    { key: 'devil', emoji: '👿' },
+    { key: 'ninja', emoji: '🥷' },
+    { key: 'ghost', emoji: '👻' },
+    { key: 'invader', emoji: '👾' },
+    { key: 'skull', emoji: '💀' },
+    { key: 'robot', emoji: '🤖' },
+    { key: 'wing', emoji: '🪽' }
+  ];
+
+  // 根据目录渲染头像选项
+  window.renderAvatarOptions = function(containerId, currentType){
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const html = (window.AVATAR_CATALOG || []).map(item => {
+      const selected = currentType && currentType === item.key ? ' selected' : '';
+      return `<div class="avatar-option${selected}" data-avatar="${item.key}">${item.emoji}</div>`;
+    }).join('');
+    container.innerHTML = html;
+  }
+
   // 渲染头像（用于显示）
   window.renderAvatar = function(avatar, nickname){
     // 检查是否应该显示首字母头像：
@@ -96,8 +152,14 @@
     }
     
     const avatarMap = {
-      wave: '🌊', tomato: '🍅', lightning: '⚡', star: '⭐',
-      saturn: '🪐', comet: '☄️', alien: '👽', devil: '👿', wing: '🪽', potato: '🥔',
+      // 太空/天气
+      moon: '🌔', earth: '🌏', saturn: '🪐', comet: '☄️', rocket: '🚀', star: '⭐', lightning: '⚡', tornado: '🌪️', wave: '🌊',
+      // 动物
+      chick: '🐤', penguin: '🐧', lion: '🦁', bear: '🐻', unicorn: '🦄', owl: '🦉', wolf: '🐺', seal: '🦭', shark: '🦈',
+      // 食物
+      tomato: '🍅', potato: '🥔', avocado: '🥑', cheese: '🧀',
+      // 角色/生物
+      alien: '👽', devil: '👿', ninja: '🥷', ghost: '👻', invader: '👾', skull: '💀', robot: '🤖', wing: '🪽',
       // 兼容旧数据
       wonderwoman: '⚡', captainmarvel: '⭐'
     };
@@ -131,7 +193,7 @@
     const password = document.getElementById('loginPassword').value.trim();
     
     if (!nickname || !password) {
-      alert('请填写昵称和密码');
+        showInlineAlert('请填写昵称和密码', 'warn');
       return;
     }
 
@@ -145,12 +207,12 @@
     try {
       const user = await window.getUserByNickname(nickname);
       if (!user) {
-        alert('用户不存在');
+          showInlineAlert('用户不存在', 'warn');
         return;
       }
 
       if (user.password !== password) {
-        alert('密码错误');
+          showInlineAlert('密码错误', 'warn');
         return;
       }
 
@@ -159,7 +221,7 @@
       localStorage.setItem('currentUserId', user.id);
       updateUserStatus();
       closeLoginModal();
-      alert(`欢迎回来，${nickname}！`);
+        showInlineAlert(`欢迎回来，${nickname}！`, 'success');
     } finally {
       // 恢复按钮状态
       isLoggingIn = false;
@@ -197,24 +259,24 @@
 
     // 验证
     if (!nickname || !password || !favoriteDirector || !favoriteFilm) {
-      alert('请填写所有必填字段');
+      showInlineAlert('请填写所有必填字段', 'warn');
       return;
     }
 
     if (password.length < 4) {
-      alert('密码至少需要4个字符');
+      showInlineAlert('密码至少需要4个字符', 'warn');
       return;
     }
 
     if (password !== passwordConfirm) {
-      alert('两次输入的密码不一致');
+      showInlineAlert('两次输入的密码不一致', 'warn');
       return;
     }
 
     // 检查昵称是否已存在
     const existing = await window.getUserByNickname(nickname);
     if (existing) {
-      alert('昵称已被使用，请换一个');
+      showInlineAlert('昵称已被使用，请换一个', 'warn');
       return;
     }
 
@@ -254,7 +316,7 @@
       console.log('用户创建结果:', userId);
       
       if (!userId) {
-        alert('注册失败：无法创建用户，请稍后再试');
+        showInlineAlert('注册失败：无法创建用户，请稍后再试', 'error');
         loadingEl.classList.remove('active');
         return;
       }
@@ -267,7 +329,7 @@
       updateUserCorner();
       closeLoginModal();
       loadingEl.classList.remove('active');
-      alert(`注册成功，欢迎 ${nickname}！`);
+      showInlineAlert(`注册成功，欢迎 ${nickname}！`, 'success');
 
       // 清空表单
       document.getElementById('regForm').reset();
@@ -276,7 +338,7 @@
 
     } catch (error) {
       console.error('注册失败:', error);
-      alert('注册失败: ' + error.message);
+        showInlineAlert('注册失败: ' + error.message, 'error');
       loadingEl.classList.remove('active');
     } finally {
       // 恢复提交按钮状态
@@ -305,7 +367,7 @@
     }
     
     updateUserCorner();
-    alert('已退出登录');
+    showInlineAlert('已退出登录', 'success');
     
     // 如果用户模态框打开，关闭它
     const userModal = document.getElementById('userModal');
@@ -332,7 +394,7 @@
   // 关系中心：查看已建立与待处理，并进行处理
   window.showRelationshipCenter = async function(){
     if (!window.currentUser) {
-      alert('请先登录');
+      showInlineAlert('请先登录', 'warn');
       return;
     }
     const dropdown = document.getElementById('userDropdown');
@@ -431,7 +493,7 @@
   window.respondRel = async function(relId, status){
     if (!window.respondRelationship) return;
     const ok = await window.respondRelationship(relId, status);
-    if (!ok) { alert('操作失败'); return; }
+    if (!ok) { showInlineAlert('操作失败', 'error'); return; }
     await window.updateMessageBadge();
     window.showRelationshipCenter();
   }
@@ -461,8 +523,17 @@
     if (!relId || !window.requestDissolveRelationship) return;
     const input = document.getElementById('dissolveReasonInput');
     const reason = input ? input.value.trim() : '';
+    if (!reason) {
+      if (input) {
+        input.focus();
+        input.style.borderColor = '#ff4444';
+        setTimeout(()=>{ if (input) input.style.borderColor = 'rgba(255,255,255,0.2)'; }, 1200);
+      }
+      showInlineAlert('请填写解除原因', 'warn');
+      return;
+    }
     const ok = await window.requestDissolveRelationship(relId, reason);
-    if (!ok) { alert('发起解除失败'); return; }
+    if (!ok) { showInlineAlert('发起解除失败', 'error'); return; }
     closeDissolvePrompt();
     await window.updateMessageBadge();
     window.showRelationshipCenter();
@@ -477,7 +548,7 @@
       const other = byMe ? (r.toNickname||'对方') : (r.fromNickname||'对方');
       return `${t?t.emoji:'🤝'} ${t?t.name:r.type} · ${other} · ${by}`;
     }).join('\n');
-    alert(content || '暂无关系');
+    showInlineAlert(content || '暂无关系', 'info');
   }
 
   window.showUserPage = async function(userId){
@@ -534,12 +605,12 @@
     
     window.applyRelationship = async function(targetUserId){
       if (!window.currentUser) {
-        alert('请先登录');
+        showInlineAlert('请先登录', 'warn');
         return;
       }
       if (!targetUserId) return;
       if (targetUserId === window.currentUser.id) {
-        alert('不能与自己建立关系');
+        showInlineAlert('不能与自己建立关系', 'warn');
         return;
       }
     
@@ -558,23 +629,23 @@
     window.submitRelationshipRequest = async function(relType){
       const targetUserId = window._pendingRelationshipTargetId;
       if (!targetUserId) {
-        alert('缺少目标用户ID');
+        showInlineAlert('缺少目标用户ID', 'error');
         return;
       }
       
       if (!relType) {
-        alert('请先选择关系类型');
+        showInlineAlert('请先选择关系类型', 'warn');
         return;
       }
       
       const message = document.getElementById('relationshipMessage').value.trim();
       if (!message) {
-        alert('申请留言不能为空');
+        showInlineAlert('申请留言不能为空', 'warn');
         return;
       }
     
       if (!window.createRelationshipRequest) {
-        alert('关系功能未加载');
+        showInlineAlert('关系功能未加载', 'error');
         return;
       }
 
@@ -689,6 +760,7 @@
           : `<button class="view-messages-btn" onclick="respondRel('${r.id}','accepted')">接受</button>
              <button class="view-messages-btn" onclick="respondRel('${r.id}','rejected')">拒绝</button>`;
         const extra = isDissolve && r.dissolveMessage ? ` · 理由：${r.dissolveMessage}` : '';
+        const messagePart = (!isDissolve && r.message) ? ` · 留言：${r.message}` : '';
         const tip = isDissolve ? '向你发起了解除关系' : '想与你建立关系';
         return `
           <div class="message-item">
@@ -696,7 +768,7 @@
               <div class="message-from-avatar">${window.renderAvatar(o.avatar, o.name)}</div>
               <div class="message-from-name">${o.name}</div>
             </div>
-            <div class="message-content">${relationTitle(r)} · ${tip}${r.message? ' · 留言：'+r.message : ''}${extra}</div>
+            <div class="message-content">${relationTitle(r)} · ${tip}${messagePart}${extra}</div>
             <div style="display:flex; gap:8px; margin-top:6px;">${actionHtml}</div>
           </div>
         `;
@@ -1081,18 +1153,7 @@
         <div style="margin-bottom: 15px;">
           <label style="display: block; margin-bottom: 8px; color: #d4af37;">头像</label>
           <small style="display: block; margin-bottom: 10px; color: #888; font-size: 12px;">点击选择emoji头像，或留空使用首字母头像</small>
-          <div class="avatar-selector" id="editAvatarSelector" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 12px; padding: 15px; background: rgba(0,0,0,0.5); border-radius: 12px; border: 1px solid rgba(212,175,55,0.2);">
-            <div class="avatar-option ${currentAvatarType === 'wave' ? 'selected' : ''}" data-avatar="wave" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 32px; cursor: pointer; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; background: rgba(255,255,255,0.05); transition: all 0.3s ease;">🌊</div>
-            <div class="avatar-option ${currentAvatarType === 'tomato' ? 'selected' : ''}" data-avatar="tomato" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 32px; cursor: pointer; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; background: rgba(255,255,255,0.05); transition: all 0.3s ease;">🍅</div>
-            <div class="avatar-option ${currentAvatarType === 'lightning' ? 'selected' : ''}" data-avatar="lightning" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 32px; cursor: pointer; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; background: rgba(255,255,255,0.05); transition: all 0.3s ease;">⚡</div>
-            <div class="avatar-option ${currentAvatarType === 'star' ? 'selected' : ''}" data-avatar="star" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 32px; cursor: pointer; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; background: rgba(255,255,255,0.05); transition: all 0.3s ease;">⭐</div>
-            <div class="avatar-option ${currentAvatarType === 'saturn' ? 'selected' : ''}" data-avatar="saturn" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 32px; cursor: pointer; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; background: rgba(255,255,255,0.05); transition: all 0.3s ease;">🪐</div>
-            <div class="avatar-option ${currentAvatarType === 'comet' ? 'selected' : ''}" data-avatar="comet" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 32px; cursor: pointer; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; background: rgba(255,255,255,0.05); transition: all 0.3s ease;">☄️</div>
-            <div class="avatar-option ${currentAvatarType === 'alien' ? 'selected' : ''}" data-avatar="alien" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 32px; cursor: pointer; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; background: rgba(255,255,255,0.05); transition: all 0.3s ease;">👽</div>
-            <div class="avatar-option ${currentAvatarType === 'devil' ? 'selected' : ''}" data-avatar="devil" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 32px; cursor: pointer; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; background: rgba(255,255,255,0.05); transition: all 0.3s ease;">👿</div>
-            <div class="avatar-option ${currentAvatarType === 'wing' ? 'selected' : ''}" data-avatar="wing" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 32px; cursor: pointer; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; background: rgba(255,255,255,0.05); transition: all 0.3s ease;">🪽</div>
-            <div class="avatar-option ${currentAvatarType === 'potato' ? 'selected' : ''}" data-avatar="potato" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 32px; cursor: pointer; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; background: rgba(255,255,255,0.05); transition: all 0.3s ease;">🥔</div>
-          </div>
+          <div class="avatar-selector" id="editAvatarSelector" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 12px; padding: 15px; background: rgba(0,0,0,0.5); border-radius: 12px; border: 1px solid rgba(212,175,55,0.2);"></div>
           <input type="hidden" id="editSelectedAvatar" value="${currentAvatarType}" />
         </div>
         
@@ -1145,17 +1206,19 @@
   
   // 初始化编辑页面的头像选择器
   function initEditAvatarSelector(){
-    const avatarOptions = document.querySelectorAll('#editAvatarSelector .avatar-option');
+    const containerId = 'editAvatarSelector';
     const selectedInput = document.getElementById('editSelectedAvatar');
-    
-    if (!avatarOptions || !selectedInput) return;
-    
+    if (!selectedInput) return;
+    const currentType = selectedInput.value || '';
+    window.renderAvatarOptions(containerId, currentType);
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const avatarOptions = container.querySelectorAll('.avatar-option');
     avatarOptions.forEach(option => {
       option.addEventListener('click', function(){
         const alreadySelected = this.classList.contains('selected');
         avatarOptions.forEach(opt => opt.classList.remove('selected'));
         if (alreadySelected) {
-          // 再次点击已选项：取消选择，回到首字母头像
           selectedInput.value = '';
         } else {
           this.classList.add('selected');
@@ -1725,22 +1788,52 @@
   
   window.deleteOwnAccount = async function(){
     if (!window.currentUser) return;
+    showDeleteAccountPrompt(`确定要注销账户吗？此操作不可恢复！\n\n你的昵称：${window.currentUser.nickname}`, 0);
+  }
+
+  window.deleteAccountStep = 0;
+  
+  window.showDeleteAccountPrompt = function(message, step){
+    window.deleteAccountStep = step;
+    const overlay = document.getElementById('deleteAccountOverlay');
+    const prompt = document.getElementById('deleteAccountPrompt');
+    const messageEl = document.getElementById('deleteAccountMessage');
+    const confirmBtn = prompt.querySelector('button:nth-child(2)');
     
-    const confirmed = confirm(`确定要注销账户吗？此操作不可恢复！\n\n你的昵称：${window.currentUser.nickname}`);
-    if (!confirmed) return;
+    messageEl.textContent = message;
     
-    const doubleConfirm = confirm('再次确认：真的要删除你的账户吗？');
-    if (!doubleConfirm) return;
-    
-    try {
-      await window.deleteUser(window.currentUser.id);
-      alert('账户已注销');
-      window.currentUser = null;
-      localStorage.removeItem('currentUserId');
-      document.getElementById('userDropdown').classList.remove('active');
-      updateUserCorner();
-    } catch (error) {
-      alert('注销失败：' + error.message);
+    if (overlay) overlay.classList.add('active');
+    if (prompt) prompt.classList.add('active');
+    if (confirmBtn) {
+      confirmBtn.textContent = step === 0 ? '继续' : '确认注销';
+    }
+  }
+  
+  window.closeDeleteAccountPrompt = function(){
+    const overlay = document.getElementById('deleteAccountOverlay');
+    const prompt = document.getElementById('deleteAccountPrompt');
+    if (overlay) overlay.classList.remove('active');
+    if (prompt) prompt.classList.remove('active');
+    window.deleteAccountStep = 0;
+  }
+  
+  window.confirmDeleteAccount = async function(){
+    if (window.deleteAccountStep === 0) {
+      // 第一步：显示二次确认
+      window.showDeleteAccountPrompt('再次确认：真的要删除你的账户吗？这将删除所有相关数据。', 1);
+    } else if (window.deleteAccountStep === 1) {
+      // 第二步：执行删除
+      closeDeleteAccountPrompt();
+      try {
+        await window.deleteUser(window.currentUser.id);
+        showInlineAlert('账户已注销', 'success');
+        window.currentUser = null;
+        localStorage.removeItem('currentUserId');
+        document.getElementById('userDropdown').classList.remove('active');
+        updateUserCorner();
+      } catch (error) {
+        showInlineAlert('注销失败：' + error.message, 'error');
+      }
     }
   }
   
@@ -1748,18 +1841,18 @@
   
   window.sendMessage = async function(toUserId, toNickname){
     if (!window.currentUser) {
-      alert('请先登录');
+      showInlineAlert('请先登录', 'warn');
       return;
     }
     
     const content = document.getElementById('messageContent').value.trim();
     if (!content) {
-      alert('请输入留言内容');
+      showInlineAlert('请输入留言内容', 'warn');
       return;
     }
     
     if (content.length > 500) {
-      alert('留言不能超过500字');
+      showInlineAlert('留言不能超过500字', 'warn');
       return;
     }
     
@@ -1773,19 +1866,19 @@
         isRead: false
       });
       
-      alert('留言发送成功');
+      showInlineAlert('留言发送成功', 'success');
       window.currentViewingUserId = toUserId; // 保存当前查看的用户
       // 发送后留在留言板，直接刷新当前用户的留言视图
       showUserMessages(toUserId);
     } catch (error) {
-      alert('发送失败：' + error.message);
+      showInlineAlert('发送失败：' + error.message, 'error');
     }
   }
   
   window.updateMyMessage = async function(messageId){
     const content = document.getElementById('messageContent').value.trim();
     if (!content) {
-      alert('留言内容不能为空');
+      showInlineAlert('留言内容不能为空', 'warn');
       return;
     }
     

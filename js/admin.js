@@ -4,7 +4,7 @@
 
   // 使用 Firebase Auth 登录，依赖自定义声明 admin=true
   async function signInWithGoogle(){
-    if (!window.auth) return alert('Auth 未初始化');
+    if (!window.auth) return showInlineAlert('Auth 未初始化', 'error');
     const provider = new firebase.auth.GoogleAuthProvider();
     await auth.signInWithPopup(provider);
   }
@@ -24,7 +24,7 @@
       if (window.updateSidebarContent) window.updateSidebarContent();
       return true;
     }
-    alert('密码错误');
+    showInlineAlert('密码错误', 'error');
     return false;
   }
 
@@ -65,7 +65,7 @@
       await window.showWall?.();
       await window.updateSidebarContent?.();
     } else {
-      alert('删除失败');
+      showInlineAlert('删除失败', 'error');
     }
   }
 
@@ -75,7 +75,7 @@
     const submissions = await window.getSubmissions?.() || [];
     const submission = submissions.find(s => s.id === id);
     if (!submission) {
-      alert('留言不存在！');
+      showInlineAlert('留言不存在！', 'warn');
       return;
     }
     // 显示 quiz-overlay 弹窗
