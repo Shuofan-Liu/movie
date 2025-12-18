@@ -319,27 +319,31 @@
     const avatarDiv = document.getElementById('danmakuUserAvatar');
     if (!avatarDiv) return;
 
-    // 清空
-    avatarDiv.innerHTML = '';
+    // 使用renderAvatar函数来生成头像HTML
+    if (window.renderAvatar) {
+      avatarDiv.innerHTML = window.renderAvatar(window.currentUser.avatar, window.currentUser.nickname);
+    } else {
+      // 降级方案：如果renderAvatar不存在
+      avatarDiv.innerHTML = '';
+      const avatar = window.currentUser.avatar;
+      if (!avatar) {
+        avatarDiv.textContent = '?';
+        avatarDiv.style.background = 'var(--avatar-bg,rgba(212,175,55,0.1))';
+        return;
+      }
 
-    const avatar = window.currentUser.avatar;
-    if (!avatar) {
-      avatarDiv.textContent = '?';
-      avatarDiv.style.background = 'var(--avatar-bg,rgba(212,175,55,0.1))';
-      return;
-    }
-
-    if (typeof avatar === 'string') {
-      avatarDiv.textContent = avatar;
-      avatarDiv.style.background = 'transparent';
-      avatarDiv.style.color = 'var(--avatar-border-color)';
-    } else if (avatar.type === 'emoji') {
-      avatarDiv.textContent = avatar.value || '?';
-      avatarDiv.style.background = 'transparent';
-    } else if (avatar.type === 'default') {
-      avatarDiv.textContent = avatar.value || '?';
-      avatarDiv.style.background = 'transparent';
-      avatarDiv.style.color = 'var(--avatar-border-color)';
+      if (typeof avatar === 'string') {
+        avatarDiv.textContent = avatar;
+        avatarDiv.style.background = 'transparent';
+        avatarDiv.style.color = 'var(--avatar-border-color)';
+      } else if (avatar.type === 'emoji') {
+        avatarDiv.textContent = avatar.value || '?';
+        avatarDiv.style.background = 'transparent';
+      } else if (avatar.type === 'default') {
+        avatarDiv.textContent = avatar.value || '?';
+        avatarDiv.style.background = 'transparent';
+        avatarDiv.style.color = 'var(--avatar-border-color)';
+      }
     }
   }
 

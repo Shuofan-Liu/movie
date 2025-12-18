@@ -29,5 +29,12 @@ service cloud.firestore {
       allow update: if true; // 允许更新状态
       allow delete: if true; // 允许删除
     }
+
+    // 弹幕留言集合：允许所有人读取和创建弹幕
+    match /danmaku_messages/{messageId} {
+      allow read: if true;   // 允许所有人读取弹幕
+      allow create: if true; // 允许创建弹幕
+      allow delete: if true; // 允许删除弹幕
+    }
   }
 }
