@@ -6,94 +6,94 @@
     const hour = new Date().getHours();
 
     if (hour >= 6 && hour < 9) {
-      // 清晨 6-9点
+      // 清晨 6-9点 - 浅蓝色调
       return {
         name: 'dawn',
+        avatarBorder: '#87ceeb',
+        avatarGlow: 'rgba(135, 206, 235, 0.4)',
+        filmOpacity: 0.15,
+        filmFilter: 'brightness(1.1) saturate(0.8) hue-rotate(-10deg)',
+        directorBaseColor: '#f0f8ff',
+        directorHoverColor: '#87ceeb',
+        badgeGlow: 'rgba(135, 206, 235, 0.4)',
+        badgeGlowSize: '10px'
+      };
+    } else if (hour >= 9 && hour < 12) {
+      // 上午 9-12点 - 金黄色
+      return {
+        name: 'morning',
         avatarBorder: '#ffd700',
         avatarGlow: 'rgba(255, 215, 0, 0.4)',
         filmOpacity: 0.15,
         filmFilter: 'brightness(1.1) saturate(0.7)',
-        directorBaseColor: '#f5f5f5',
-        directorHoverColor: '#f4c430',
-        badgeGlow: 'rgba(212, 175, 55, 0.4)',
-        badgeGlowSize: '10px'
-      };
-    } else if (hour >= 9 && hour < 12) {
-      // 上午 9-12点
-      return {
-        name: 'morning',
-        avatarBorder: '#f4c430',
-        avatarGlow: 'rgba(244, 196, 48, 0.35)',
-        filmOpacity: 0.15,
-        filmFilter: 'brightness(1.1) saturate(0.7)',
-        directorBaseColor: '#f5f5f5',
-        directorHoverColor: '#f4c430',
-        badgeGlow: 'rgba(212, 175, 55, 0.4)',
+        directorBaseColor: '#fffacd',
+        directorHoverColor: '#ffd700',
+        badgeGlow: 'rgba(255, 215, 0, 0.4)',
         badgeGlowSize: '10px'
       };
     } else if (hour >= 12 && hour < 16) {
-      // 午后 12-16点
+      // 午后 12-16点 - 橙金色
       return {
         name: 'afternoon',
-        avatarBorder: '#f5a623',
-        avatarGlow: 'rgba(245, 166, 35, 0.3)',
+        avatarBorder: '#ffb347',
+        avatarGlow: 'rgba(255, 179, 71, 0.4)',
         filmOpacity: 0.2,
-        filmFilter: 'brightness(1.05) saturate(0.75)',
-        directorBaseColor: '#f0f0f0',
-        directorHoverColor: '#f5a623',
-        badgeGlow: 'rgba(212, 175, 55, 0.4)',
-        badgeGlowSize: '10px'
+        filmFilter: 'brightness(1.05) saturate(0.8)',
+        directorBaseColor: '#fff8e7',
+        directorHoverColor: '#ffb347',
+        badgeGlow: 'rgba(255, 179, 71, 0.4)',
+        badgeGlowSize: '12px'
       };
     } else if (hour >= 16 && hour < 19) {
-      // 傍晚 16-19点
+      // 傍晚 16-19点 - 橙红色
       return {
         name: 'evening',
-        avatarBorder: '#ff8c42',
-        avatarGlow: 'rgba(255, 140, 66, 0.4)',
+        avatarBorder: '#ff6347',
+        avatarGlow: 'rgba(255, 99, 71, 0.45)',
         filmOpacity: 0.25,
-        filmFilter: 'brightness(0.95) saturate(0.9) hue-rotate(10deg)',
+        filmFilter: 'brightness(0.95) saturate(0.95) hue-rotate(5deg)',
         directorBaseColor: '#ffe4e1',
-        directorHoverColor: '#ff8c42',
-        badgeGlow: 'rgba(212, 175, 55, 0.4)',
-        badgeGlowSize: '10px'
-      };
-    } else if (hour >= 19 && hour < 21) {
-      // 黄昏 19-21点
-      return {
-        name: 'dusk',
-        avatarBorder: '#ff6b6b',
-        avatarGlow: 'rgba(255, 107, 107, 0.5)',
-        filmOpacity: 0.3,
-        filmFilter: 'brightness(0.95) saturate(1.0) contrast(1.05)',
-        directorBaseColor: '#ffe4e1',
-        directorHoverColor: '#ff8c42',
-        badgeGlow: 'rgba(255, 140, 66, 0.5)',
+        directorHoverColor: '#ff6347',
+        badgeGlow: 'rgba(255, 99, 71, 0.45)',
         badgeGlowSize: '15px'
       };
+    } else if (hour >= 19 && hour < 21) {
+      // 黄昏 19-21点 - 蓝色调
+      return {
+        name: 'dusk',
+        avatarBorder: '#4682b4',
+        avatarGlow: 'rgba(70, 130, 180, 0.5)',
+        filmOpacity: 0.3,
+        filmFilter: 'brightness(0.9) saturate(1.0) contrast(1.05)',
+        directorBaseColor: '#e0f2ff',
+        directorHoverColor: '#4682b4',
+        badgeGlow: 'rgba(70, 130, 180, 0.6)',
+        badgeGlowSize: '18px'
+      };
     } else if (hour >= 21 && hour < 24) {
-      // 夜晚 21-24点
+      // 夜晚 21-24点 - 紫色调
       return {
         name: 'night',
-        avatarBorder: '#9b59b6',
-        avatarGlow: 'rgba(155, 89, 182, 0.6)',
+        avatarBorder: '#9370db',
+        avatarGlow: 'rgba(147, 112, 219, 0.6)',
         filmOpacity: 0.35,
-        filmFilter: 'brightness(0.9) saturate(1.1) contrast(1.1)',
+        filmFilter: 'brightness(0.85) saturate(1.1) contrast(1.1)',
         directorBaseColor: '#e6e6fa',
-        directorHoverColor: '#bb86fc',
-        badgeGlow: 'rgba(155, 89, 182, 0.7)',
-        badgeGlowSize: '25px'
+        directorHoverColor: '#9370db',
+        badgeGlow: 'rgba(147, 112, 219, 0.7)',
+        badgeGlowSize: '22px'
       };
     } else {
-      // 深夜 0-6点
+      // 深夜 0-6点 - 深紫蓝
       return {
         name: 'midnight',
-        avatarBorder: '#6c5ce7',
-        avatarGlow: 'rgba(108, 92, 231, 0.5)',
+        avatarBorder: '#483d8b',
+        avatarGlow: 'rgba(72, 61, 139, 0.6)',
         filmOpacity: 0.4,
-        filmFilter: 'brightness(0.8) saturate(1.2) contrast(1.15)',
+        filmFilter: 'brightness(0.75) saturate(1.2) contrast(1.15)',
         directorBaseColor: '#dcd0ff',
-        directorHoverColor: '#9b59b6',
-        badgeGlow: 'rgba(155, 89, 182, 0.7)',
+        directorHoverColor: '#6a5acd',
+        badgeGlow: 'rgba(72, 61, 139, 0.75)',
         badgeGlowSize: '25px'
       };
     }

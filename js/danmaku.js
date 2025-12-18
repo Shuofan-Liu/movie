@@ -21,15 +21,19 @@
   // 打开弹幕墙
   async function openDanmakuWall() {
     if (!window.currentUser) {
-      alert('请先登录');
+      if (window.showBadgeToast) {
+        window.showBadgeToast('请先登录', '🔒');
+      }
       return;
     }
 
     const overlay = document.getElementById('danmakuWallOverlay');
     overlay.classList.add('active');
 
-    // 更新用户头像
-    updateDanmakuUserAvatar();
+    // 等待 DOM 渲染完成后更新用户头像
+    setTimeout(() => {
+      updateDanmakuUserAvatar();
+    }, 50);
 
     // 加载最近50条留言
     await loadDanmakuMessages();
@@ -126,7 +130,8 @@
         avatar.textContent = data.avatar.value || '?';
       } else if (data.avatar.type === 'default') {
         avatar.textContent = data.avatar.value || '?';
-        avatar.style.background = data.avatar.color || '#d4af37';
+        avatar.style.background = 'transparent';
+        avatar.style.color = 'var(--avatar-border-color)';
       }
     } else {
       avatar.textContent = '?';
@@ -162,10 +167,16 @@
 
   // 添加弹幕交互（鼠标悬停/触摸暂停+发光）
   function addDanmakuInteraction(item) {
+    // 获取当前主题的发光颜色
+    const getGlowColor = () => {
+      return getComputedStyle(document.documentElement)
+        .getPropertyValue('--avatar-glow-color').trim();
+    };
+
     // 桌面端：鼠标悬停
     item.addEventListener('mouseenter', () => {
       item.style.animationPlayState = 'paused';
-      item.style.boxShadow = '0 0 20px rgba(212,175,55,0.6)';
+      item.style.boxShadow = `0 0 20px ${getGlowColor()}`;
       item.style.transform = 'scale(1.05)';
       item.style.zIndex = '10';
     });
@@ -184,7 +195,7 @@
       e.stopPropagation();
       touchActive = true;
       item.style.animationPlayState = 'paused';
-      item.style.boxShadow = '0 0 20px rgba(212,175,55,0.6)';
+      item.style.boxShadow = `0 0 20px ${getGlowColor()}`;
       item.style.transform = 'scale(1.05)';
       item.style.zIndex = '10';
     });
@@ -208,12 +219,14 @@
     danmakuPaused = !danmakuPaused;
     const icon = document.getElementById('danmakuPauseIcon');
     if (danmakuPaused) {
-      if (icon) icon.textContent = '▶️';
+      // 切换到播放图标
+      if (icon) icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
       document.querySelectorAll('.danmaku-item').forEach(item => {
         item.style.animationPlayState = 'paused';
       });
     } else {
-      if (icon) icon.textContent = '⏸️';
+      // 切换到暂停图标
+      if (icon) icon.innerHTML = '<path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>';
       document.querySelectorAll('.danmaku-item').forEach(item => {
         item.style.animationPlayState = 'running';
       });
@@ -223,7 +236,9 @@
   // 发送弹幕
   window.sendDanmaku = async function() {
     if (!window.currentUser) {
-      alert('请先登录');
+      if (window.showBadgeToast) {
+        window.showBadgeToast('请先登录', '🔒');
+      }
       return;
     }
 
@@ -232,7 +247,9 @@
 
     if (!content) return;
     if (content.length > 50) {
-      alert('留言最多50个字');
+      if (window.showBadgeToast) {
+        window.showBadgeToast('留言最多50个字', '⚠️');
+      }
       return;
     }
 
@@ -282,9 +299,16 @@
 
       console.log('[Danmaku] Message sent successfully');
 
+      // 显示成功提示
+      if (window.showBadgeToast) {
+        window.showBadgeToast('发送成功', '✨');
+      }
+
     } catch (error) {
       console.error('[Danmaku] Failed to send message:', error);
-      alert('发送失败，请重试');
+      if (window.showBadgeToast) {
+        window.showBadgeToast('发送失败，请重试', '❌');
+      }
     }
   }
 
@@ -307,13 +331,15 @@
 
     if (typeof avatar === 'string') {
       avatarDiv.textContent = avatar;
-      avatarDiv.style.background = 'var(--avatar-bg,rgba(212,175,55,0.1))';
+      avatarDiv.style.background = 'transparent';
+      avatarDiv.style.color = 'var(--avatar-border-color)';
     } else if (avatar.type === 'emoji') {
       avatarDiv.textContent = avatar.value || '?';
-      avatarDiv.style.background = 'var(--avatar-bg,rgba(212,175,55,0.1))';
+      avatarDiv.style.background = 'transparent';
     } else if (avatar.type === 'default') {
       avatarDiv.textContent = avatar.value || '?';
-      avatarDiv.style.background = avatar.color || 'var(--avatar-bg,rgba(212,175,55,0.1))';
+      avatarDiv.style.background = 'transparent';
+      avatarDiv.style.color = 'var(--avatar-border-color)';
     }
   }
 
@@ -328,6 +354,129 @@
       });
     }
   });
+
+  // 显示删除所有弹幕确认弹窗
+  window.showDeleteAllDanmakuPrompt = async function() {
+    if (!window.currentUser) {
+      if (window.showBadgeToast) {
+        window.showBadgeToast('请先登录', '🔒');
+      }
+      return;
+    }
+
+    try {
+      // 查询当前用户的弹幕数量
+      const snapshot = await window.db.collection('danmaku_messages')
+        .where('userId', '==', window.currentUser.id)
+        .get();
+
+      const count = snapshot.size;
+
+      if (count === 0) {
+        if (window.showBadgeToast) {
+          window.showBadgeToast('你还没有发送过弹幕留言', 'ℹ️');
+        }
+        return;
+      }
+
+      // 显示弹幕数量
+      const countElement = document.getElementById('deleteAllDanmakuCount');
+      if (countElement) {
+        countElement.textContent = `共找到 ${count} 条弹幕留言`;
+      }
+
+      // 显示确认弹窗
+      const overlay = document.getElementById('deleteAllDanmakuOverlay');
+      const prompt = document.getElementById('deleteAllDanmakuPrompt');
+      if (overlay) overlay.classList.add('active');
+      if (prompt) prompt.classList.add('active');
+
+      console.log(`[Danmaku] Found ${count} messages to delete`);
+
+    } catch (error) {
+      console.error('[Danmaku] Failed to count messages:', error);
+      if (window.showBadgeToast) {
+        window.showBadgeToast('查询弹幕失败，请重试', '❌');
+      }
+    }
+  }
+
+  // 关闭删除所有弹幕确认弹窗
+  window.closeDeleteAllDanmakuPrompt = function() {
+    const overlay = document.getElementById('deleteAllDanmakuOverlay');
+    const prompt = document.getElementById('deleteAllDanmakuPrompt');
+    if (overlay) overlay.classList.remove('active');
+    if (prompt) prompt.classList.remove('active');
+  }
+
+  // 确认删除所有弹幕
+  window.confirmDeleteAllDanmaku = async function() {
+    if (!window.currentUser) {
+      if (window.showBadgeToast) {
+        window.showBadgeToast('请先登录', '🔒');
+      }
+      closeDeleteAllDanmakuPrompt();
+      return;
+    }
+
+    try {
+      // 显示加载提示
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      if (loadingOverlay) loadingOverlay.classList.add('active');
+
+      // 关闭确认弹窗
+      closeDeleteAllDanmakuPrompt();
+
+      // 查询所有该用户的弹幕
+      const snapshot = await window.db.collection('danmaku_messages')
+        .where('userId', '==', window.currentUser.id)
+        .get();
+
+      const deleteCount = snapshot.size;
+
+      // 批量删除
+      const batch = window.db.batch();
+      snapshot.forEach(doc => {
+        batch.delete(doc.ref);
+      });
+
+      await batch.commit();
+
+      // 重新加载弹幕列表
+      await loadDanmakuMessages();
+
+      // 清空当前屏幕上的弹幕（只清除当前用户的）
+      const container = document.getElementById('danmakuContainer');
+      if (container) {
+        const items = container.querySelectorAll('.danmaku-item');
+        items.forEach(item => {
+          // 这里简单起见，清空所有弹幕，让系统重新显示
+          item.remove();
+        });
+      }
+
+      // 隐藏加载提示
+      if (loadingOverlay) loadingOverlay.classList.remove('active');
+
+      // 显示成功提示
+      if (window.showBadgeToast) {
+        window.showBadgeToast(`成功删除 ${deleteCount} 条弹幕留言`, '✅');
+      }
+
+      console.log(`[Danmaku] Successfully deleted ${deleteCount} messages`);
+
+    } catch (error) {
+      console.error('[Danmaku] Failed to delete messages:', error);
+
+      // 隐藏加载提示
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      if (loadingOverlay) loadingOverlay.classList.remove('active');
+
+      if (window.showBadgeToast) {
+        window.showBadgeToast('删除失败，请重试', '❌');
+      }
+    }
+  }
 
   console.log('[Danmaku] Module loaded');
 

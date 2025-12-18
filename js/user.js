@@ -76,14 +76,13 @@
 
   // 生成默认首字母头像
   function generateDefaultAvatar(nickname){
-      if (!nickname) return { type: 'default', value: '?', color: '#d4af37' };
-    
+      if (!nickname) return { type: 'default', value: '?' };
+
     const firstChar = nickname.charAt(0).toUpperCase();
-    
+
     return {
       type: 'default',
-      value: firstChar,
-        color: '#d4af37'
+      value: firstChar
     };
   }
 
@@ -148,9 +147,9 @@
     // 3. avatar.type 是空字符串或无效值
     if (!avatar || avatar.type === 'default' || !avatar.type || avatar.type.trim() === '') {
       const defaultAvatar = generateDefaultAvatar(nickname);
-        return `<div class="default-avatar" style="color: ${defaultAvatar.color}">${defaultAvatar.value}</div>`;
+        return `<div class="default-avatar">${defaultAvatar.value}</div>`;
     }
-    
+
     const avatarMap = {
       // 太空/天气
       moon: '🌔', earth: '🌏', saturn: '🪐', comet: '☄️', rocket: '🚀', star: '⭐', lightning: '⚡', tornado: '🌪️', wave: '🌊',
@@ -163,14 +162,14 @@
       // 兼容旧数据
       wonderwoman: '⚡', captainmarvel: '⭐'
     };
-    
+
     // 如果找到对应的emoji就显示，找不到就显示首字母头像（而不是默认人形图标）
     if (avatarMap[avatar.type]) {
       return `<div class="avatar-emoji">${avatarMap[avatar.type]}</div>`;
     } else {
       // 无效的 avatar.type，回退到首字母头像
       const defaultAvatar = generateDefaultAvatar(nickname);
-      return `<div class="default-avatar" style="color: ${defaultAvatar.color}">${defaultAvatar.value}</div>`;
+      return `<div class="default-avatar">${defaultAvatar.value}</div>`;
     }
   }
 
@@ -1151,46 +1150,46 @@
         
         <!-- 头像选择 -->
         <div style="margin-bottom: 15px;">
-          <label style="display: block; margin-bottom: 8px; color: #d4af37;">头像</label>
+          <label style="display: block; margin-bottom: 8px; color: var(--avatar-border-color);">头像</label>
           <small style="display: block; margin-bottom: 10px; color: #888; font-size: 12px;">点击选择emoji头像，或留空使用首字母头像</small>
-          <div class="avatar-selector" id="editAvatarSelector" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 12px; padding: 15px; background: rgba(0,0,0,0.5); border-radius: 12px; border: 1px solid rgba(212,175,55,0.2);"></div>
+          <div class="avatar-selector" id="editAvatarSelector" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 12px; padding: 15px; background: rgba(0,0,0,0.5); border-radius: 12px; border: 1px solid var(--avatar-border-color);"></div>
           <input type="hidden" id="editSelectedAvatar" value="${currentAvatarType}" />
         </div>
-        
+
         <!-- 昵称 -->
         <div style="margin-bottom: 15px;">
-          <label style="display: block; margin-bottom: 5px; color: #d4af37;">昵称</label>
-          <input type="text" id="editNickname" value="${user.nickname || ''}" 
+          <label style="display: block; margin-bottom: 5px; color: var(--avatar-border-color);">昵称</label>
+          <input type="text" id="editNickname" value="${user.nickname || ''}"
                  style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #f5f5f5; font-size: 14px;" />
           <small style="display: block; margin-top: 5px; color: #888; font-size: 12px;">修改昵称将影响首字母头像显示</small>
         </div>
-        
+
         <div style="margin-bottom: 15px;">
-          <label style="display: block; margin-bottom: 5px; color: #d4af37;">最喜欢的女导演</label>
-          <input type="text" id="editDirector" value="${user.favoriteDirector || ''}" 
+          <label style="display: block; margin-bottom: 5px; color: var(--avatar-border-color);">最喜欢的女导演</label>
+          <input type="text" id="editDirector" value="${user.favoriteDirector || ''}"
                  style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #f5f5f5; font-size: 14px;" />
         </div>
-        
+
         <div style="margin-bottom: 15px;">
-          <label style="display: block; margin-bottom: 5px; color: #d4af37;">最喜欢的女性电影</label>
-          <input type="text" id="editFilm" value="${user.favoriteFilm || ''}" 
+          <label style="display: block; margin-bottom: 5px; color: var(--avatar-border-color);">最喜欢的女性电影</label>
+          <input type="text" id="editFilm" value="${user.favoriteFilm || ''}"
                  style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #f5f5f5; font-size: 14px;" />
         </div>
-        
+
         <div style="margin-bottom: 15px;">
-          <label style="display: block; margin-bottom: 5px; color: #d4af37;">最近看的电影</label>
-          <input type="text" id="editRecentFilm" value="${user.recentFilm || ''}" 
+          <label style="display: block; margin-bottom: 5px; color: var(--avatar-border-color);">最近看的电影</label>
+          <input type="text" id="editRecentFilm" value="${user.recentFilm || ''}"
                  style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #f5f5f5; font-size: 14px;" />
         </div>
-        
+
         <div style="margin-bottom: 20px;">
-          <label style="display: block; margin-bottom: 5px; color: #d4af37;">最近的想法</label>
-          <textarea id="editThoughts" rows="4" 
+          <label style="display: block; margin-bottom: 5px; color: var(--avatar-border-color);">最近的想法</label>
+          <textarea id="editThoughts" rows="4"
                     style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #f5f5f5; font-size: 14px; resize: vertical;">${user.thoughts || ''}</textarea>
         </div>
-        
+
         <div style="display: flex; gap: 10px; justify-content: center;">
-          <button onclick="saveProfileEdit()" style="padding: 10px 30px; background: rgba(212,175,55,0.2); border: 1px solid rgba(212,175,55,0.4); color: #d4af37; border-radius: 8px; cursor: pointer; font-size: 14px;">保存</button>
+          <button onclick="saveProfileEdit()" style="padding: 10px 30px; background: var(--avatar-glow-color); border: 1px solid var(--avatar-border-color); color: var(--avatar-border-color); border-radius: 8px; cursor: pointer; font-size: 14px;">保存</button>
           <button onclick="closeUserModal()" style="padding: 10px 30px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #ccc; border-radius: 8px; cursor: pointer; font-size: 14px;">取消</button>
         </div>
       </div>

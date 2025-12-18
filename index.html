@@ -82,10 +82,10 @@
     </svg>
   </div>
 
-  <!-- 右下角弹幕墙按钮（仅登录后显示，电影风格icon） -->
+  <!-- 右下角弹幕墙按钮（仅登录后显示，电影摄影机icon） -->
   <div class="danmaku-icon-button" id="danmakuButton" onclick="toggleDanmakuWall()" title="留言墙" style="display:none;">
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" style="width:35px;height:35px;">
-      <path d="M4 4h16v2H4zm0 4h16v2H4zm0 4h10v2H4zm0 4h10v2H4zm12 0v-2h2v2zm0-4v-2h2v2zm0-4V8h2v2zm0-4V4h2v2z"/>
+      <path d="M18,11.34V6.11C18,5.5,17.5,5,16.89,5H5.11C4.5,5,4,5.5,4,6.11v11.78C4,18.5,4.5,19,5.11,19h11.78c0.61,0,1.11-0.5,1.11-1.11v-5.23l4,3.62V7.72L18,11.34z M7,9h2v2H7V9z M7,13h2v2H7V13z M15,13v2h-2v-2H15z M15,9v2h-2V9H15z"/>
     </svg>
   </div>
 
@@ -334,13 +334,41 @@
     </div>
   </div>
 
+  <!-- 删除所有弹幕确认弹窗 -->
+  <div class="admin-prompt-overlay" id="deleteAllDanmakuOverlay" onclick="closeDeleteAllDanmakuPrompt()"></div>
+  <div class="admin-prompt" id="deleteAllDanmakuPrompt">
+    <h3 style="color: #ff4444; font-size: 18px;">🗑️ 删除我的所有弹幕</h3>
+    <p style="color: #ccc; margin: 20px 0; line-height: 1.6;">
+      确定要删除你发送的所有弹幕留言吗？<br/>
+      <strong style="color: #ff8888;">此操作不可撤销！</strong>
+    </p>
+    <p id="deleteAllDanmakuCount" style="color: var(--avatar-border-color); margin: 10px 0; font-size: 14px; text-align: center; transition: color 2s ease;"></p>
+    <div style="display: flex; gap: 12px;">
+      <button onclick="closeDeleteAllDanmakuPrompt()" style="flex: 1; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #ccc; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">取消</button>
+      <button onclick="confirmDeleteAllDanmaku()" style="flex: 1; padding: 12px; background: rgba(255,68,68,0.25); border: 1px solid rgba(255,68,68,0.5); color: #ff4444; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">确认删除</button>
+    </div>
+  </div>
+
   <!-- 弹幕墙覆盖层 -->
   <div class="danmaku-wall-overlay" id="danmakuWallOverlay">
     <!-- 顶部控制栏（去除标题和分割线，仅icon按钮） -->
     <div class="danmaku-header" style="border-bottom:none;background:transparent;padding:20px 40px 0 40px;">
       <div class="danmaku-controls" style="gap:12px;">
-        <button id="danmakuPauseBtn" onclick="toggleDanmakuPause()" title="Pause/Play" style="width:40px;height:40px;padding:0;display:flex;align-items:center;justify-content:center;background:var(--avatar-glow-color);border:1px solid var(--avatar-border-color);border-radius:50%;color:var(--avatar-border-color);font-size:22px;"><span id="danmakuPauseIcon">⏸️</span></button>
-        <button class="modal-close" onclick="closeDanmakuWall()" title="Close" style="width:40px;height:40px;padding:0;display:flex;align-items:center;justify-content:center;background:var(--avatar-glow-color);border:1px solid var(--avatar-border-color);border-radius:50%;color:var(--avatar-border-color);font-size:22px;">×</button>
+        <button id="danmakuPauseBtn" onclick="toggleDanmakuPause()" title="Pause/Play" style="width:40px;height:40px;padding:0;display:flex;align-items:center;justify-content:center;background:var(--avatar-glow-color);border:1px solid var(--avatar-border-color);border-radius:50%;color:var(--avatar-border-color);cursor:pointer;transition:all 0.3s ease;">
+          <svg id="danmakuPauseIcon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" style="width:20px;height:20px;">
+            <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+          </svg>
+        </button>
+        <button id="danmakuDeleteAllBtn" onclick="showDeleteAllDanmakuPrompt()" title="Delete All My Messages" style="width:40px;height:40px;padding:0;display:flex;align-items:center;justify-content:center;background:rgba(255,68,68,0.15);border:1px solid rgba(255,68,68,0.4);border-radius:50%;color:#ff4444;cursor:pointer;transition:all 0.3s ease;">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" style="width:20px;height:20px;">
+            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+          </svg>
+        </button>
+        <button class="modal-close" onclick="closeDanmakuWall()" title="Close" style="width:40px;height:40px;padding:0;display:flex;align-items:center;justify-content:center;background:var(--avatar-glow-color);border:1px solid var(--avatar-border-color);border-radius:50%;color:var(--avatar-border-color);cursor:pointer;transition:all 0.3s ease;">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" style="width:20px;height:20px;">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
+          </svg>
+        </button>
       </div>
     </div>
 
