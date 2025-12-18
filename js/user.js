@@ -664,10 +664,10 @@
       });
     
       if (ok && ok.ok) {
-        alert('申请已发送，等待对方处理');
+        showInlineAlert('申请已发送，等待对方处理', 'success');
         closeRelationshipPrompt();
       } else {
-        alert(ok.msg || '申请失败');
+        showInlineAlert(ok.msg || '申请失败', 'error');
       }
     }
     
@@ -701,7 +701,7 @@
     // 关系中心：查看已建立与待处理，并进行处理（接收、拒绝、发起解除、同意/拒绝解除）
     window.showRelationshipCenter = async function(){
       if (!window.currentUser) {
-        alert('请先登录');
+        showInlineAlert('请先登录', 'warn');
         return;
       }
       document.getElementById('userDropdown').classList.remove('active');
@@ -793,7 +793,7 @@
     window.respondRel = async function(relId, status){
       if (!window.respondRelationship) return;
       const ok = await window.respondRelationship(relId, status);
-      if (!ok) { alert('操作失败'); return; }
+      if (!ok) { showInlineAlert('操作失败', 'error'); return; }
       await window.updateMessageBadge();
       if (window.updateDropdownContent) await window.updateDropdownContent();
       window.showRelationshipCenter();
@@ -802,7 +802,7 @@
       if (!window.requestDissolveRelationship) return;
       const reason = prompt('请输入解除关系的原因（可选）：') || '';
       const ok = await window.requestDissolveRelationship(relId, reason.trim());
-      if (!ok) { alert('发起解除失败'); return; }
+      if (!ok) { showInlineAlert('发起解除失败', 'error'); return; }
       await window.updateMessageBadge();
       if (window.updateDropdownContent) await window.updateDropdownContent();
       window.showRelationshipCenter();
@@ -810,10 +810,10 @@
     window.currentViewingUserId = userId; // 保存当前查看的用户ID
     currentModalView = 'profile'; // 切换到详情界面
     await (typeof syncIndex === 'function' ? syncIndex(userId) : Promise.resolve());
-    
+
     const user = await window.getUserById(userId);
     if (!user) {
-      alert('用户不存在');
+      showInlineAlert('用户不存在', 'error');
       return;
     }
 
@@ -1002,13 +1002,13 @@
     window.currentViewingUserId = userId; // 保存当前查看的用户ID
     currentModalView = 'messages'; // 切换到留言板界面
     await (typeof syncIndex === 'function' ? syncIndex(userId) : Promise.resolve());
-    
+
     const user = await window.getUserById(userId);
     if (!user) {
-      alert('用户不存在');
+      showInlineAlert('用户不存在', 'error');
       return;
     }
-    
+
     // 若存在旧的监听，先解绑
     if (window._userMessagesUnsub) {
       try { window._userMessagesUnsub(); } catch(_){}
@@ -1237,10 +1237,10 @@
     const film = document.getElementById('editFilm').value.trim();
     const recentFilm = document.getElementById('editRecentFilm').value.trim();
     const thoughts = document.getElementById('editThoughts').value.trim();
-    
+
     // 验证昵称
     if (!nickname) {
-      alert('昵称不能为空');
+      showInlineAlert('昵称不能为空', 'warn');
       return;
     }
     
@@ -1248,7 +1248,7 @@
     if (nickname !== window.currentUser.nickname) {
       const existingUser = await window.getUserByNickname(nickname);
       if (existingUser && existingUser.id !== window.currentUser.id) {
-        alert('昵称已被使用，请换一个');
+        showInlineAlert('昵称已被使用，请换一个', 'warn');
         return;
       }
     }
@@ -1285,7 +1285,7 @@
     if (thoughts !== window.currentUser.thoughts) updateData.thoughts = thoughts;
     
     if (Object.keys(updateData).length === 0) {
-      alert('没有修改任何内容');
+      showInlineAlert('没有修改任何内容', 'warn');
       return;
     }
     
@@ -1299,37 +1299,44 @@
       if (updateData.favoriteFilm !== undefined) window.currentUser.favoriteFilm = updateData.favoriteFilm;
       if (updateData.recentFilm !== undefined) window.currentUser.recentFilm = updateData.recentFilm;
       if (updateData.thoughts !== undefined) window.currentUser.thoughts = updateData.thoughts;
-      
-      // 更新下拉菜单和左上角头像显示
+
+      showInlineAlert('资料已更新！', 'success');
+
+      // 立即更新左上角和下拉菜单的头像显示（使用已更新的本地数据）
       if (window.updateUserCorner) {
-        window.updateUserCorner();
+        await window.updateUserCorner();
       }
-      
-      alert('资料已更新！');
+
       closeUserModal();
-      
-      // 刷新显示
+
+      // 等待模态框关闭动画完成后刷新用户页面
       setTimeout(() => {
         showUserPage(window.currentUser.id);
       }, 300);
     } else {
-      alert('更新失败，请稍后再试');
+      showInlineAlert('更新失败，请稍后再试', 'error');
     }
   }
 
   window.deleteUserAccount = async function(userId){
-    const confirm = window.confirm('确定要删除此账户吗？此操作无法撤销！');
-    if (!confirm) return;
+    const confirmed = await showConfirmDialog({
+      title: '删除账户',
+      message: '确定要删除此账户吗？此操作无法撤销！',
+      confirmText: '确认删除',
+      cancelText: '取消',
+      isDanger: true
+    });
+    if (!confirmed) return;
 
     const success = await window.deleteUser(userId);
     if (success) {
-      alert('账户已删除');
+      showInlineAlert('账户已删除', 'success');
       closeUserModal();
       if (window.currentUser && window.currentUser.id === userId) {
         logoutUser();
       }
     } else {
-      alert('删除失败');
+      showInlineAlert('删除失败', 'error');
     }
   }
 
@@ -1773,14 +1780,14 @@
     if (password === 'cinema2026') {
       window.APP_STATE.isAdmin = true;
       closeAdminPrompt();
-      alert('已进入管理员模式');
+      showInlineAlert('已进入管理员模式', 'success');
       // 刷新当前页面显示
       if (document.getElementById('userModal').classList.contains('active')) {
         const currentUserId = document.querySelector('[data-current-user-id]')?.dataset.currentUserId;
         if (currentUserId) showUserPage(currentUserId);
       }
     } else {
-      alert('密码错误');
+      showInlineAlert('密码错误', 'error');
     }
   }
   
@@ -1881,37 +1888,43 @@
       showInlineAlert('留言内容不能为空', 'warn');
       return;
     }
-    
+
     if (content.length > 500) {
-      alert('留言不能超过500字');
+      showInlineAlert('留言不能超过500字', 'warn');
       return;
     }
-    
+
     try {
       await window.updateMessage(messageId, content);
-      alert('留言已更新');
+      showInlineAlert('留言已更新', 'success');
       // 刷新当前留言板并停留
       if (window.currentViewingUserId) {
         showUserMessages(window.currentViewingUserId);
       }
     } catch (error) {
-      alert('更新失败：' + error.message);
+      showInlineAlert('更新失败：' + error.message, 'error');
     }
   }
   
   window.deleteMyMessage = async function(messageId){
-    const confirmed = confirm('确定要删除这条留言吗？');
+    const confirmed = await showConfirmDialog({
+      title: '删除留言',
+      message: '确定要删除这条留言吗？',
+      confirmText: '删除',
+      cancelText: '取消',
+      isDanger: true
+    });
     if (!confirmed) return;
-    
+
     try {
       await window.deleteMessage(messageId);
-      alert('留言已删除');
+      showInlineAlert('留言已删除', 'success');
       // 刷新当前留言板并停留
       if (window.currentViewingUserId) {
         showUserMessages(window.currentViewingUserId);
       }
     } catch (error) {
-      alert('删除失败：' + error.message);
+      showInlineAlert('删除失败：' + error.message, 'error');
     }
   }
 
