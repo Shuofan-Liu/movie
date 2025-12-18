@@ -134,6 +134,7 @@
 
     const item = document.createElement('div');
     item.className = 'danmaku-item';
+    item.style.position = 'relative'; // 让时间绝对定位于item下方
 
     // 随机高度（15%-85%之间）
     const randomTop = Math.random() * 70 + 15;
@@ -220,20 +221,18 @@
     item.appendChild(document.createTextNode(': '));
     item.appendChild(content);
 
-    // 时间放在弹幕框下边框外左下角，作为兄弟节点插入
+    // 时间放在弹幕框下边框外左下角，作为子元素插入
+    time.style.position = 'absolute';
+    time.style.left = '0';
+    time.style.top = '100%';
+    time.style.width = 'max-content';
+    time.style.zIndex = '2';
+    time.style.background = 'transparent';
+    time.style.pointerEvents = 'none';
+    item.appendChild(time);
+
     if (container) {
       container.appendChild(item);
-      // 等待 item 渲染后再插入时间
-      setTimeout(() => {
-        time.style.position = 'absolute';
-        time.style.left = item.offsetLeft + 'px';
-        time.style.top = (item.offsetTop + item.offsetHeight + 2) + 'px';
-        time.style.width = 'max-content';
-        time.style.zIndex = '2';
-        time.style.background = 'transparent';
-        time.style.pointerEvents = 'none';
-        container.appendChild(time);
-      }, 0);
     }
 
     // 添加交互事件
