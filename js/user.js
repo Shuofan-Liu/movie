@@ -1444,6 +1444,32 @@
     return map;
   }
 
+  // 徽章索引持久化管理
+  function getBadgeIndexStorageKey(){
+    return window.currentUser ? `relationBadgeIndex_${window.currentUser.id}` : null;
+  }
+
+  function loadBadgeIndex(){
+    const key = getBadgeIndexStorageKey();
+    if (!key) return 0;
+    try {
+      const stored = localStorage.getItem(key);
+      return stored ? parseInt(stored) : 0;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  function saveBadgeIndex(index){
+    const key = getBadgeIndexStorageKey();
+    if (!key) return;
+    try {
+      localStorage.setItem(key, index.toString());
+    } catch (e) {
+      console.warn('Failed to save badge index:', e);
+    }
+  }
+
   async function refreshAcceptedRelations(){
     if (!window.currentUser || !window.getRelationshipsForUser) {
       acceptedRelationsCache = [];
@@ -1455,6 +1481,8 @@
     acceptedRelationsCache = (rels||[]).filter(r=>r.status === 'accepted').sort((a,b)=> relTimestampMs(a) - relTimestampMs(b));
     acceptedRelationsMap = buildAcceptedMap(acceptedRelationsCache, window.currentUser.id);
     window.__dropdownAcceptedRelations = acceptedRelationsCache;
+    // 加载持久化的徽章索引
+    window.__currentRelationBadgeIndex = loadBadgeIndex();
     return acceptedRelationsCache;
   }
 
@@ -1501,6 +1529,7 @@
             e.stopPropagation();
             window.__currentRelationBadgeIndex = (window.__currentRelationBadgeIndex || 0) + 1;
             if (window.__currentRelationBadgeIndex >= acceptedRelationsCache.length) window.__currentRelationBadgeIndex = 0;
+            saveBadgeIndex(window.__currentRelationBadgeIndex);
             window.updateCornerRelationBadge(acceptedRelationsCache);
             // 右侧用户列表也刷新
             if (window.updateUsersSidebarAvatars) window.updateUsersSidebarAvatars();
@@ -1548,6 +1577,26 @@
         if (badgeHtml) {
           badgeHolder.style.display = 'inline-flex';
           badgeHolder.innerHTML = badgeHtml;
+          // 多关系时允许点击切换（初始化时也需要绑定）
+          if (accepted.length > 1) {
+            const badgeEl = badgeHolder.querySelector('.relation-chip-embedded');
+            if (badgeEl) {
+              badgeEl.style.pointerEvents = 'auto';
+              badgeEl.style.cursor = 'pointer';
+              badgeEl.onclick = function(e) {
+                e.stopPropagation();
+                window.__currentRelationBadgeIndex = (window.__currentRelationBadgeIndex || 0) + 1;
+                if (window.__currentRelationBadgeIndex >= accepted.length) window.__currentRelationBadgeIndex = 0;
+                saveBadgeIndex(window.__currentRelationBadgeIndex);
+                window.updateCornerRelationBadge(accepted);
+                // 右侧用户列表也刷新
+                if (window.updateUsersSidebarAvatars) window.updateUsersSidebarAvatars();
+              };
+            }
+          } else {
+            window.__currentRelationBadgeIndex = 0;
+            saveBadgeIndex(0);
+          }
         } else {
           badgeHolder.style.display = 'none';
         }
@@ -1661,6 +1710,7 @@
           item.onclick = function(e){
             const idx = parseInt(this.getAttribute('data-idx'));
             window.__currentRelationBadgeIndex = idx;
+            saveBadgeIndex(idx);
             if(window.updateCornerRelationBadge) window.updateCornerRelationBadge(window.__dropdownAcceptedRelations||[]);
             if(window.updateUsersSidebarAvatars) window.updateUsersSidebarAvatars();
             panel.remove();
