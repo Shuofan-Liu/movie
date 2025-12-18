@@ -1668,19 +1668,19 @@
         });
       }, 10);
       document.body.appendChild(panel);
-      // 悬停控制消失
-      let hideTimer = null;
-      function tryHidePanel(e) {
-        const chip = container.querySelector('.relation-chip-clickable');
-        if (!panel.contains(e.relatedTarget) && (!chip || !chip.contains(e.relatedTarget))) {
-          panel.remove();
-          container.removeEventListener('mouseleave', tryHidePanel);
-          panel.removeEventListener('mouseleave', tryHidePanel);
-        }
-      }
-      panel.addEventListener('mouseleave', tryHidePanel);
-      container.addEventListener('mouseleave', tryHidePanel);
-      panel.addEventListener('mouseenter', ()=>{ if(hideTimer) clearTimeout(hideTimer); });
+
+      // 添加全局点击事件监听器：点击弹窗外部时关闭
+      setTimeout(() => {
+        const handleClickOutside = function(e) {
+          const chip = container.querySelector('.relation-chip-clickable');
+          // 如果点击的不是弹窗内部，也不是触发按钮，则关闭弹窗
+          if (!panel.contains(e.target) && (!chip || !chip.contains(e.target))) {
+            panel.remove();
+            document.removeEventListener('click', handleClickOutside);
+          }
+        };
+        document.addEventListener('click', handleClickOutside);
+      }, 100);
     }
 
     async function updateDropdownContent(preAccepted, preMap){
@@ -1732,15 +1732,6 @@
               panel.remove();
             } else {
               window.toggleDropdownRelationsPanel && window.toggleDropdownRelationsPanel();
-            }
-          });
-          // 点击页面其他地方关闭面板
-          document.addEventListener('click', function handler(e) {
-            const panel = document.getElementById('dropdownRelationsPanel');
-            if (!panel) return;
-            if (!dropdownRelations.contains(e.target) && !panel.contains(e.target)) {
-              panel.remove();
-              document.removeEventListener('click', handler);
             }
           });
         }
