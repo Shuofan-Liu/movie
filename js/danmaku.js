@@ -219,8 +219,23 @@
     item.appendChild(nickname);
     item.appendChild(document.createTextNode(': '));
     item.appendChild(content);
-    // 时间放在底部左下角
-    item.appendChild(time);
+
+    // 时间放在弹幕框下边框外左下角
+    // 先渲染弹幕本体
+    const container = document.getElementById('danmakuContainer');
+    if (container) {
+      container.appendChild(item);
+      // 绝对定位时间
+      time.style.position = 'absolute';
+      time.style.left = item.offsetLeft + 'px';
+      time.style.top = (item.offsetTop + item.offsetHeight + 2) + 'px';
+      time.style.width = 'max-content';
+      time.style.zIndex = '2';
+      time.style.background = 'transparent';
+      time.style.pointerEvents = 'none';
+      container.appendChild(time);
+    }
+    return; // 直接return，避免重复append
 
     container.appendChild(item);
 
