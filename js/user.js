@@ -1694,11 +1694,11 @@
           const otherAvatar = isFrom ? r.toAvatar : r.fromAvatar;
           const otherAvatarHtml = window.renderAvatar ? window.renderAvatar(otherAvatar, otherName) : '';
           return `<div class="relation-panel-item" data-idx="${idx}" style="display:flex; align-items:center; gap:12px; padding:8px 6px; cursor:pointer; border-radius:6px; transition:background 0.2s;">
-            <span style="font-size:20px; flex-shrink:0;">${badge}</span>
-            <span style="color:var(--avatar-border-color); font-size:14px; min-width:80px; flex-shrink:0;">${(t&&t.name)||r.type}</span>
-            <span style="display:flex; align-items:center; gap:6px; min-width:0;">
+            <span style="font-size:20px; flex-shrink:0; width:24px; text-align:center;">${badge}</span>
+            <span style="color:var(--avatar-border-color); font-size:14px; width:100px; flex-shrink:0;">${(t&&t.name)||r.type}</span>
+            <span style="display:flex; align-items:center; gap:8px; flex:1; min-width:0;">
               <span style="width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;">${otherAvatarHtml}</span>
-              <span style="font-size:13px; color:#eee; max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${otherName}</span>
+              <span style="font-size:13px; color:#eee; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${otherName}</span>
             </span>
           </div>`;
         }).join('')}
