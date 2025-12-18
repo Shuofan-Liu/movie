@@ -139,7 +139,7 @@
     // 随机高度（15%-85%之间）
     const randomTop = Math.random() * 70 + 15;
     item.style.top = `${randomTop}%`;
-    item.style.left = '0';
+    item.style.right = '0';
 
     // 头像
     const avatar = document.createElement('div');

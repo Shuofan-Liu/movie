@@ -1927,6 +1927,14 @@
       if (window.currentViewingUserId) {
         showUserMessages(window.currentViewingUserId);
       }
+      // 如果弹幕墙处于打开状态，刷新弹幕数据并重播
+      const danmakuOverlay = document.getElementById('danmakuWallOverlay');
+      if (danmakuOverlay && danmakuOverlay.classList.contains('active') && window.loadDanmakuMessages && window.startDanmakuDisplay) {
+        await window.loadDanmakuMessages();
+        const danmakuContainer = document.getElementById('danmakuContainer');
+        if (danmakuContainer) danmakuContainer.innerHTML = '';
+        window.startDanmakuDisplay();
+      }
     } catch (error) {
       showInlineAlert('删除失败：' + error.message, 'error');
     }
