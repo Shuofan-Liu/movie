@@ -134,11 +134,12 @@
 
     const item = document.createElement('div');
     item.className = 'danmaku-item';
-    item.style.position = 'relative'; // 让时间绝对定位于item下方
-
+    item.style.position = 'absolute'; // 恢复绝对定位
+    item.style.whiteSpace = 'nowrap';
     // 随机高度（15%-85%之间）
     const randomTop = Math.random() * 70 + 15;
     item.style.top = `${randomTop}%`;
+    item.style.left = '0';
 
     // 头像
     const avatar = document.createElement('div');
@@ -191,9 +192,15 @@
     const time = document.createElement('div');
     time.className = 'danmaku-time';
     time.style.fontSize = '10px';
-    time.style.marginTop = '6px';
     time.style.textAlign = 'left';
     time.style.color = 'var(--avatar-border-color)';
+    time.style.position = 'absolute';
+    time.style.left = '0';
+    time.style.top = '100%';
+    time.style.width = 'max-content';
+    time.style.zIndex = '2';
+    time.style.background = 'transparent';
+    time.style.pointerEvents = 'none';
     let dateObj = null;
     if (data.timestamp && typeof data.timestamp.toDate === 'function') {
       dateObj = data.timestamp.toDate();
@@ -220,17 +227,7 @@
     item.appendChild(nickname);
     item.appendChild(document.createTextNode(': '));
     item.appendChild(content);
-
-    // 时间放在弹幕框下边框外左下角，作为子元素插入
-    time.style.position = 'absolute';
-    time.style.left = '0';
-    time.style.top = '100%';
-    time.style.width = 'max-content';
-    time.style.zIndex = '2';
-    time.style.background = 'transparent';
-    time.style.pointerEvents = 'none';
     item.appendChild(time);
-
     if (container) {
       container.appendChild(item);
     }
