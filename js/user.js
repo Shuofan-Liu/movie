@@ -1630,20 +1630,26 @@
       panel.style.minWidth = '200px';
       panel.style.maxHeight = '260px';
       panel.style.overflowY = 'auto';
-      panel.innerHTML = list.map(r=>{
-        const byMe = r.fromUserId === window.currentUser.id;
-        const otherName = byMe ? (r.toNickname||'对方') : (r.fromNickname||'对方');
-        const otherAvatar = byMe ? r.toAvatar : r.fromAvatar;
+      panel.innerHTML = list.map((r, idx)=>{
         const t = window.RELATIONSHIP_TYPES[r.type];
         const badge = t ? t.emoji : '🤝';
-        return `<div style="display:flex; align-items:center; gap:8px; padding:6px 4px;">
-          <div style="width:32px; height:32px; border:1px solid var(--avatar-glow-color); border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center;">${window.renderAvatar(otherAvatar, otherName)}</div>
-          <div style="display:flex; flex-direction:column;">
-            <span style="color:#f5f5f5; font-size:13px;">${otherName}</span>
-            <span style="color:var(--avatar-border-color); font-size:12px;">${badge} ${(t&&t.name)||r.type}</span>
-          </div>
+        return `<div class="relation-panel-item" data-idx="${idx}" style="display:flex; align-items:center; gap:8px; padding:6px 4px; cursor:pointer; border-radius:6px; transition:background 0.2s;">
+          <span style="font-size:20px;">${badge}</span>
+          <span style="color:var(--avatar-border-color); font-size:14px;">${(t&&t.name)||r.type}</span>
         </div>`;
       }).join('');
+      // 绑定点击事件
+      setTimeout(()=>{
+        panel.querySelectorAll('.relation-panel-item').forEach(item=>{
+          item.onclick = function(e){
+            const idx = parseInt(this.getAttribute('data-idx'));
+            window.__currentRelationBadgeIndex = idx;
+            if(window.updateCornerRelationBadge) window.updateCornerRelationBadge(window.__dropdownAcceptedRelations||[]);
+            if(window.updateUsersSidebarAvatars) window.updateUsersSidebarAvatars();
+            panel.remove();
+          };
+        });
+      }, 10);
       document.body.appendChild(panel);
       // 点击外部关闭
       const closeHandler = (e)=>{
