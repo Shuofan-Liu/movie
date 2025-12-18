@@ -273,11 +273,26 @@
 
   // 发起解除关系（将已建立的关系置为解除待处理）
   window.requestDissolveRelationship = async function(relId, reason){
-    if (!window.db || !relId) return false;
+    if (!window.db || !relId || !window.currentUser) return false;
     showLoading();
     try {
+      // 先获取当前关系数据
+      const doc = await db.collection('relationships').doc(relId).get();
+      if (!doc.exists) {
+        hideLoading();
+        return false;
+      }
+      const rel = doc.data();
+      const currentUserId = window.currentUser.id;
+
+      // 交换 fromUserId 和 toUserId，让对方成为接收方（toUser）
+      const newFromUserId = currentUserId;
+      const newToUserId = rel.fromUserId === currentUserId ? rel.toUserId : rel.fromUserId;
+
       await db.collection('relationships').doc(relId).update({
         status: 'dissolve_pending',
+        fromUserId: newFromUserId,
+        toUserId: newToUserId,
         dissolveMessage: reason || '',
         respondedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
