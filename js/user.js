@@ -786,7 +786,21 @@
       const acceptedHtml = accepted.length ? accepted.map(r=>{
         const o = otherOf(r);
         const tip = statusTip(r, userId);
-        const tipHtml = tip ? `<div style="color:#ffb347; font-size:12px;">${tip}</div>` : '';
+        const tipHtml = tip ? `<div style="color:var(--avatar-border-color); font-size:12px;">${tip}</div>` : '';
+        // 如果是dissolve_pending状态，检查是否由我发起：如果是，只显示等待提示，不显示按钮
+        let buttonHtml = '';
+        if (r.status === 'dissolve_pending') {
+          if (r.fromUserId === userId) {
+            // 我发起的解除，等待对方确认，不显示按钮
+            buttonHtml = '';
+          } else {
+            // 对方发起的解除，我不应该在这里看到（应该在待处理区）
+            buttonHtml = '';
+          }
+        } else {
+          // accepted状态，显示解除按钮
+          buttonHtml = `<button class="view-messages-btn" onclick="requestDissolve('${r.id}')">解除关系</button>`;
+        }
         return `
           <div class="message-item" style="display:flex; align-items:center; gap:12px;">
             <div class="message-from" onclick="showUserPage('${o.id}')">
@@ -794,7 +808,7 @@
               <div class="message-from-name">${o.name}</div>
             </div>
             <div style="flex:1; color:var(--avatar-border-color); font-size:14px;">${relationTitle(r)}${tipHtml}</div>
-            <button class="view-messages-btn" onclick="requestDissolve('${r.id}')">解除关系</button>
+            ${buttonHtml}
           </div>
         `;
       }).join('') : '<p style="text-align:center;color:#888;padding:12px;">暂无已建立关系</p>';
