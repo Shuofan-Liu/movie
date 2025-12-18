@@ -1454,6 +1454,7 @@
     const cornerFlame = document.getElementById('cornerFlame');
     const cornerAvatar = document.getElementById('cornerAvatar');
     const quizButton = document.getElementById('quizIconButton');
+    const danmakuButton = document.getElementById('danmakuButton');
     const sidebarTab = document.getElementById('usersSidebarTab');
     
     if (window.currentUser) {
@@ -1484,6 +1485,8 @@
       
       // 显示测验按钮
       if (quizButton) quizButton.style.display = 'flex';
+      // 显示弹幕墙按钮
+      if (danmakuButton) danmakuButton.style.display = 'flex';
       // 显示右侧抽屉标签
       if (sidebarTab) sidebarTab.style.display = 'flex';
       
@@ -1500,9 +1503,11 @@
       // 未登录：显示火焰
       if (cornerFlame) cornerFlame.style.display = 'flex';
       if (cornerAvatar) cornerAvatar.style.display = 'none';
-      
+
         // 隐藏测验按钮
         if (quizButton) quizButton.style.display = 'none';
+        // 隐藏弹幕墙按钮
+        if (danmakuButton) danmakuButton.style.display = 'none';
         // 隐藏右侧抽屉标签
         if (sidebarTab) sidebarTab.style.display = 'none';
 

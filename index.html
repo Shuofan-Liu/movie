@@ -75,11 +75,16 @@
   <!-- 流动诗意排版的导演名字 -->
   <div class="directors-layer" id="directorsLayer"></div>
 
-  <!-- 右下角测验按钮（仅登录后显示） -->
+  <!-- 左下角测验按钮（仅登录后显示） -->
   <div class="quiz-icon-button" id="quizIconButton" onclick="startQuiz()" title="开始测验" style="display:none;">
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
       <path d="M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/>
     </svg>
+  </div>
+
+  <!-- 右下角弹幕墙按钮（仅登录后显示） -->
+  <div class="danmaku-icon-button" id="danmakuButton" onclick="toggleDanmakuWall()" title="留言墙" style="display:none;">
+    💬
   </div>
 
   <!-- 导演弹窗 -->
@@ -327,6 +332,48 @@
     </div>
   </div>
 
+  <!-- 弹幕墙覆盖层 -->
+  <div class="danmaku-wall-overlay" id="danmakuWallOverlay">
+    <!-- 顶部控制栏 -->
+    <div class="danmaku-header">
+      <h2>💬 留言墙</h2>
+      <div class="danmaku-controls">
+        <button id="danmakuPauseBtn" onclick="toggleDanmakuPause()">⏸️ 暂停</button>
+        <span class="modal-close" onclick="closeDanmakuWall()">×</span>
+      </div>
+    </div>
+
+    <!-- 弹幕容器 -->
+    <div class="danmaku-container" id="danmakuContainer">
+      <!-- 弹幕会动态插入这里 -->
+    </div>
+
+    <!-- 底部输入区 -->
+    <div class="danmaku-input-area">
+      <div class="danmaku-user-avatar" id="danmakuUserAvatar">
+        <!-- 显示当前用户头像 -->
+      </div>
+      <input
+        type="text"
+        id="danmakuInput"
+        placeholder="说点什么..."
+        maxlength="50"
+      />
+      <button onclick="sendDanmaku()">发送</button>
+    </div>
+  </div>
+
+  <!-- 通用确认对话框 -->
+  <div class="confirm-dialog-overlay" id="confirmDialogOverlay"></div>
+  <div class="confirm-dialog" id="confirmDialog">
+    <h3 id="confirmDialogTitle" style="font-size: 18px; color: #f5f5f5; margin-bottom: 20px;">确认操作</h3>
+    <p id="confirmDialogMessage" style="color: #ccc; margin-bottom: 24px; line-height: 1.6;"></p>
+    <div style="display: flex; gap: 12px; justify-content: flex-end;">
+      <button id="confirmDialogCancelBtn" style="padding: 10px 24px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #ccc; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">取消</button>
+      <button id="confirmDialogConfirmBtn" style="padding: 10px 24px; background: rgba(212,175,55,0.2); border: 1px solid rgba(212,175,55,0.4); color: #d4af37; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">确定</button>
+    </div>
+  </div>
+
   <!-- App Scripts: 注意顺序，非模块，全局暴露 -->
   <script src="./js/config.js"></script>
   <script src="./js/data.js"></script>
@@ -337,6 +384,8 @@
   <script src="./js/admin.js"></script>
   <script src="./js/gestures.js"></script>
   <script src="./js/messages.js"></script>
+  <script src="./js/timeTheme.js"></script>
+  <script src="./js/danmaku.js"></script>
   <script>
     // 初始化
     document.addEventListener('DOMContentLoaded', function(){
@@ -344,6 +393,7 @@
       if (window.initGestures) window.initGestures();
       if (window.initUserCorner) window.initUserCorner();
       if (window.initUsersSidebarTab) window.initUsersSidebarTab();
+      if (window.initTimeTheme) window.initTimeTheme();
     });
   </script>
 </body>
