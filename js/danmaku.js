@@ -220,22 +220,22 @@
     item.appendChild(document.createTextNode(': '));
     item.appendChild(content);
 
-    // 时间放在弹幕框下边框外左下角
-    // 先渲染弹幕本体
+    // 时间放在弹幕框下边框外左下角，作为兄弟节点插入
     const container = document.getElementById('danmakuContainer');
     if (container) {
       container.appendChild(item);
-      // 绝对定位时间
-      time.style.position = 'absolute';
-      time.style.left = item.offsetLeft + 'px';
-      time.style.top = (item.offsetTop + item.offsetHeight + 2) + 'px';
-      time.style.width = 'max-content';
-      time.style.zIndex = '2';
-      time.style.background = 'transparent';
-      time.style.pointerEvents = 'none';
-      container.appendChild(time);
+      // 等待 item 渲染后再插入时间
+      setTimeout(() => {
+        time.style.position = 'absolute';
+        time.style.left = item.offsetLeft + 'px';
+        time.style.top = (item.offsetTop + item.offsetHeight + 2) + 'px';
+        time.style.width = 'max-content';
+        time.style.zIndex = '2';
+        time.style.background = 'transparent';
+        time.style.pointerEvents = 'none';
+        container.appendChild(time);
+      }, 0);
     }
-    return; // 直接return，避免重复append
 
     container.appendChild(item);
 
