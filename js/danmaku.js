@@ -90,32 +90,31 @@
 
     currentDisplayIndex = 0;
 
+    // 确保“重新播放”按钮始终存在
+    const header = document.querySelector('.danmaku-header .danmaku-controls');
+    if (header && !document.getElementById('danmakuReplayBtn')) {
+      const replayBtn = document.createElement('button');
+      replayBtn.id = 'danmakuReplayBtn';
+      replayBtn.title = '重新播放';
+      replayBtn.style = 'width:40px;height:40px;padding:0;display:flex;align-items:center;justify-content:center;background:var(--avatar-glow-color);border:1px solid var(--avatar-border-color);border-radius:50%;color:var(--avatar-border-color);cursor:pointer;transition:all 0.3s ease;';
+      replayBtn.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" style="width:20px;height:20px;"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6 0 1.3-.42 2.5-1.13 3.47l1.46 1.46C19.07 16.07 20 14.13 20 12c0-4.42-3.58-8-8-8zm-6.87.13L3.13 6.54C2.42 7.5 2 8.7 2 10c0 4.42 3.58 8 8 8v4l5-5-5-5v4c-3.31 0-6-2.69-6-6 0-1.3.42-2.5 1.13-3.47z"/></svg>';
+      replayBtn.onclick = function() {
+        const container = document.getElementById('danmakuContainer');
+        if (container) container.innerHTML = '';
+        startDanmakuDisplay();
+      };
+      header.appendChild(replayBtn);
+    }
+
+    currentDisplayIndex = 0;
     // 每1.5秒显示一条弹幕，只显示一次
     displayInterval = setInterval(() => {
       if (danmakuPaused) return;
-
       if (currentDisplayIndex < danmakuMessages.length) {
         showDanmakuItem(danmakuMessages[currentDisplayIndex]);
         currentDisplayIndex++;
       } else {
         stopDanmakuDisplay();
-        // 显示“重新播放”按钮
-        const header = document.querySelector('.danmaku-header .danmaku-controls');
-        if (header && !document.getElementById('danmakuReplayBtn')) {
-          const replayBtn = document.createElement('button');
-          replayBtn.id = 'danmakuReplayBtn';
-          replayBtn.title = '重新播放';
-          replayBtn.style = 'width:40px;height:40px;padding:0;display:flex;align-items:center;justify-content:center;background:var(--avatar-glow-color);border:1px solid var(--avatar-border-color);border-radius:50%;color:var(--avatar-border-color);cursor:pointer;transition:all 0.3s ease;';
-          replayBtn.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" style="width:20px;height:20px;"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6 0 1.3-.42 2.5-1.13 3.47l1.46 1.46C19.07 16.07 20 14.13 20 12c0-4.42-3.58-8-8-8zm-6.87.13L3.13 6.54C2.42 7.5 2 8.7 2 10c0 4.42 3.58 8 8 8v4l5-5-5-5v4c-3.31 0-6-2.69-6-6 0-1.3.42-2.5 1.13-3.47z"/></svg>';
-          replayBtn.onclick = function() {
-            // 清空弹幕容器并重新播放
-            const container = document.getElementById('danmakuContainer');
-            if (container) container.innerHTML = '';
-            startDanmakuDisplay();
-            replayBtn.remove();
-          };
-          header.appendChild(replayBtn);
-        }
       }
     }, 1500);
   }
@@ -191,9 +190,9 @@
     const time = document.createElement('div');
     time.className = 'danmaku-time';
     time.style.fontSize = '10px';
-    time.style.marginTop = '2px';
-    time.style.textAlign = 'center';
-    time.style.color = 'var(--avatar-border-color)'; // 跟随主题色
+    time.style.marginTop = '6px';
+    time.style.textAlign = 'left';
+    time.style.color = 'var(--avatar-border-color)';
     let dateObj = null;
     if (data.timestamp && typeof data.timestamp.toDate === 'function') {
       dateObj = data.timestamp.toDate();
@@ -215,18 +214,13 @@
       time.textContent = '';
     }
 
-    // 头像和时间包裹
-    const avatarWrap = document.createElement('div');
-    avatarWrap.style.display = 'flex';
-    avatarWrap.style.flexDirection = 'column';
-    avatarWrap.style.alignItems = 'center';
-    avatarWrap.appendChild(avatar);
-    avatarWrap.appendChild(time);
-
-    item.appendChild(avatarWrap);
+    // 头像单独
+    item.appendChild(avatar);
     item.appendChild(nickname);
     item.appendChild(document.createTextNode(': '));
     item.appendChild(content);
+    // 时间放在底部左下角
+    item.appendChild(time);
 
     container.appendChild(item);
 
