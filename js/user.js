@@ -634,7 +634,7 @@
           <div class="user-card" style="text-align:left; display:flex; align-items:center; gap:12px; margin-bottom:8px;">
             <div class="user-card-avatar" style="width:56px; height:56px;">${renderAvatar(otherAvatar, otherName)}</div>
             <div style="flex:1;">
-              <div style="font-size:14px; color:#d4af37; margin-bottom:4px;">${resolveRelationLabel(r.type)}</div>
+              <div style="font-size:14px; color:var(--avatar-border-color); margin-bottom:4px;">${resolveRelationLabel(r.type)}</div>
               <div style="font-size:14px; color:#f5f5f5; cursor:pointer;" onclick="showUserPage('${otherId}')">${otherName}</div>
             </div>
           </div>
@@ -793,7 +793,7 @@
               <div class="message-from-avatar">${window.renderAvatar(o.avatar, o.name)}</div>
               <div class="message-from-name">${o.name}</div>
             </div>
-            <div style="flex:1; color:#d4af37; font-size:14px;">${relationTitle(r)}${tipHtml}</div>
+            <div style="flex:1; color:var(--avatar-border-color); font-size:14px;">${relationTitle(r)}${tipHtml}</div>
             <button class="view-messages-btn" onclick="requestDissolve('${r.id}')">解除关系</button>
           </div>
         `;
@@ -1322,7 +1322,7 @@
         updateData.avatar = { 
           type: 'default', 
           value: nickname.charAt(0).toUpperCase(), 
-          color: '#d4af37' 
+          color: 'var(--avatar-border-color)' // 金色主题色变量
         };
       }
     }
@@ -1460,17 +1460,19 @@
 
   function relationBadgeData(list){
     if (!list || list.length === 0) return null;
-    const primary = list[0];
+    // 支持多关系切换
+    let idx = window.__currentRelationBadgeIndex || 0;
+    if (idx >= list.length) idx = 0;
+    const primary = list[idx];
     const emoji = (window.RELATIONSHIP_TYPES[primary.type] && window.RELATIONSHIP_TYPES[primary.type].emoji) || '🤝';
-    return { emoji, count: list.length };
+    return { emoji, count: list.length, idx };
   }
 
   function renderRelationChip(list, extraClass){
     const data = relationBadgeData(list);
     if (!data) return '';
-    const countHtml = data.count > 1 ? ` <span class="relation-chip-count">${data.count}</span>` : '';
-    const cls = extraClass ? `relation-chip ${extraClass}` : 'relation-chip';
-    return `<span class="${cls}">${data.emoji}${countHtml}</span>`;
+    let cls = extraClass ? `relation-chip ${extraClass}` : 'relation-chip';
+    return `<span class="${cls}">${data.emoji}</span>`;
   }
 
   // 实时更新右下角关系徽章（由消息监听器调用）
@@ -1489,8 +1491,27 @@
     if (badgeHtml) {
       badgeHolder.style.display = 'inline-flex';
       badgeHolder.innerHTML = badgeHtml;
+      // 多关系时允许点击切换
+      if (acceptedRelationsCache.length > 1) {
+        const badgeEl = badgeHolder.querySelector('.relation-chip-embedded');
+        if (badgeEl) {
+          badgeEl.style.pointerEvents = 'auto';
+          badgeEl.style.cursor = 'pointer';
+          badgeEl.onclick = function(e) {
+            e.stopPropagation();
+            window.__currentRelationBadgeIndex = (window.__currentRelationBadgeIndex || 0) + 1;
+            if (window.__currentRelationBadgeIndex >= acceptedRelationsCache.length) window.__currentRelationBadgeIndex = 0;
+            window.updateCornerRelationBadge(acceptedRelationsCache);
+            // 右侧用户列表也刷新
+            if (window.updateUsersSidebarAvatars) window.updateUsersSidebarAvatars();
+          };
+        }
+      } else {
+        window.__currentRelationBadgeIndex = 0;
+      }
     } else {
       badgeHolder.style.display = 'none';
+      window.__currentRelationBadgeIndex = 0;
     }
     
     // 同步更新下拉菜单的关系显示
@@ -1602,7 +1623,7 @@
       panel.style.left = `${Math.max(12, Math.min(rect.left, window.innerWidth - 220))}px`;
       panel.style.zIndex = '9999';
       panel.style.background = 'rgba(20,20,20,0.95)';
-      panel.style.border = '1px solid rgba(212,175,55,0.4)';
+      panel.style.border = '1px solid var(--avatar-border-color)';
       panel.style.borderRadius = '8px';
       panel.style.padding = '8px';
       panel.style.boxShadow = '0 6px 20px rgba(0,0,0,0.4)';
@@ -1616,10 +1637,10 @@
         const t = window.RELATIONSHIP_TYPES[r.type];
         const badge = t ? t.emoji : '🤝';
         return `<div style="display:flex; align-items:center; gap:8px; padding:6px 4px;">
-          <div style="width:32px; height:32px; border:1px solid rgba(212,175,55,0.3); border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center;">${window.renderAvatar(otherAvatar, otherName)}</div>
+          <div style="width:32px; height:32px; border:1px solid var(--avatar-glow-color); border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center;">${window.renderAvatar(otherAvatar, otherName)}</div>
           <div style="display:flex; flex-direction:column;">
             <span style="color:#f5f5f5; font-size:13px;">${otherName}</span>
-            <span style="color:#d4af37; font-size:12px;">${badge} ${(t&&t.name)||r.type}</span>
+            <span style="color:var(--avatar-border-color); font-size:12px;">${badge} ${(t&&t.name)||r.type}</span>
           </div>
         </div>`;
       }).join('');
@@ -1673,7 +1694,35 @@
       if (badgeHtml) {
         dropdownRelations.innerHTML = badgeHtml;
         const chip = dropdownRelations.querySelector('.relation-chip-clickable');
-        if (chip) chip.onclick = toggleDropdownRelationsPanel;
+        if (chip) {
+          let showTimer = null, hideTimer = null;
+          chip.addEventListener('mouseenter', function() {
+            clearTimeout(hideTimer);
+            showTimer = setTimeout(() => {
+              window.toggleDropdownRelationsPanel && window.toggleDropdownRelationsPanel();
+            }, 120);
+          });
+          chip.addEventListener('mouseleave', function() {
+            clearTimeout(showTimer);
+            hideTimer = setTimeout(() => {
+              const panel = document.getElementById('dropdownRelationsPanel');
+              if (panel) panel.remove();
+            }, 180);
+          });
+          // 让面板本身也支持移入不消失，移出才消失
+          document.addEventListener('mouseover', function handler(e) {
+            const panel = document.getElementById('dropdownRelationsPanel');
+            if (!panel) return;
+            if (panel.contains(e.target)) {
+              clearTimeout(hideTimer);
+            } else if (chip && !chip.contains(e.target)) {
+              hideTimer = setTimeout(() => {
+                if (panel) panel.remove();
+                document.removeEventListener('mouseover', handler);
+              }, 180);
+            }
+          });
+        }
       } else {
         dropdownRelations.innerHTML = '';
       }
@@ -1711,9 +1760,13 @@
         }
         
         const styleTag = user.userStyle ? `<div style="font-size:11px;color:#888;margin-top:4px;">${user.userStyle}</div>` : '';
-        const relList = (user.id === (window.currentUser && window.currentUser.id))
+        let relList = (user.id === (window.currentUser && window.currentUser.id))
           ? acceptedList
           : (relMap && relMap[user.id]) ? relMap[user.id] : [];
+        // 右侧用户列表同步主角当前选中关系
+        if (user.id === (window.currentUser && window.currentUser.id) && relList.length > 1 && typeof window.__currentRelationBadgeIndex === 'number') {
+          relList = [relList[window.__currentRelationBadgeIndex % relList.length]];
+        }
         const badgeHtml = renderRelationChip(relList, 'relation-chip-embedded');
         const avatarHtml = badgeHtml
           ? `<div class="avatar-with-badge">${window.renderAvatar(user.avatar, user.nickname)}${badgeHtml}</div>`
@@ -1744,7 +1797,7 @@
     // 标签固定在视窗右侧：打开时移动到抽屉左缘之外（框外）
     if (tab) {
       const width = sidebar ? (sidebar.getBoundingClientRect().width || 320) : 320;
-      const margin = 4; // 与抽屉金色边框的间距
+      const margin = 4; // 与抽屉主题色边框的间距
       tab.style.right = Math.max(0, width + margin) + 'px';
     }
   }

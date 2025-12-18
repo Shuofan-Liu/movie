@@ -87,14 +87,14 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 
 /* 关系徽章通用样式 */
 .relation-chip { display: inline-flex; align-items: center; justify-content: center; gap: 4px; background: rgba(20,20,20,0.8); color: #fff; border: none; border-radius: 999px; padding: 4px 8px; font-size: 16px; line-height: 1; position: relative; box-shadow: 0 0 var(--badge-glow-size) var(--badge-glow-color); transition: box-shadow 2s ease; }
-.relation-chip-count { font-size: 11px; color: #fff; background: var(--avatar-border-color); border-radius: 999px; padding: 1px 5px; line-height: 1; transition: background 2s ease; }
+.relation-chip-count { font-size: 11px; color: #fff; background: var(--avatar-border-color); border-radius: 50%; padding: 2px 0px; min-width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; line-height: 1; transition: background 2s ease; box-sizing: border-box; }
 .relation-chip-clickable { cursor: pointer; }
 
 /* 镶嵌在头像右下角的关系徽章（与右上角消息角标定位方式一致） */
 .avatar-with-badge { position: relative; display: inline-flex; }
 .relation-chip-embedded { position: absolute; right: -14px; bottom: -8px; transform: scale(0.75); padding: 0 !important; pointer-events: none; border: none !important; background: transparent !important; border-radius: 0 !important; box-shadow: 0 0 var(--badge-glow-size) var(--badge-glow-color) !important; transition: box-shadow 2s ease !important; }
 /* 主页面左上角头像徽章：调整位置和大小 */
-#cornerRelationBadge .relation-chip-embedded { right: 0px; bottom: 2px;transform: scale(0.85); }
+#cornerRelationBadge .relation-chip-embedded { right: 0px; bottom: 2px; transform: scale(0.85); }
 /* 右侧用户列表头像徽章：调整位置和大小 */
 .user-card-avatar .relation-chip-embedded { right: -18px; transform: scale(0.95); }
 
