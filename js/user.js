@@ -404,7 +404,15 @@
       window.getPendingRelationshipRequests ? window.getPendingRelationshipRequests(userId) : Promise.resolve([])
     ]);
 
-    const accepted = (all || []).filter(r=> r.status === 'accepted' || r.status === 'dissolve_pending');
+    // 过滤掉被自己删除的申请（deletedBy 包含自己）
+    function notDeletedByMe(r) {
+      return !Array.isArray(r.deletedBy) || !r.deletedBy.includes(userId);
+    }
+
+    const accepted = (all || []).filter(r=> (r.status === 'accepted' || r.status === 'dissolve_pending') && notDeletedByMe(r));
+
+    // 我发起的所有申请（不管状态），且未被自己删除
+    const myRequests = (all || []).filter(r => r.fromUserId === userId && notDeletedByMe(r));
 
     function otherOf(r){
       const isFrom = r.fromUserId === userId;
@@ -475,13 +483,55 @@
       `;
     }).join('') : '<p style="text-align:center;color:#888;padding:12px;">暂无待处理申请</p>';
 
+    // 我发起的申请区块
+    const myRequestsHtml = myRequests.length ? myRequests.map(r => {
+      // 展示对方信息
+      const o = r.toUserId === userId ? { id: r.fromUserId, name: r.fromNickname, avatar: r.fromAvatar } : { id: r.toUserId, name: r.toNickname, avatar: r.toAvatar };
+      // 状态文字
+      let statusText = '';
+      if (r.status === 'pending') statusText = '<span style="color:var(--avatar-glow-color)">待处理</span>';
+      else if (r.status === 'accepted') statusText = '<span style="color:var(--avatar-border-color)">已通过</span>';
+      else if (r.status === 'rejected') statusText = '<span style="color:#ff4444">被拒绝</span>';
+      else statusText = `<span style="color:#888">${r.status}</span>`;
+      // 删除按钮（主题色）
+      const delBtn = `<button class="view-messages-btn" style="background:var(--avatar-glow-color);color:var(--avatar-border-color);border:1px solid var(--avatar-border-color);margin-left:10px;" onclick="deleteMyRelationshipRequest('${r.id}')">删除</button>`;
+      return `
+        <div class="message-item relationship-row">
+          <div class="message-from" onclick="showUserPage('${o.id}')">
+            <div class="message-from-avatar">${window.renderAvatar(o.avatar, o.name)}</div>
+            <div class="message-from-name">${o.name||'对方'}</div>
+          </div>
+          <div class="relationship-title">${relationTitle(r)} · ${statusText}${r.message ? ' · 留言：'+r.message : ''}</div>
+          ${delBtn}
+        </div>
+      `;
+    }).join('') : '<p style="text-align:center;color:#888;padding:12px;">暂无我发起的申请</p>';
+
     const html = `
       <div class="user-section"><h3>✅ 已建立</h3>${acceptedHtml}</div>
       <div class="user-section"><h3>📨 待处理</h3>${pendingHtml}</div>
+      <div class="user-section"><h3>📝 我发起的申请</h3>${myRequestsHtml}</div>
     `;
     document.getElementById('relationshipCenterContent').innerHTML = html;
     document.getElementById('relationshipCenterOverlay').classList.add('active');
     document.getElementById('relationshipCenterPage').classList.add('active');
+    // 删除我发起的申请，仅影响自己
+    window.deleteMyRelationshipRequest = async function(relId) {
+      if (!window.db || !window.currentUser || !relId) return;
+      try {
+        const doc = await window.db.collection('relationships').doc(relId).get();
+        if (!doc.exists) return;
+        const data = doc.data();
+        let deletedBy = Array.isArray(data.deletedBy) ? data.deletedBy : [];
+        if (!deletedBy.includes(window.currentUser.id)) {
+          deletedBy.push(window.currentUser.id);
+          await window.db.collection('relationships').doc(relId).update({ deletedBy });
+        }
+        window.showRelationshipCenter();
+      } catch (err) {
+        showInlineAlert('删除失败', 'error');
+      }
+    }
   }
 
   window.closeRelationshipCenter = function(){
