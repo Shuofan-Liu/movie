@@ -1644,12 +1644,12 @@
           const otherName = isFrom ? (r.toNickname || '对方') : (r.fromNickname || '对方');
           const otherAvatar = isFrom ? r.toAvatar : r.fromAvatar;
           const otherAvatarHtml = window.renderAvatar ? window.renderAvatar(otherAvatar, otherName) : '';
-          return `<div class="relation-panel-item" data-idx="${idx}" style="display:flex; align-items:center; gap:8px; padding:6px 4px; cursor:pointer; border-radius:6px; transition:background 0.2s;">
-            <span style="font-size:20px;">${badge}</span>
-            <span style="color:var(--avatar-border-color); font-size:14px;">${(t&&t.name)||r.type}</span>
-            <span style="margin-left:auto; display:flex; align-items:center; gap:6px;">
-              <span style="width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center;">${otherAvatarHtml}</span>
-              <span style="font-size:13px; color:#eee; max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${otherName}</span>
+          return `<div class="relation-panel-item" data-idx="${idx}" style="display:flex; align-items:center; gap:12px; padding:8px 6px; cursor:pointer; border-radius:6px; transition:background 0.2s;">
+            <span style="font-size:20px; flex-shrink:0;">${badge}</span>
+            <span style="color:var(--avatar-border-color); font-size:14px; min-width:80px; flex-shrink:0;">${(t&&t.name)||r.type}</span>
+            <span style="display:flex; align-items:center; gap:6px; min-width:0;">
+              <span style="width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;">${otherAvatarHtml}</span>
+              <span style="font-size:13px; color:#eee; max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${otherName}</span>
             </span>
           </div>`;
         }).join('')}
@@ -1723,31 +1723,24 @@
         dropdownRelations.innerHTML = badgeHtml;
         const chip = dropdownRelations.querySelector('.relation-chip-clickable');
         if (chip) {
-          let showTimer = null, hideTimer = null;
-          chip.addEventListener('mouseenter', function() {
-            clearTimeout(hideTimer);
-            showTimer = setTimeout(() => {
+          chip.style.cursor = 'pointer';
+          chip.addEventListener('click', function(e) {
+            e.stopPropagation();
+            // 若已存在面板则移除，否则显示
+            const panel = document.getElementById('dropdownRelationsPanel');
+            if (panel) {
+              panel.remove();
+            } else {
               window.toggleDropdownRelationsPanel && window.toggleDropdownRelationsPanel();
-            }, 120);
+            }
           });
-          chip.addEventListener('mouseleave', function() {
-            clearTimeout(showTimer);
-            hideTimer = setTimeout(() => {
-              const panel = document.getElementById('dropdownRelationsPanel');
-              if (panel) panel.remove();
-            }, 180);
-          });
-          // 让面板本身也支持移入不消失，移出才消失
-          document.addEventListener('mouseover', function handler(e) {
+          // 点击页面其他地方关闭面板
+          document.addEventListener('click', function handler(e) {
             const panel = document.getElementById('dropdownRelationsPanel');
             if (!panel) return;
-            if (panel.contains(e.target)) {
-              clearTimeout(hideTimer);
-            } else if (chip && !chip.contains(e.target)) {
-              hideTimer = setTimeout(() => {
-                if (panel) panel.remove();
-                document.removeEventListener('mouseover', handler);
-              }, 180);
+            if (!dropdownRelations.contains(e.target) && !panel.contains(e.target)) {
+              panel.remove();
+              document.removeEventListener('click', handler);
             }
           });
         }
