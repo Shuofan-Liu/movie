@@ -61,8 +61,8 @@
     <div class="user-dropdown-actions">
         <button class="dropdown-btn" onclick="showUserPage(window.currentUser.id)">👤 查看我的主页</button>
         <button class="dropdown-btn" onclick="editOwnProfile()">✏️ 编辑资料</button>
-        <button class="dropdown-btn" onclick="showMyMessages()">📬 查看我的留言 <span id="dropdownMsgPill" style="display:none; margin-left:6px; padding:2px 6px; background:rgba(212,175,55,0.2); border:1px solid rgba(212,175,55,0.4); color:#d4af37; border-radius:10px; font-size:12px;"></span></button>
-        <button class="dropdown-btn" onclick="showRelationshipCenter()">🤝 关系处理 <span id="dropdownRelPill" style="display:none; margin-left:6px; padding:2px 6px; background:rgba(212,175,55,0.2); border:1px solid rgba(212,175,55,0.4); color:#d4af37; border-radius:10px; font-size:12px;"></span></button>
+        <button class="dropdown-btn" onclick="showMyMessages()">📬 查看我的留言 <span id="dropdownMsgPill" style="display:none; margin-left:6px; padding:2px 6px; background:var(--avatar-glow-color); border:1px solid var(--avatar-border-color); color:var(--avatar-border-color); border-radius:10px; font-size:12px;"></span></button>
+        <button class="dropdown-btn" onclick="showRelationshipCenter()">🤝 关系处理 <span id="dropdownRelPill" style="display:none; margin-left:6px; padding:2px 6px; background:var(--avatar-glow-color); border:1px solid var(--avatar-border-color); color:var(--avatar-border-color); border-radius:10px; font-size:12px;"></span></button>
       <button class="dropdown-btn" onclick="showAdminPrompt()">👑 管理员模式</button>
       <button class="dropdown-btn" onclick="logoutUser()">🚪 退出登录</button>
       <button class="dropdown-btn danger" onclick="deleteOwnAccount()">⚠️ 注销账户</button>
@@ -306,7 +306,7 @@
     <!-- 操作按钮 -->
     <div style="display: flex; gap: 10px; justify-content: flex-end;">
       <button onclick="closeRelationshipPrompt()" style="padding: 10px 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #ccc; border-radius: 8px; cursor: pointer; font-size: 14px;">取消</button>
-      <button onclick="submitRelationshipRequest(window._selectedRelationType)" style="padding: 10px 20px; background: rgba(212,175,55,0.2); border: 1px solid rgba(212,175,55,0.4); color: #d4af37; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">发送申请</button>
+      <button onclick="submitRelationshipRequest(window._selectedRelationType)" style="padding: 10px 20px; background: var(--avatar-glow-color); border: 1px solid var(--avatar-border-color); color: var(--avatar-border-color); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">发送申请</button>
     </div>
   </div>
 
@@ -371,7 +371,7 @@
     <p id="confirmDialogMessage" style="color: #ccc; margin-bottom: 24px; line-height: 1.6;"></p>
     <div style="display: flex; gap: 12px; justify-content: flex-end;">
       <button id="confirmDialogCancelBtn" style="padding: 10px 24px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #ccc; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">取消</button>
-      <button id="confirmDialogConfirmBtn" style="padding: 10px 24px; background: rgba(212,175,55,0.2); border: 1px solid rgba(212,175,55,0.4); color: #d4af37; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">确定</button>
+      <button id="confirmDialogConfirmBtn" style="padding: 10px 24px; background: var(--avatar-glow-color); border: 1px solid var(--avatar-border-color); color: var(--avatar-border-color); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">确定</button>
     </div>
   </div>
 
