@@ -98,7 +98,7 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 .quiz-icon-button:hover { background: var(--avatar-glow-color); opacity: 0.8; border-color: var(--avatar-border-color); transform: scale(1.1); box-shadow: 0 0 30px var(--avatar-glow-color); }
 .quiz-icon-button svg { width: 35px; height: 35px; fill: var(--avatar-border-color); transition: fill 2s ease; }
 
-/* 右下角弹幕墙按钮（与测验按钮同尺寸） */
+/* 右下角弹幕墙按钮（与测验按钮对齐） */
 .danmaku-icon-button { position: fixed; bottom: 40px; right: 30px; width: 65px; height: 65px; background: var(--avatar-glow-color); border: 2px solid var(--avatar-border-color); border-radius: 50%; cursor: pointer; z-index: 999; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease, background 2s ease, border-color 2s ease, box-shadow 2s ease; backdrop-filter: blur(10px); }
 .danmaku-icon-button:hover { background: var(--avatar-glow-color); opacity: 0.8; border-color: var(--avatar-border-color); transform: scale(1.1); box-shadow: 0 0 30px var(--avatar-glow-color); }
 .danmaku-icon-button svg { width: 35px; height: 35px; fill: var(--avatar-border-color); transition: fill 2s ease; }
@@ -258,7 +258,12 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
   .user-modal {
     width: 90vw;
     max-width: 700px;
+    height: 85vh;
+    max-height: 85vh;
     padding: 32px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 
   /* 左右切换按钮调整 */
@@ -304,7 +309,12 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
   .my-messages-page {
     width: 88vw;
     max-width: 800px;
+    height: 85vh;
+    max-height: 85vh;
     padding: 36px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 
   /* 弹幕墙 */
@@ -344,9 +354,14 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 
   /* 用户模态框 */
   .user-modal {
-    width: 92vw;
+    width: 90vw;
     max-width: 640px;
+    height: 85vh;
+    max-height: 85vh;
     padding: 28px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 
   /* 左右切换按钮 - 缩小并靠近边缘 */
@@ -609,7 +624,7 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 
 .user-modal {
   display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  max-width: 680px; width: 92vw; max-height: 90vh; overflow-y: auto;
+  width: 90vw; max-width: 680px; height: 85vh; max-height: 85vh; overflow-y: auto;
   background: rgba(20,20,20,0.98); border: 2px solid var(--avatar-border-color);
   padding: 40px; z-index: 1501; border-radius: 8px;
   box-shadow: 0 10px 60px rgba(0,0,0,0.8);
@@ -675,15 +690,16 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 
   /* 手机端用户详情弹窗适配 */
   .user-modal {
-    width: 94vw !important;
-    max-width: 94vw !important;
+    width: 90vw !important;
+    max-width: 500px !important;
     min-width: 0 !important;
     left: 50% !important;
-    top: 2vh !important;
-    transform: translateX(-50%) !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
     padding: 18px !important;
     border-radius: 12px !important;
-    max-height: 96vh !important;
+    height: 85vh !important;
+    max-height: 85vh !important;
     overflow-y: auto !important;
   }
   .user-header { gap: 12px !important; margin-bottom: 18px !important; padding-bottom: 16px !important; }
@@ -765,11 +781,15 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 
   /* 用户模态框 */
   .user-modal {
-    width: 94vw;
-    max-width: none;
+    width: 90vw;
+    max-width: 550px;
+    height: 85vh;
+    max-height: 85vh;
     padding: 18px;
-    max-height: 90vh;
     overflow-y: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
   .user-header {
     gap: 12px;
@@ -913,10 +933,14 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 
   /* 留言页面 */
   .my-messages-page {
-    width: 92vw;
-    max-width: none;
+    width: 90vw;
+    max-width: 600px;
+    height: 85vh;
+    max-height: 85vh;
     padding: 24px 16px;
-    max-height: 90vh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
   .messages-header {
     margin-bottom: 20px;
@@ -1109,10 +1133,15 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 
   /* 用户模态框 */
   .user-modal {
-    width: 96vw;
+    width: 90vw;
+    max-width: 480px;
+    height: 85vh;
+    max-height: 85vh;
     padding: 16px;
-    max-height: 88vh;
     overflow-y: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
   .user-header {
     gap: 12px;
@@ -1309,9 +1338,14 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 
   /* 留言页面 */
   .my-messages-page {
-    width: 94vw;
+    width: 90vw;
+    max-width: 500px;
+    height: 85vh;
+    max-height: 85vh;
     padding: 20px 14px;
-    max-height: 88vh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
   .messages-header {
     margin-bottom: 18px;
@@ -1458,11 +1492,18 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
    大屏幕优化 - min-width: 1200px
    ======================================== */
 @media (min-width: 1200px) {
-  .quiz-icon-button,
-  .danmaku-icon-button {
+  .quiz-icon-button {
     width: 48px !important;
     height: 48px !important;
     left: 20px !important;
+    bottom: 20px !important;
+    font-size: 20px !important;
+    padding: 0 !important;
+    z-index: 999 !important;
+  }
+  .danmaku-icon-button {
+    width: 48px !important;
+    height: 48px !important;
     right: 20px !important;
     bottom: 20px !important;
     font-size: 20px !important;
@@ -1706,7 +1747,7 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 /* 我的留言页面 */
 .my-messages-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1500; }
 .my-messages-overlay.active { display: block; }
-.my-messages-page { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 800px; width: 90%; max-height: 90vh; overflow-y: auto; background: rgba(20,20,20,0.98); border: 2px solid var(--avatar-border-color); padding: 40px; z-index: 1501; border-radius: 12px; -webkit-overflow-scrolling: touch; transition: border-color 2s ease; }
+.my-messages-page { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90vw; max-width: 800px; height: 85vh; max-height: 85vh; overflow-y: auto; background: rgba(20,20,20,0.98); border: 2px solid var(--avatar-border-color); padding: 40px; z-index: 1501; border-radius: 12px; -webkit-overflow-scrolling: touch; transition: border-color 2s ease; }
 .my-messages-page.active { display: block; animation: modalSlideIn 0.4s ease-out; }
 .messages-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: none; transition: border-color 2s ease; }
 .messages-header h2 { font-family: 'Playfair Display', serif; font-size: 32px; color: var(--avatar-border-color); margin: 0; transition: color 2s ease; }
@@ -1732,7 +1773,7 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 .dropdown-info { overflow-wrap: anywhere; word-break: break-word; }
 
 /* 用户详情页留言板 */
-.user-messages-section { margin-top: 30px; padding-top: 30px; border-top: 2px solid var(--avatar-border-color); min-height: 300px; transition: border-color 2s ease; }
+.user-messages-section { margin-top: 30px; padding-top: 30px; border-top: none; min-height: 300px; }
 .user-messages-section h3 { font-size: 20px; color: var(--avatar-border-color); margin-bottom: 20px; transition: color 2s ease; }
 .messages-board { display: flex; flex-direction: column; gap: 15px; }
 .message-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
