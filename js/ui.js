@@ -131,7 +131,8 @@
       confirmBtn.textContent = options.confirmText || '确定';
 
       // 自定义确认按钮样式（危险操作用红色）
-      if (options.isDanger) {
+      const isDanger = options.isDanger || options.type === 'danger';
+      if (isDanger) {
         confirmBtn.style.background = 'rgba(255,68,68,0.25)';
         confirmBtn.style.borderColor = 'rgba(255,68,68,0.5)';
         confirmBtn.style.color = '#ff4444';

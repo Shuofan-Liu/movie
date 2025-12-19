@@ -37,7 +37,7 @@
 
   window.showEmojiCreatePage = function() {
     if (!window.currentUser) {
-      alert('请先登录');
+      showToast('请先登录', 'warn');
       return;
     }
 
@@ -88,13 +88,13 @@
     const emojiText = document.getElementById('emojiInput').value.trim();
 
     if (!answerDisplay) {
-      alert('请选择或输入电影名');
+      showToast('请选择或输入电影名', 'warn');
       return;
     }
 
     const validation = window.validateEmojiInput(emojiText);
     if (!validation.valid) {
-      alert(validation.message);
+      showToast(validation.message, 'warn');
       return;
     }
 
@@ -110,12 +110,12 @@
     hideLoading();
 
     if (result.success) {
-      alert('发布成功！');
+      showToast('发布成功！', 'success', '✅');
       closeEmojiCreatePage();
       // 更新badge
       await updateHallBadge();
     } else {
-      alert('发布失败: ' + (result.error || '未知错误'));
+      showToast('发布失败: ' + (result.error || '未知错误'), 'error');
     }
   };
 
@@ -123,7 +123,7 @@
 
   window.showEmojiHallPage = async function() {
     if (!window.currentUser) {
-      alert('请先登录');
+      showToast('请先登录', 'warn');
       return;
     }
 
@@ -177,6 +177,27 @@
     return name.charAt(0).toUpperCase();
   }
 
+  // 统一轻量提示（替代 alert），跟随站内主题
+  function showToast(message, type = 'info', icon) {
+    if (window.showInlineAlert) {
+      if (icon && window.showBadgeToast && type === 'success') {
+        window.showBadgeToast(message, icon);
+      } else {
+        window.showInlineAlert(message, type);
+      }
+    } else {
+      alert(message);
+    }
+  }
+
+  // 统一确认对话（替代 confirm）
+  function showConfirmDialogSafe(options) {
+    if (window.showConfirmDialog) {
+      return window.showConfirmDialog(options);
+    }
+    return Promise.resolve(confirm(options.message || '确认操作？'));
+  }
+
   // 头像渲染：优先使用全局 renderAvatar，兼容 avatar 对象/字符串
   function renderAvatarInline(avatarData, nickname, size = 45, fontSize = 22, useLightBorder = false) {
     const borderColor = useLightBorder ? 'rgba(255,255,255,0.2)' : 'var(--avatar-border-color)';
@@ -225,7 +246,7 @@
     hideLoading();
 
     if (!currentPuzzle) {
-      alert('题目不存在');
+      showToast('题目不存在', 'error');
       return;
     }
 
@@ -347,7 +368,7 @@
 
     if (result.success) {
       // 猜对了！
-      alert('🎉 恭喜你猜对了！');
+      showToast('恭喜你猜对了！', 'success', '🎉');
       closeEmojiGuessModal();
       // 刷新列表和badge
       if (document.getElementById('emojiHallOverlay').style.display === 'flex') {
@@ -356,7 +377,7 @@
       await updateHallBadge();
     } else if (result.alreadySolved) {
       // 被别人抢先了
-      alert(`已被 ${result.solverInfo.name} 抢先猜对了！`);
+      showToast(`已被 ${result.solverInfo.name} 抢先猜对了！`, 'warn');
       // 重新加载题目信息并显示
       await showPuzzleDetail(currentPuzzle.id);
     } else if (result.isAuthor) {
@@ -376,15 +397,20 @@
         inputEl.style.borderColor = 'rgba(255,255,255,0.2)';
       }, 2000);
     } else {
-      alert('提交失败: ' + (result.error || '未知错误'));
+      showToast('提交失败: ' + (result.error || '未知错误'), 'error');
     }
   };
 
   // Task 6: 删除题目（仅限open状态）
   window.deletePuzzleConfirm = function(puzzleId) {
-    if (confirm('确定要删除这道题吗？\n注意：已被猜出的题目不可删除。')) {
-      deletePuzzleAction(puzzleId);
-    }
+    showConfirmDialogSafe({
+      title: '删除题目',
+      message: '确定要删除这道题吗？已被猜出的题目不可删除。',
+      confirmText: '删除',
+      cancelText: '取消'
+    }).then(confirmed => {
+      if (confirmed) deletePuzzleAction(puzzleId);
+    });
   };
 
   async function deletePuzzleAction(puzzleId) {
@@ -395,7 +421,7 @@
     hideLoading();
 
     if (result.success) {
-      alert('删除成功');
+      showToast('删除成功', 'success', '🗑️');
       closeEmojiGuessModal();
       // 刷新列表和badge
       if (document.getElementById('emojiHallOverlay').style.display === 'flex') {
@@ -403,7 +429,7 @@
       }
       await updateHallBadge();
     } else {
-      alert('删除失败: ' + (result.error || '未知错误'));
+      showToast('删除失败: ' + (result.error || '未知错误'), 'error');
     }
   }
 
@@ -411,7 +437,7 @@
 
   window.showEmojiLeaderboard = async function() {
     if (!window.currentUser) {
-      alert('请先登录');
+      showToast('请先登录', 'warn');
       return;
     }
 
