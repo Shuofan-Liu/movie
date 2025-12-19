@@ -181,6 +181,10 @@
           };
         }
 
+        // 在写入前读取用户统计
+        const userStatsRef = db.collection('user_stats').doc(window.currentUser.id);
+        const statsDoc = await transaction.get(userStatsRef);
+
         // 检查答案是否正确
         const guessNorm = normalizeAnswer(guessText);
         const correctNorm = puzzleData.answer_norm;
@@ -200,9 +204,6 @@
         });
 
         // 同步更新用户统计（方案A）
-        const userStatsRef = db.collection('user_stats').doc(window.currentUser.id);
-        const statsDoc = await transaction.get(userStatsRef);
-
         if (statsDoc.exists) {
           transaction.update(userStatsRef, {
             correct_guess_count: firebase.firestore.FieldValue.increment(1),
