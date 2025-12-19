@@ -152,9 +152,11 @@
 
       const db = firebase.firestore();
       const puzzleRef = db.collection('puzzles').doc(puzzleId);
+      const userStatsRef = db.collection('user_stats').doc(window.currentUser.id);
 
       const result = await db.runTransaction(async (transaction) => {
-        const puzzleDoc = await transaction.get(puzzleRef);
+        // 一次读取所有需要的文档，确保读取在写入之前完成
+        const [puzzleDoc, statsDoc] = await transaction.getAll(puzzleRef, userStatsRef);
 
         if (!puzzleDoc.exists) {
           throw new Error('题目不存在');
@@ -180,10 +182,6 @@
             }
           };
         }
-
-        // 在写入前读取用户统计
-        const userStatsRef = db.collection('user_stats').doc(window.currentUser.id);
-        const statsDoc = await transaction.get(userStatsRef);
 
         // 检查答案是否正确
         const guessNorm = normalizeAnswer(guessText);

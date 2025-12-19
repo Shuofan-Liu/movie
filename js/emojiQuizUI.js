@@ -280,6 +280,12 @@
 
           <div style="font-size: 64px; margin: 30px 0; line-height: 1.2;">${currentPuzzle.emoji_text}</div>
 
+          ${isAuthor ? `
+            <div style="margin: 10px 0 24px; padding: 12px 14px; background: rgba(255,255,255,0.04); border: 1px dashed rgba(255,255,255,0.2); border-radius: 8px; color: #aaa; font-size: 14px;">
+              你是出题人，电影名：<span style="color: var(--avatar-border-color); font-weight: 600;">${currentPuzzle.answer_display}</span>
+            </div>
+          ` : ''}
+
           <div style="margin: 30px 0;">
             <input
               type="text"
