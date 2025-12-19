@@ -110,7 +110,7 @@
     hideLoading();
 
     if (result.success) {
-      showToast('发布成功！', 'success', '✅');
+      showToast('发布成功！', 'success', '!');
       closeEmojiCreatePage();
       // 更新badge
       await updateHallBadge();
@@ -368,7 +368,7 @@
 
     if (result.success) {
       // 猜对了！
-      showToast('恭喜你猜对了！', 'success', '🎉');
+      showToast('恭喜你猜对了', 'success', '!');
       closeEmojiGuessModal();
       // 刷新列表和badge
       if (document.getElementById('emojiHallOverlay').style.display === 'flex') {
