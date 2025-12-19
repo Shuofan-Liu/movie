@@ -316,7 +316,7 @@
     if (!tabsEl) return;
     tabsEl.innerHTML = emojiPickerData.map(cat => `
       <button class="emoji-picker-tab ${cat.key === activeEmojiCategory ? 'active' : ''}" data-key="${cat.key}">
-        ${cat.label}
+        ${cat.label || cat.category || cat.key}
       </button>
     `).join('');
 
