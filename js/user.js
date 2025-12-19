@@ -970,10 +970,6 @@
           ${userIdHtml}
           <div class="user-badges">${badgesHtml}</div>
         </div>
-        <div style="display:flex; gap:10px; flex-wrap: wrap;">
-          <button class="view-messages-btn" onclick="showUserMessages('${userId}')">📬 查看留言</button>
-          ${canApplyRelation ? `<button class="view-messages-btn" onclick="applyRelationship('${userId}')">🤝 建立关系</button>` : ''}
-        </div>
       </div>
 
       <div class="user-section">
@@ -1001,6 +997,11 @@
       ` : ''}
 
       ${relationHtml}
+
+      <div class="user-actions" style="margin-top: 16px; display:flex; gap:10px; flex-wrap: wrap;">
+        <button class="view-messages-btn" onclick="showUserMessages('${userId}')">📬 查看留言</button>
+        ${canApplyRelation ? `<button class="view-messages-btn" onclick="applyRelationship('${userId}')">🤝 建立关系</button>` : ''}
+      </div>
     `;
 
     document.getElementById('userContent').innerHTML = html;
