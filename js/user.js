@@ -237,16 +237,23 @@
   
   window.handleRegister = async function(event){
     event.preventDefault();
-    
-    // 防止重复提交
+
+    // 防止重复提交 - 立即设置标志位
     if (isRegistering) {
       console.log('正在注册中，请勿重复提交');
       return;
     }
 
+    // 立即设置为注册中，防止竞态条件
+    isRegistering = true;
+
     // 获取提交按钮
     const submitBtn = event.target.querySelector('button[type="submit"]');
-    
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = '注册中...';
+    }
+
     // 获取表单数据
     const nickname = document.getElementById('regNickname').value.trim();
     const password = document.getElementById('regPassword').value.trim();
@@ -259,16 +266,31 @@
     // 验证
     if (!nickname || !password || !favoriteDirector || !favoriteFilm) {
       showInlineAlert('请填写所有必填字段', 'warn');
+      isRegistering = false;
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '注册';
+      }
       return;
     }
 
     if (password.length < 4) {
       showInlineAlert('密码至少需要4个字符', 'warn');
+      isRegistering = false;
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '注册';
+      }
       return;
     }
 
     if (password !== passwordConfirm) {
       showInlineAlert('两次输入的密码不一致', 'warn');
+      isRegistering = false;
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '注册';
+      }
       return;
     }
 
@@ -276,28 +298,26 @@
     const existing = await window.getUserByNickname(nickname);
     if (existing) {
       showInlineAlert('昵称已被使用，请换一个', 'warn');
+      isRegistering = false;
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '注册';
+      }
       return;
     }
 
     // 获取选择的头像
     const selectedAvatarType = document.getElementById('selectedAvatar').value.trim();
-    const avatar = selectedAvatarType 
-      ? { type: selectedAvatarType } 
+    const avatar = selectedAvatarType
+      ? { type: selectedAvatarType }
       : generateDefaultAvatar(nickname);
-
-    // 设置提交状态
-    isRegistering = true;
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.textContent = '注册中...';
-    }
 
     const loadingEl = document.getElementById('loadingOverlay');
     loadingEl.classList.add('active');
 
     try {
       console.log('开始创建用户...');
-      
+
       // 创建用户数据（无图片上传）
       const userData = {
         nickname,
@@ -312,14 +332,6 @@
       };
 
       const userId = await window.createUser(userData);
-      console.log('用户创建结果:', userId);
-      
-      if (!userId) {
-        showInlineAlert('注册失败：无法创建用户，请稍后再试', 'error');
-        loadingEl.classList.remove('active');
-        return;
-      }
-
       console.log('注册成功，用户ID:', userId);
       
       // 登录新用户

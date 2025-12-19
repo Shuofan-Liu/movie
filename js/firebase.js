@@ -68,24 +68,42 @@
     }
   }
 
-  // 创建新用户
+  // 创建新用户（带昵称唯一性检查）
   window.createUser = async function(userData){
     if (!window.db) return null;
     showLoading();
     try {
-      const withMeta = { 
-        ...userData, 
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        badges: userData.badges || {},
-        userStyle: userData.userStyle || ''
-      };
-      const ref = await db.collection('users').add(withMeta);
+      // 使用事务确保昵称唯一性
+      const result = await db.runTransaction(async (transaction) => {
+        // 在事务中再次检查昵称是否已存在
+        const nicknameQuery = await transaction.get(
+          db.collection('users').where('nickname', '==', userData.nickname).limit(1)
+        );
+
+        if (!nicknameQuery.empty) {
+          throw new Error('昵称已被使用，请换一个');
+        }
+
+        // 昵称未被使用，创建新用户
+        const newUserRef = db.collection('users').doc();
+        const withMeta = {
+          ...userData,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          badges: userData.badges || {},
+          userStyle: userData.userStyle || ''
+        };
+
+        transaction.set(newUserRef, withMeta);
+        return newUserRef.id;
+      });
+
       hideLoading();
-      return ref.id;
+      return result;
     } catch (err) {
       console.error('[firebase] 创建用户失败', err);
       hideLoading();
-      return null;
+      // 将错误信息传递给调用者
+      throw err;
     }
   }
 
