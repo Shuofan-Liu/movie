@@ -73,32 +73,29 @@
     if (!window.db) return null;
     showLoading();
     try {
-      // 使用事务确保昵称唯一性
-      const result = await db.runTransaction(async (transaction) => {
-        // 在事务中再次检查昵称是否已存在
-        const nicknameQuery = await transaction.get(
-          db.collection('users').where('nickname', '==', userData.nickname).limit(1)
-        );
+      // 先在事务外检查昵称是否已存在
+      const existingUser = await db.collection('users')
+        .where('nickname', '==', userData.nickname)
+        .limit(1)
+        .get();
 
-        if (!nicknameQuery.empty) {
-          throw new Error('昵称已被使用，请换一个');
-        }
+      if (!existingUser.empty) {
+        throw new Error('昵称已被使用，请换一个');
+      }
 
-        // 昵称未被使用，创建新用户
-        const newUserRef = db.collection('users').doc();
-        const withMeta = {
-          ...userData,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          badges: userData.badges || {},
-          userStyle: userData.userStyle || ''
-        };
+      // 昵称未被使用，创建新用户
+      const newUserRef = db.collection('users').doc();
+      const withMeta = {
+        ...userData,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        badges: userData.badges || {},
+        userStyle: userData.userStyle || ''
+      };
 
-        transaction.set(newUserRef, withMeta);
-        return newUserRef.id;
-      });
+      await newUserRef.set(withMeta);
 
       hideLoading();
-      return result;
+      return newUserRef.id;
     } catch (err) {
       console.error('[firebase] 创建用户失败', err);
       hideLoading();

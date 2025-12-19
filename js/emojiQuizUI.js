@@ -155,9 +155,7 @@
     listEl.innerHTML = puzzles.map(puzzle => `
       <div class="emoji-hall-item" onclick="showPuzzleDetail('${puzzle.id}')" style="background: rgba(20,20,20,0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 20px; margin-bottom: 15px; cursor: pointer; transition: all 0.3s ease;">
         <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
-          <div style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--avatar-border-color); display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 0 15px var(--avatar-glow-color); transition: all 2s ease;">
-            ${puzzle.author_avatar_url || getDefaultAvatar(puzzle.author_name)}
-          </div>
+          ${renderAvatarInline(puzzle.author_avatar_url, puzzle.author_name, 45, 22)}
           <div style="flex: 1;">
             <div style="font-size: 16px; font-weight: 600; color: var(--avatar-border-color); margin-bottom: 4px; transition: color 2s ease;">${puzzle.author_name}</div>
             <div style="font-size: 13px; color: #888;">${window.formatDateTime(puzzle.created_at)}</div>
@@ -177,6 +175,43 @@
   function getDefaultAvatar(name) {
     if (!name) return '?';
     return name.charAt(0).toUpperCase();
+  }
+
+  // 头像渲染：优先使用全局 renderAvatar，兼容 avatar 对象/字符串
+  function renderAvatarInline(avatarData, nickname, size = 45, fontSize = 22, useLightBorder = false) {
+    const borderColor = useLightBorder ? 'rgba(255,255,255,0.2)' : 'var(--avatar-border-color)';
+    const boxShadow = useLightBorder ? 'none' : '0 0 15px var(--avatar-glow-color)';
+    const content = window.renderAvatar
+      ? window.renderAvatar(avatarData, nickname)
+      : fallbackAvatarContent(avatarData, nickname);
+    return `
+      <div style="width: ${size}px; height: ${size}px; border-radius: 50%; border: 2px solid ${borderColor}; display: flex; align-items: center; justify-content: center; font-size: ${fontSize}px; box-shadow: ${boxShadow}; transition: all 2s ease; overflow:hidden;">
+        ${content}
+      </div>
+    `;
+  }
+
+  function fallbackAvatarContent(avatarData, nickname) {
+    if (!avatarData || typeof avatarData === 'string') {
+      return avatarData || getDefaultAvatar(nickname);
+    }
+    if (avatarData.type === 'emoji' && avatarData.value) {
+      return avatarData.value;
+    }
+    if (avatarData.type === 'default' && avatarData.value) {
+      return avatarData.value;
+    }
+    if (avatarData.type) {
+      const map = {
+        moon: '🌔', earth: '🌏', saturn: '🪐', comet: '☄️', rocket: '🚀', star: '⭐', lightning: '⚡', tornado: '🌪️', wave: '🌊',
+        chick: '🐤', penguin: '🐧', lion: '🦁', bear: '🐻', unicorn: '🦄', owl: '🦉', wolf: '🐺', seal: '🦭', shark: '🦈',
+        tomato: '🍅', potato: '🥔', avocado: '🥑', cheese: '🧀',
+        alien: '👽', devil: '👿', ninja: '🥷', ghost: '👻', invader: '👾', skull: '💀', robot: '🤖', wing: '🪽',
+        wonderwoman: '⚡', captainmarvel: '⭐'
+      };
+      if (map[avatarData.type]) return map[avatarData.type];
+    }
+    return getDefaultAvatar(nickname);
   }
 
   // ============ Task 4: 猜题弹窗 ============
@@ -226,9 +261,7 @@
             <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 20px 0;"></div>
 
             <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 20px;">
-              <div style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--avatar-border-color); display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 0 15px var(--avatar-glow-color); transition: all 2s ease;">
-                ${currentPuzzle.solved_by_user_avatar_url || getDefaultAvatar(currentPuzzle.solved_by_user_name)}
-              </div>
+              ${renderAvatarInline(currentPuzzle.solved_by_user_avatar_url, currentPuzzle.solved_by_user_name, 50, 24)}
               <div style="text-align: left;">
                 <div style="font-size: 16px; font-weight: 600; color: var(--avatar-border-color); margin-bottom: 4px; transition: color 2s ease;">${currentPuzzle.solved_by_user_name}</div>
                 <div style="font-size: 13px; color: #888;">${window.formatDateTime(currentPuzzle.solved_at)} 猜对</div>
@@ -254,12 +287,13 @@
               placeholder="输入你的答案..."
               style="width: 100%; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 15px; color: #f5f5f5; font-size: 18px; text-align: center; transition: border-color 0.3s ease;"
               onkeypress="if(event.key==='Enter') submitGuess()"
+              ${isAuthor ? 'disabled' : ''}
             />
-            <div id="guessErrorMsg" style="margin-top: 10px; font-size: 14px; color: #ff4444; min-height: 20px;"></div>
+            <div id="guessErrorMsg" style="margin-top: 10px; font-size: 14px; color: #ff4444; min-height: 20px;">${isAuthor ? '不能猜自己出的题目' : ''}</div>
           </div>
 
           <div style="display: flex; gap: 12px; justify-content: center; margin-top: 30px;">
-            <button onclick="submitGuess()" style="padding: 12px 30px; background: var(--avatar-glow-color); border: 1px solid var(--avatar-border-color); color: var(--avatar-border-color); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease, background 2s ease, border-color 2s ease;">提交答案</button>
+            <button onclick="submitGuess()" ${isAuthor ? 'disabled' : ''} style="padding: 12px 30px; background: var(--avatar-glow-color); border: 1px solid var(--avatar-border-color); color: var(--avatar-border-color); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease, background 2s ease, border-color 2s ease; ${isAuthor ? 'opacity:0.6; cursor:not-allowed;' : ''}">提交答案</button>
             ${canDelete ? `
               <button onclick="deletePuzzleConfirm('${currentPuzzle.id}')" style="padding: 12px 30px; background: rgba(255,68,68,0.15); border: 1px solid rgba(255,68,68,0.4); color: #ff4444; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease;">删除题目</button>
             ` : ''}
@@ -268,9 +302,7 @@
 
           <div style="margin-top: 30px; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 8px;">
             <div style="display: flex; align-items: center; gap: 12px; justify-content: center; margin-bottom: 10px;">
-              <div style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 20px;">
-                ${currentPuzzle.author_avatar_url || getDefaultAvatar(currentPuzzle.author_name)}
-              </div>
+              ${renderAvatarInline(currentPuzzle.author_avatar_url, currentPuzzle.author_name, 40, 20, true)}
               <div style="text-align: left;">
                 <div style="font-size: 14px; color: #ccc;">${currentPuzzle.author_name}</div>
                 <div style="font-size: 12px; color: #666;">${window.formatDateTime(currentPuzzle.created_at)} 出题</div>
@@ -289,6 +321,10 @@
     const errorEl = document.getElementById('guessErrorMsg');
 
     if (!inputEl || !currentPuzzle) return;
+    if (window.currentUser && currentPuzzle.author_id === window.currentUser.id) {
+      errorEl.textContent = '不能猜自己出的题目';
+      return;
+    }
 
     const guessText = inputEl.value.trim();
     if (!guessText) {
@@ -317,6 +353,9 @@
       alert(`已被 ${result.solverInfo.name} 抢先猜对了！`);
       // 重新加载题目信息并显示
       await showPuzzleDetail(currentPuzzle.id);
+    } else if (result.isAuthor) {
+      errorEl.textContent = '不能猜自己出的题目';
+      inputEl.style.borderColor = '#ff4444';
     } else if (result.incorrect) {
       // 答案错误
       errorEl.textContent = '❌ 答案不正确，再想想';

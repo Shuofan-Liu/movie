@@ -162,6 +162,11 @@
 
         const puzzleData = puzzleDoc.data();
 
+        // 作者不能猜自己的题目
+        if (puzzleData.author_id === window.currentUser.id) {
+          return { success: false, isAuthor: true };
+        }
+
         // 检查是否已被解答
         if (puzzleData.status === 'solved') {
           return {
