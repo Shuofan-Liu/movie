@@ -1694,16 +1694,32 @@
       panel.id = panelId;
       panel.style.position = 'fixed';
       const rect = container.getBoundingClientRect();
-      panel.style.top = `${rect.bottom + 8}px`;
-      panel.style.left = `${Math.max(12, Math.min(rect.left, window.innerWidth - 220))}px`;
+      const viewportW = window.innerWidth || document.documentElement.clientWidth;
+      const viewportH = window.innerHeight || document.documentElement.clientHeight;
+      const panelPadding = 8;
+      const margin = 12;
+      const desiredWidth = Math.min(260, viewportW - margin * 2);
+      panel.style.minWidth = `${desiredWidth}px`;
+      panel.style.maxWidth = `${desiredWidth}px`;
+      // 优先放在触发元素下方；空间不足则放在上方，并限制高度防止遮挡
+      let maxHeight = Math.min(260, viewportH - rect.bottom - margin);
+      let top;
+      if (maxHeight < 140) {
+        maxHeight = Math.min(260, Math.max(140, viewportH - margin * 2));
+        top = Math.max(margin, rect.top - maxHeight - panelPadding);
+      } else {
+        top = rect.bottom + panelPadding;
+      }
+      const left = Math.max(margin, Math.min(rect.left, viewportW - desiredWidth - margin));
+      panel.style.top = `${top}px`;
+      panel.style.left = `${left}px`;
+      panel.style.maxHeight = `${maxHeight}px`;
       panel.style.zIndex = '9999';
       panel.style.background = 'rgba(20,20,20,0.95)';
       panel.style.border = '1px solid var(--avatar-border-color)';
       panel.style.borderRadius = '8px';
       panel.style.padding = '8px';
       panel.style.boxShadow = '0 6px 20px rgba(0,0,0,0.4)';
-      panel.style.minWidth = '200px';
-      panel.style.maxHeight = '260px';
       panel.style.overflowY = 'auto';
       // 获取当前用户头像和昵称
       const avatar = window.currentUser?.avatar;
