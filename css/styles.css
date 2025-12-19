@@ -1773,9 +1773,25 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 .dropdown-info { overflow-wrap: anywhere; word-break: break-word; }
 
 /* 用户详情页留言板 */
-.user-messages-section { margin-top: 30px; padding-top: 30px; border-top: none; min-height: 300px; }
+.user-messages-section {
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: none;
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 30px);
+  overflow: hidden;
+}
 .user-messages-section h3 { font-size: 20px; color: var(--avatar-border-color); margin-bottom: 20px; transition: color 2s ease; }
-.messages-board { display: flex; flex-direction: column; gap: 15px; }
+.messages-board {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 15px;
+  padding-right: 8px;
+}
 .message-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
 .message-from-info { flex: 1; }
 .message-from-info .message-from-name { font-size: 15px; font-weight: 600; color: #f5f5f5; margin-bottom: 4px; }
@@ -1784,7 +1800,16 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 .message-action-btn:hover { background: var(--avatar-glow-color); opacity: 0.8; }
 .message-action-btn.delete-btn { background: rgba(255,0,0,0.2); border-color: rgba(255,68,68,0.4); color: #ff4444; }
 .message-action-btn.delete-btn:hover { background: rgba(255,0,0,0.3); }
-.message-compose { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; margin-top: 15px; }
+.message-compose {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 15px;
+  flex-shrink: 0;
+  position: sticky;
+  bottom: 0;
+  background: rgba(20,20,20,0.98);
+}
 .message-compose textarea { width: 100%; min-height: 80px; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #f5f5f5; font-size: 14px; resize: vertical; font-family: 'Lato', sans-serif; }
 .message-compose-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px; }
 .message-compose-actions button { padding: 8px 20px; background: var(--avatar-glow-color); border: 1px solid var(--avatar-border-color); color: var(--avatar-border-color); border-radius: 8px; cursor: pointer; font-size: 14px; transition: all 0.3s ease, background 2s ease, border-color 2s ease, color 2s ease; }
