@@ -470,13 +470,19 @@
       const rankColor = index === 0 ? '#FFD700' : index === 1 ? '#C0C0C0' : index === 2 ? '#CD7F32' : 'var(--avatar-border-color)';
       const rankIcon = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
 
+      // 使用renderAvatarInline正确渲染头像对象
+      const avatarHtml = renderAvatarInline(user.user_avatar_url, user.user_name, 50, 24, false);
+      // 提取内部内容（去掉外层div容器，因为我们自己定义了容器）
+      const avatarContentMatch = avatarHtml.match(/<div[^>]*>(.*?)<\/div>/);
+      const avatarContent = avatarContentMatch ? avatarContentMatch[1] : (user.user_avatar_url || getDefaultAvatar(user.user_name));
+
       return `
         <div style="background: rgba(20,20,20,0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 20px; margin-bottom: 12px; display: flex; align-items: center; gap: 20px;">
           <div style="font-size: 28px; font-weight: 700; color: ${rankColor}; min-width: 50px; text-align: center; transition: color 2s ease;">
             ${rankIcon || (index + 1)}
           </div>
-          <div style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid ${rankColor}; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 0 15px rgba(212,175,55,0.3); transition: all 2s ease;">
-            ${user.user_avatar_url || getDefaultAvatar(user.user_name)}
+          <div style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid ${rankColor}; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 0 15px rgba(212,175,55,0.3); transition: all 2s ease; overflow: hidden;">
+            ${avatarContent}
           </div>
           <div style="flex: 1;">
             <div style="font-size: 18px; font-weight: 600; color: ${rankColor}; margin-bottom: 4px; transition: color 2s ease;">${user.user_name}</div>
