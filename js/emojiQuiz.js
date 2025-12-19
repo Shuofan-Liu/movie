@@ -155,8 +155,9 @@
       const userStatsRef = db.collection('user_stats').doc(window.currentUser.id);
 
       const result = await db.runTransaction(async (transaction) => {
-        // 一次读取所有需要的文档，确保读取在写入之前完成
-        const [puzzleDoc, statsDoc] = await transaction.getAll(puzzleRef, userStatsRef);
+        // 读取所需文档（全部读取完成后再进行任何写操作）
+        const puzzleDoc = await transaction.get(puzzleRef);
+        const statsDoc = await transaction.get(userStatsRef);
 
         if (!puzzleDoc.exists) {
           throw new Error('题目不存在');
