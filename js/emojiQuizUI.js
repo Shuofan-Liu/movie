@@ -340,10 +340,11 @@
     const cat = emojiPickerData.find(c => c.key === key);
     if (!cat) return;
 
+    const baseList = (cat.emojis || []).filter(Boolean);
     const searchLower = emojiPickerSearch.toLowerCase();
     const filtered = searchLower
-      ? cat.emojis.filter(e => e.toLowerCase().includes(searchLower))
-      : cat.emojis;
+      ? baseList.filter(e => (e || '').toString().toLowerCase().includes(searchLower))
+      : baseList;
 
     const totalPages = Math.max(1, Math.ceil(filtered.length / EMOJI_PAGE_SIZE));
     if (emojiPickerPage > totalPages) emojiPickerPage = totalPages;

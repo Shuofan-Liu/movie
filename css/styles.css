@@ -2255,10 +2255,12 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
   background: rgba(20,20,20,0.95);
   border: 1px solid var(--avatar-border-color);
   border-radius: 12px;
-  padding: 40px;
+  padding: 28px;
   position: relative;
   animation: slideIn 0.3s ease-out;
   transition: border-color 2s ease;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 /* 大厅页覆盖层 */
@@ -2548,9 +2550,9 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 
 .emoji-picker-grid {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
+  grid-template-columns: repeat(8, minmax(0, 1fr));
   gap: 8px;
-  max-height: 240px;
+  max-height: 260px;
   overflow-y: auto;
 }
 
@@ -2633,7 +2635,7 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 
   /* Emoji Picker */
   .emoji-picker-grid {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 6px;
   }
 
@@ -2695,7 +2697,7 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 
   /* Emoji Picker */
   .emoji-picker-grid {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     max-height: 200px;
   }
 
