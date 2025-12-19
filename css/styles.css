@@ -209,7 +209,99 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 .badge-toast.error { border-color: var(--avatar-border-color); color: var(--avatar-border-color); background: var(--avatar-glow-color); }
 @keyframes toastIn { from { opacity: 0; transform: translate(-50%, 20px);} to { opacity: 1; transform: translate(-50%, 0);} }
 
-/* 响应式 */
+/* ========================================
+   响应式设计 - 统一断点系统
+   ======================================== */
+
+/* 断点定义：
+   - 超小屏幕 (xs): < 480px  (小手机)
+   - 小屏幕 (sm):   480px - 767px (大手机)
+   - 中等屏幕 (md): 768px - 1023px (平板)
+   - 大屏幕 (lg):   1024px - 1439px (小笔记本)
+   - 超大屏幕 (xl): >= 1440px (台式机)
+*/
+
+/* ========================================
+   平板端 (md) - max-width: 1023px
+   ======================================== */
+@media (max-width: 1023px) {
+  /* 主页元素 */
+  .main-title { font-size: 56px; }
+  .subtitle { font-size: 18px; }
+  .intro-text { font-size: 15px; }
+
+  /* 导演层 */
+  .directors-layer { padding: 60px 30px; }
+  .director-name.size-xl { font-size: 36px; }
+  .director-name.size-l { font-size: 28px; }
+  .director-name.size-m { font-size: 20px; }
+  .director-name.size-s { font-size: 16px; }
+
+  /* 侧边栏 */
+  .sidebar-wall { width: 85vw; right: -85vw; }
+  .sidebar-wall.active { right: 0; }
+
+  /* 用户模态框 */
+  .user-modal {
+    width: 90vw;
+    max-width: 700px;
+    padding: 32px;
+  }
+
+  /* 左右切换按钮调整 */
+  .user-chevron.prev { left: calc(50% - 45vw - 50px); }
+  .user-chevron.next { right: calc(50% - 45vw - 50px); }
+
+  /* 用户列表页面 */
+  .users-page {
+    width: 90vw;
+    padding: 32px;
+  }
+  .users-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+  }
+
+  /* 登录/注册弹窗 */
+  .login-modal {
+    width: 88vw;
+    max-width: 600px;
+    padding: 36px;
+  }
+
+  /* 确认对话框 */
+  .confirm-dialog {
+    width: 85vw;
+    max-width: 500px;
+    padding: 28px;
+  }
+
+  /* 关系弹窗 */
+  .relationship-prompt,
+  .admin-prompt,
+  #deleteAccountPrompt,
+  #deleteAllDanmakuPrompt,
+  #dissolvePrompt {
+    width: 85vw;
+    max-width: 480px;
+    padding: 28px;
+  }
+
+  /* 留言页面 */
+  .my-messages-page {
+    width: 88vw;
+    max-width: 800px;
+    padding: 36px;
+  }
+
+  /* 弹幕墙 */
+  .danmaku-header { padding: 18px 32px; }
+  .danmaku-input-area { padding: 22px 32px; }
+}
+
+/* ========================================
+   平板端 (md) - max-width: 768px
+   ======================================== */
 @media (max-width: 768px) {
   .main-title { font-size: 48px; }
   .directors-layer { padding: 60px 30px; }
@@ -221,18 +313,82 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 
   /* 确认对话框平板优化 */
   .confirm-dialog {
-    width: 85vw;
+    width: 88vw;
     max-width: 480px;
     padding: 26px;
   }
 
   /* 关系弹窗平板优化 */
   .relationship-prompt,
-  .admin-prompt {
-    width: 85vw;
-    max-width: 480px;
+  .admin-prompt,
+  #deleteAccountPrompt,
+  #deleteAllDanmakuPrompt,
+  #dissolvePrompt {
+    width: 88vw;
+    max-width: 450px;
     padding: 26px;
   }
+
+  /* 用户模态框 */
+  .user-modal {
+    width: 92vw;
+    max-width: 640px;
+    padding: 28px;
+  }
+
+  /* 左右切换按钮 - 缩小并靠近边缘 */
+  .user-chevron {
+    width: 42px;
+    height: 42px;
+    font-size: 20px;
+  }
+  .user-chevron.prev { left: 10px; }
+  .user-chevron.next { right: 10px; }
+
+  /* 用户头像在详情页缩小 */
+  .user-avatar-display {
+    width: 80px;
+    height: 80px;
+  }
+  .user-avatar-display .avatar-emoji {
+    font-size: 40px;
+  }
+  .user-avatar-display .default-avatar {
+    width: 80px;
+    height: 80px;
+    font-size: 32px;
+  }
+
+  /* 用户列表网格优化 */
+  .users-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 14px;
+  }
+
+  /* 登录/注册弹窗 */
+  .login-modal {
+    width: 90vw;
+    padding: 32px;
+  }
+
+  /* 头像选择器优化 */
+  .avatar-selector {
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 12px;
+    padding: 16px;
+  }
+  .avatar-option {
+    width: 60px;
+    height: 60px;
+    font-size: 32px;
+  }
+
+  /* 用户列表侧边栏标签 */
+  .users-sidebar-tab {
+    width: 32px;
+    height: 80px;
+  }
+
   .sidebar-wall.active { right: 0; }
 }
 
@@ -466,65 +622,164 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 .user-chevron.prev { left: calc(50% - 340px - 60px); }
 .user-chevron.next { right: calc(50% - 340px - 60px); }
 
-/* 响应式：在更小屏幕上进一步收缩模态框宽度与内边距 */
-@media (max-width: 768px) {
-  .user-modal { width: 95vw; max-width: 640px; padding: 28px; }
-}
-@media (max-width: 480px) {
-  .user-modal { width: 96vw; max-width: 420px; padding: 20px; }
+/* ========================================
+   小屏幕 (sm) - max-width: 767px (大手机)
+   ======================================== */
+@media (max-width: 767px) {
+  /* 用户模态框 */
+  .user-modal {
+    width: 94vw;
+    max-width: none;
+    padding: 24px;
+  }
+
+  /* 左右切换按钮进一步缩小 */
+  .user-chevron {
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
+  }
+  .user-chevron.prev { left: 8px; }
+  .user-chevron.next { right: 8px; }
 }
 
-/* 更窄屏下的整体收缩与按钮重排 */
+/* ========================================
+   小屏幕 (sm) - max-width: 600px (手机竖屏)
+   ======================================== */
 @media (max-width: 600px) {
   body { font-size: 15px; }
+
+  /* 主页元素 */
+  .main-title { font-size: 42px; }
+  .subtitle { font-size: 16px; }
+  .intro-text { font-size: 14px; }
 
   /* 顶部入口按钮缩小并贴边 */
   .user-corner { top: 16px; left: 16px; }
   .corner-flame, .corner-avatar { width: 54px; height: 54px; }
-  .corner-flame svg, .quiz-icon-button svg, .flame-icon-button svg, .users-icon-button svg { width: 28px; height: 28px; }
+  .corner-flame svg { width: 28px; height: 28px; }
 
   /* 登录下拉宽度自适应 */
-  .user-dropdown { width: 88vw; left: 6vw; top: 80px; max-height: 60vh; }
+  .user-dropdown {
+    width: 88vw;
+    left: 6vw;
+    top: 80px;
+    max-height: 60vh;
+  }
   .user-dropdown-body { max-height: 120px; }
 
   /* 固定角标按钮尺寸与间距 */
   .quiz-icon-button,
   .danmaku-icon-button {
-    position: fixed;
-    bottom: 40px;
-    right: 30px;
-    width: 65px;
-    height: 65px;
-    background: var(--avatar-glow-color,rgba(212,175,55,0.15));
-    border: 2px solid var(--avatar-border-color,rgba(212,175,55,0.5));
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
-    cursor: pointer;
-    z-index: 999;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
+    bottom: 24px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
   }
-  .danmaku-icon-button:hover {
-    background: var(--avatar-glow-color,rgba(212,175,55,0.3));
-    border-color: var(--avatar-border-color,#d4af37);
-    transform: scale(1.1);
-    box-shadow: 0 0 30px var(--avatar-glow-color,rgba(212,175,55,0.4));
+  .quiz-icon-button svg,
+  .danmaku-icon-button svg {
+    width: 28px;
+    height: 28px;
   }
+
+  /* 导演层 */
+  .director-name.size-xl { font-size: 28px; }
   .director-name.size-l { font-size: 20px; }
   .director-name.size-m { font-size: 16px; }
   .director-name.size-s { font-size: 13px; }
 
   /* 移动端 5x8，保持完整不裁切，超出区域隐藏 */
-  .film-strip-background { grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(8, 1fr); overflow: hidden; }
+  .film-strip-background {
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    overflow: hidden;
+  }
+
+  /* 用户模态框 */
+  .user-modal {
+    width: 96vw;
+    max-width: none;
+    padding: 20px;
+  }
+
+  /* 用户头像进一步缩小 */
+  .user-avatar-display {
+    width: 70px;
+    height: 70px;
+  }
+  .user-avatar-display .avatar-emoji {
+    font-size: 35px;
+  }
+  .user-avatar-display .default-avatar {
+    width: 70px;
+    height: 70px;
+    font-size: 28px;
+  }
+
+  /* 用户信息标题缩小 */
+  .user-info h2 {
+    font-size: 26px;
+  }
+
+  /* 用户列表网格 */
+  .users-grid {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 12px;
+  }
+  .user-card {
+    padding: 12px;
+  }
+  .user-card-avatar {
+    width: 70px;
+    height: 70px;
+  }
+  .user-card-avatar .avatar-emoji {
+    font-size: 35px;
+  }
+  .user-card-avatar .default-avatar {
+    width: 70px;
+    height: 70px;
+    font-size: 28px;
+  }
+  .user-card-name {
+    font-size: 14px;
+  }
+
+  /* 登录/注册弹窗 */
+  .login-modal {
+    width: 94vw;
+    padding: 28px 20px;
+  }
+  .login-choice h2 {
+    font-size: 28px;
+    margin-bottom: 24px;
+  }
+  .choice-button {
+    font-size: 16px;
+    padding: 16px;
+  }
+  .auth-form h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+
+  /* 头像选择器 */
+  .avatar-selector {
+    grid-template-columns: repeat(auto-fill, minmax(55px, 1fr));
+    gap: 10px;
+    padding: 14px;
+  }
+  .avatar-option {
+    width: 55px;
+    height: 55px;
+    font-size: 28px;
+  }
 
   /* 确认对话框移动端优化 */
   .confirm-dialog {
-    width: 92vw;
-    max-width: 95vw;
-    padding: 24px 20px;
+    width: 94vw;
+    max-width: none;
+    padding: 24px 18px;
   }
   .confirm-dialog h3 { font-size: 16px; margin-bottom: 16px; }
   .confirm-dialog p { font-size: 14px; margin-bottom: 20px; }
@@ -536,13 +791,22 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 
   /* 关系弹窗移动端优化 */
   .relationship-prompt,
-  .admin-prompt {
-    width: 92vw;
-    max-width: 95vw;
-    padding: 24px 20px;
+  .admin-prompt,
+  #deleteAccountPrompt,
+  #deleteAllDanmakuPrompt,
+  #dissolvePrompt {
+    width: 94vw;
+    max-width: none;
+    padding: 24px 18px;
   }
   .relationship-prompt h3,
-  .admin-prompt h3 { font-size: 16px; margin-bottom: 14px; }
+  .admin-prompt h3,
+  #deleteAccountPrompt h3,
+  #deleteAllDanmakuPrompt h3,
+  #dissolvePrompt h3 {
+    font-size: 16px;
+    margin-bottom: 14px;
+  }
 
   /* 关系类型按钮网格优化 */
   .relationship-type-btn {
@@ -551,19 +815,539 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
   .relationship-type-btn > div:first-child { font-size: 24px; margin-bottom: 4px; }
   .relationship-type-btn > div:last-child { font-size: 12px; }
 
-  /* 删除账户弹窗移动端优化 */
-  #deleteAccountPrompt {
-    width: 92vw;
-    max-width: 95vw;
-    padding: 24px 20px;
+  /* 留言页面 */
+  .my-messages-page {
+    width: 94vw;
+    max-width: none;
+    padding: 28px 18px;
   }
-  #deleteAccountPrompt button {
-    font-size: 13px !important;
-    padding: 10px !important;
+  .messages-header h2 {
+    font-size: 26px;
+  }
+  .message-from-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+  .message-from-name {
+    font-size: 15px;
+  }
+  .message-content {
+    font-size: 14px;
+    padding-left: 48px;
+  }
+  .message-time {
+    padding-left: 48px;
+  }
+
+  /* 弹幕墙 */
+  .danmaku-header {
+    padding: 16px 20px;
+  }
+  .danmaku-header h2 {
+    font-size: 24px;
+  }
+  .danmaku-input-area {
+    padding: 18px 20px;
+    gap: 10px;
+  }
+  .danmaku-user-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+  #danmakuInput {
+    font-size: 14px;
+    padding: 12px 16px;
+  }
+  .danmaku-input-area button {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+  .danmaku-item {
+    font-size: 12px;
+    padding: 6px 12px;
+    max-width: 75vw;
+  }
+  .danmaku-avatar {
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+  }
+  .danmaku-nickname {
+    font-size: 12px;
+  }
+  .danmaku-content {
+    font-size: 12px;
+  }
+
+  /* 测验页面 */
+  .quiz-container {
+    padding: 40px 24px;
+  }
+  .question-text {
+    font-size: 26px;
+  }
+  .answer-input {
+    font-size: 20px;
+  }
+  .option-button {
+    font-size: 14px;
+    padding: 14px 16px;
   }
 }
+/* ========================================
+   超小屏幕 (xs) - max-width: 480px (小手机)
+   ======================================== */
+@media (max-width: 480px) {
+  /* 主页元素 */
+  .main-title { font-size: 36px; letter-spacing: 2px; }
+  .subtitle { font-size: 15px; }
+  .intro-text { font-size: 13px; }
+  .intro-content { padding: 30px 20px; }
+
+  /* 顶部用户入口 */
+  .user-corner { top: 12px; left: 12px; }
+  .corner-flame, .corner-avatar { width: 48px; height: 48px; }
+  .corner-flame svg { width: 24px; height: 24px; }
+  .corner-badge {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+
+  /* 用户下拉菜单 */
+  .user-dropdown {
+    width: 92vw;
+    left: 4vw;
+    top: 70px;
+    max-height: 55vh;
+  }
+  .user-dropdown-header {
+    padding: 16px;
+    gap: 12px;
+  }
+  .dropdown-avatar {
+    width: 42px;
+    height: 42px;
+    font-size: 20px;
+  }
+  .dropdown-nickname {
+    font-size: 16px;
+  }
+  .user-dropdown-body {
+    padding: 12px 16px;
+    max-height: 100px;
+  }
+  .dropdown-info-item {
+    font-size: 12px;
+  }
+  .user-dropdown-actions {
+    padding: 12px;
+    gap: 6px;
+  }
+  .dropdown-btn {
+    padding: 9px 12px;
+    font-size: 13px;
+  }
+
+  /* 角标按钮 */
+  .quiz-icon-button,
+  .danmaku-icon-button {
+    bottom: 20px;
+    right: 16px;
+    width: 50px;
+    height: 50px;
+  }
+  .quiz-icon-button svg,
+  .danmaku-icon-button svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* 导演层 */
+  .director-row {
+    gap: 40px;
+    margin-bottom: 60px;
+  }
+  .director-name.size-xl { font-size: 24px; }
+  .director-name.size-l { font-size: 18px; }
+  .director-name.size-m { font-size: 14px; }
+  .director-name.size-s { font-size: 12px; }
+  .director-info-card {
+    min-width: 200px;
+    padding: 12px 16px;
+  }
+  .info-line {
+    font-size: 12px;
+  }
+
+  /* 电影海报背景 - 更紧凑的布局 */
+  .film-strip-background {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+  }
+
+  /* 用户模态框 */
+  .user-modal {
+    width: 98vw;
+    padding: 18px 16px;
+  }
+  .user-header {
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .user-avatar-display {
+    width: 60px;
+    height: 60px;
+  }
+  .user-avatar-display .avatar-emoji {
+    font-size: 30px;
+  }
+  .user-avatar-display .default-avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+  }
+  .user-info h2 {
+    font-size: 22px;
+  }
+  .user-section h3 {
+    font-size: 16px;
+  }
+  .user-section p {
+    font-size: 13px;
+  }
+  .user-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .user-action-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  /* 左右切换按钮 */
+  .user-chevron {
+    width: 34px;
+    height: 34px;
+    font-size: 16px;
+  }
+  .user-chevron.prev { left: 6px; }
+  .user-chevron.next { right: 6px; }
+
+  /* 用户列表 */
+  .users-page {
+    width: 98vw;
+    padding: 24px 16px;
+  }
+  .users-header h2 {
+    font-size: 28px;
+  }
+  .users-grid {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 10px;
+  }
+  .user-card {
+    padding: 10px 8px;
+  }
+  .user-card-avatar {
+    width: 60px;
+    height: 60px;
+  }
+  .user-card-avatar .avatar-emoji {
+    font-size: 30px;
+  }
+  .user-card-avatar .default-avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+  }
+  .user-card-name {
+    font-size: 13px;
+  }
+  .user-card-id {
+    font-size: 10px;
+  }
+
+  /* 用户列表侧边栏 */
+  .users-sidebar {
+    width: 280px;
+  }
+  .users-sidebar-tab {
+    width: 28px;
+    height: 70px;
+    font-size: 14px;
+  }
+  .sidebar-users-grid {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  /* 侧边栏 */
+  .sidebar-wall {
+    width: 92vw;
+    right: -92vw;
+    padding: 32px 20px;
+  }
+  .sidebar-header {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+  }
+  .sidebar-title {
+    font-size: 26px;
+  }
+
+  /* 登录/注册弹窗 */
+  .login-modal {
+    width: 96vw;
+    padding: 24px 18px;
+  }
+  .login-choice h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  .choice-button {
+    font-size: 15px;
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+  .auth-form h2 {
+    font-size: 24px;
+    margin-bottom: 18px;
+  }
+  .auth-form .form-group {
+    margin-bottom: 16px;
+  }
+  .auth-form .form-group label {
+    font-size: 13px;
+  }
+  .auth-form .form-group input,
+  .auth-form .form-group textarea {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  /* 头像选择器 */
+  .avatar-selector {
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    gap: 8px;
+    padding: 12px;
+  }
+  .avatar-option {
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+  }
+
+  /* 确认对话框 */
+  .confirm-dialog {
+    width: 96vw;
+    padding: 20px 16px;
+  }
+  .confirm-dialog h3 { font-size: 15px; margin-bottom: 14px; }
+  .confirm-dialog p { font-size: 13px; margin-bottom: 18px; }
+  .confirm-dialog button {
+    padding: 9px 14px !important;
+    font-size: 12px !important;
+    min-width: 70px;
+  }
+
+  /* 关系弹窗 */
+  .relationship-prompt,
+  .admin-prompt,
+  #deleteAccountPrompt,
+  #deleteAllDanmakuPrompt,
+  #dissolvePrompt {
+    width: 96vw;
+    padding: 20px 16px;
+  }
+  .relationship-prompt h3,
+  .admin-prompt h3,
+  #deleteAccountPrompt h3,
+  #deleteAllDanmakuPrompt h3,
+  #dissolvePrompt h3 {
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+  .relationship-type-btn {
+    padding: 10px 6px;
+  }
+  .relationship-type-btn > div:first-child { font-size: 22px; margin-bottom: 3px; }
+  .relationship-type-btn > div:last-child { font-size: 11px; }
+  #relationshipMessage,
+  #dissolveReasonInput {
+    font-size: 13px;
+    min-height: 70px;
+  }
+
+  /* 留言页面 */
+  .my-messages-page {
+    width: 96vw;
+    padding: 24px 16px;
+  }
+  .messages-header {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+  }
+  .messages-header h2 {
+    font-size: 24px;
+  }
+  .message-item {
+    padding: 16px;
+  }
+  .message-from-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+  .message-from-name {
+    font-size: 14px;
+  }
+  .message-content {
+    font-size: 13px;
+    padding-left: 44px;
+  }
+  .message-time {
+    font-size: 11px;
+    padding-left: 44px;
+  }
+  .message-compose {
+    padding: 12px;
+  }
+  .message-compose textarea {
+    min-height: 70px;
+    font-size: 13px;
+  }
+  .message-action-btn,
+  .message-compose-actions button {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  /* 弹幕墙 */
+  .danmaku-header {
+    padding: 14px 16px;
+  }
+  .danmaku-controls {
+    gap: 8px;
+  }
+  .danmaku-controls button {
+    width: 36px;
+    height: 36px;
+  }
+  .danmaku-controls button svg {
+    width: 18px;
+    height: 18px;
+  }
+  .danmaku-input-area {
+    padding: 16px;
+    gap: 8px;
+  }
+  .danmaku-user-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+  #danmakuInput {
+    font-size: 13px;
+    padding: 11px 14px;
+  }
+  .danmaku-input-area button {
+    padding: 11px 18px;
+    font-size: 13px;
+  }
+  .danmaku-item {
+    font-size: 11px;
+    padding: 5px 10px;
+    max-width: 80vw;
+  }
+  .danmaku-avatar {
+    width: 22px;
+    height: 22px;
+    font-size: 12px;
+  }
+  .danmaku-nickname {
+    font-size: 11px;
+  }
+  .danmaku-content {
+    font-size: 11px;
+  }
+
+  /* 测验页面 */
+  .quiz-container {
+    padding: 32px 20px;
+  }
+  .question-number {
+    font-size: 13px;
+  }
+  .question-text {
+    font-size: 22px;
+    margin-bottom: 24px;
+  }
+  .answer-input {
+    font-size: 18px;
+    padding: 12px 0;
+  }
+  .quiz-button {
+    padding: 12px 24px;
+    font-size: 14px;
+    margin-right: 12px;
+  }
+  .option-button {
+    font-size: 13px;
+    padding: 12px 14px;
+  }
+
+  /* 模态框 */
+  .modal-content {
+    max-width: 95vw;
+    margin: 80px auto;
+    padding: 40px 24px;
+  }
+  .modal-name {
+    font-size: 36px;
+  }
+  .modal-meta,
+  .modal-bio {
+    font-size: 14px;
+  }
+
+  /* 管理后台面板 */
+  .admin-panel {
+    width: 90vw;
+    right: 5vw;
+    top: 80px;
+  }
+}
+
+/* ========================================
+   大屏幕优化 - min-width: 1200px
+   ======================================== */
 @media (min-width: 1200px) {
-  .user-modal { max-width: 640px; }
+  .user-modal { max-width: 700px; }
+  .login-modal { max-width: 650px; }
+  .my-messages-page { max-width: 850px; }
+}
+
+/* ========================================
+   超大屏幕优化 - min-width: 1440px
+   ======================================== */
+@media (min-width: 1440px) {
+  .main-title { font-size: 80px; }
+  .subtitle { font-size: 22px; }
+  .intro-content { max-width: 700px; }
+
+  .user-modal { max-width: 750px; padding: 48px; }
+  .login-modal { max-width: 680px; }
+  .my-messages-page { max-width: 900px; }
+  .users-page { max-width: 1300px; }
+
+  .users-grid {
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 24px;
+  }
 }
 
 .user-content {
@@ -745,7 +1529,6 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
   transition: right 0.25s cubic-bezier(0.4,0,0.2,1), border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 2s ease;
 }
 .users-sidebar-tab:hover { border-color: var(--avatar-border-color); box-shadow: 0 0 18px var(--avatar-glow-color); background: var(--avatar-glow-color); opacity: 0.8; color: var(--avatar-border-color); }
-@media (max-width: 768px) { .users-sidebar-tab { width: 32px; height: 80px; } }
 .sidebar-users-grid { padding: 16px; display: grid; grid-template-columns: 1fr; gap: 12px; }
 
 /* 管理员密码弹窗 */
@@ -1107,53 +1890,60 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
   box-shadow: 0 5px 15px var(--avatar-glow-color);
 }
 
-/* 响应式：移动端 */
-@media (max-width: 768px) {
-  .danmaku-header {
-    padding: 15px 20px;
+/* ========================================
+   横屏模式优化 (手机横屏)
+   ======================================== */
+@media (max-height: 500px) and (orientation: landscape) {
+  /* 减少垂直空间占用 */
+  .user-corner { top: 10px; left: 10px; }
+  .corner-flame, .corner-avatar { width: 44px; height: 44px; }
+
+  .user-dropdown {
+    max-height: 70vh;
+    top: 60px;
   }
 
-  .danmaku-header h2 {
-    font-size: 24px;
+  /* 弹窗优化 */
+  .user-modal,
+  .login-modal,
+  .my-messages-page,
+  .confirm-dialog,
+  .relationship-prompt,
+  .admin-prompt {
+    max-height: 85vh;
+    padding: 16px;
   }
 
+  .user-header {
+    margin-bottom: 16px;
+  }
+
+  .messages-header {
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+  }
+
+  /* 导演层字体缩小 */
+  .director-name.size-xl { font-size: 22px; }
+  .director-name.size-l { font-size: 17px; }
+  .director-name.size-m { font-size: 14px; }
+  .director-name.size-s { font-size: 11px; }
+
+  /* 弹幕墙输入区域压缩 */
   .danmaku-input-area {
-    padding: 20px;
-    gap: 10px;
-  }
-
-  .danmaku-user-avatar {
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
-  }
-
-  #danmakuInput {
-    font-size: 14px;
-    padding: 12px 16px;
-  }
-
-  .danmaku-input-area button {
     padding: 12px 20px;
-    font-size: 14px;
+  }
+  .danmaku-user-avatar {
+    width: 36px;
+    height: 36px;
   }
 
-  .danmaku-item {
-    font-size: 12px;
-    padding: 6px 12px;
+  /* 测验页面压缩 */
+  .quiz-container {
+    padding: 24px 20px;
   }
-
-  .danmaku-avatar {
-    width: 24px;
-    height: 24px;
-    font-size: 14px;
-  }
-
-  .danmaku-nickname {
-    font-size: 12px;
-  }
-
-  .danmaku-content {
-    font-size: 12px;
+  .question-text {
+    font-size: 20px;
+    margin-bottom: 20px;
   }
 }
