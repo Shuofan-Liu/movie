@@ -1636,8 +1636,10 @@
       // 显示emoji游戏按钮
       const emojiCreateButton = document.getElementById('emojiCreateButton');
       const emojiHallButton = document.getElementById('emojiHallButton');
+      const emojiLeaderboardButton = document.getElementById('emojiLeaderboardButton');
       if (emojiCreateButton) emojiCreateButton.style.display = 'flex';
       if (emojiHallButton) emojiHallButton.style.display = 'flex';
+      if (emojiLeaderboardButton) emojiLeaderboardButton.style.display = 'flex';
       // 显示右侧抽屉标签
       if (sidebarTab) sidebarTab.style.display = 'flex';
       

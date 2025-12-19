@@ -85,17 +85,25 @@
   <!-- emoji游戏出题按钮（登录后显示，位置：左下角第二个） -->
   <div class="emoji-create-button" id="emojiCreateButton" onclick="showEmojiCreatePage()" title="出题" style="display:none;">
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-      <path d="M19 5H11.21l-.94-1.88A1 1 0 0 0 9.37 2H5a1 1 0 0 0-1 1v17a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Zm0 14H5V5h3.79l.94 1.88A1 1 0 0 0 11.63 7H19Z"/>
-      <path d="M7 7h2.5L8.8 5H6.3Zm4 0h2.5L12.8 5H10.3Zm4 0H17V5h-2.5Z"/>
+      <path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/>
+      <path d="M5.5 16c.83 0 1.5-.67 1.5-1.5S6.33 13 5.5 13 4 13.67 4 14.5 4.67 16 5.5 16z"/>
+      <path d="M18.5 16c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5z"/>
     </svg>
   </div>
 
   <!-- emoji游戏大厅按钮（登录后显示，位置：底部中间） -->
   <div class="emoji-hall-button" id="emojiHallButton" onclick="showEmojiHallPage()" title="猜题大厅" style="display:none;">
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-      <path d="M20 5H4c-1.1 0-2 .9-2 2v3h4V7h2v3h4V7h2v3h4V7h2v10h-2v-3h-4v3h-2v-3h-4v3H6v-3H2v3c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2Z"/>
+      <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM7.76 16.24l-1.41 1.41C4.78 16.1 4 14.05 4 12c0-2.05.78-4.1 2.34-5.66l1.41 1.41C6.59 8.93 6 10.46 6 12s.59 3.07 1.76 4.24zM12 16l-4-4h8l-4 4zm5.66 1.66l-1.41-1.41C17.41 15.07 18 13.54 18 12s-.59-3.07-1.76-4.24l1.41-1.41C19.22 7.9 20 9.95 20 12c0 2.05-.78 4.1-2.34 5.66z"/>
     </svg>
     <div class="emoji-hall-badge" id="emojiHallBadge" style="display:none;">0</div>
+  </div>
+
+  <!-- emoji游戏排行榜按钮（登录后显示，紧邻大厅按钮） -->
+  <div class="emoji-leaderboard-button" id="emojiLeaderboardButton" onclick="showEmojiLeaderboard()" title="排行榜" style="display:none;">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+      <path d="M16 11V3H8v6H2v12h20V11h-6zm-6-6h4v14h-4V5zm-6 6h4v8H4v-8zm16 8h-4v-6h4v6z"/>
+    </svg>
   </div>
 
   <!-- 右下角弹幕墙按钮（仅登录后显示，电影摄影机icon） -->
@@ -435,6 +443,14 @@
         <!-- Emoji 分类面板 -->
         <div id="emojiPicker" class="emoji-picker">
           <div class="emoji-picker-tabs" id="emojiPickerTabs"></div>
+          <div class="emoji-picker-controls">
+            <input id="emojiPickerSearch" type="text" placeholder="搜索表情..." aria-label="搜索表情" />
+            <div class="emoji-picker-pager">
+              <button id="emojiPagerPrev" type="button">‹</button>
+              <span id="emojiPagerInfo">1 / 1</span>
+              <button id="emojiPagerNext" type="button">›</button>
+            </div>
+          </div>
           <div class="emoji-picker-grid" id="emojiPickerGrid"></div>
         </div>
       </div>
@@ -450,11 +466,15 @@
   <div class="emoji-hall-overlay" id="emojiHallOverlay" style="display:none;">
     <div class="emoji-hall-page">
       <div class="emoji-hall-header">
-        <h2 style="font-family: 'Playfair Display', serif; font-size: 36px; color: var(--avatar-border-color); transition: color 2s ease;">猜题大厅</h2>
-        <div class="emoji-hall-actions">
-          <button class="emoji-hall-btn" onclick="showEmojiLeaderboard()">排行榜</button>
-          <span class="modal-close" onclick="closeEmojiHallPage()">&times;</span>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <h2 style="font-family: 'Playfair Display', serif; font-size: 36px; color: var(--avatar-border-color); transition: color 2s ease; margin: 0;">猜题大厅</h2>
+          <button class="emoji-hall-leaderboard-btn" onclick="showEmojiLeaderboard()" title="排行榜">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+              <path d="M16 11V3H8v6H2v12h20V11h-6zm-6-6h4v14h-4V5zm-6 6h4v8H4v-8zm16 8h-4v-6h4v6z"/>
+            </svg>
+          </button>
         </div>
+        <span class="modal-close" onclick="closeEmojiHallPage()">&times;</span>
       </div>
       <div id="emojiHallList" class="emoji-hall-list">
         <!-- 题目列表动态插入 -->

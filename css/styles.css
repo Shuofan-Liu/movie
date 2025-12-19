@@ -2204,6 +2204,36 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
   transition: all 2s ease;
 }
 
+/* 排行榜按钮（紧邻大厅按钮） */
+.emoji-leaderboard-button {
+  position: fixed;
+  bottom: 40px;
+  left: 285px; /* 在大厅按钮右侧，间距20px */
+  width: 65px;
+  height: 65px;
+  background: var(--avatar-glow-color);
+  border: 2px solid var(--avatar-border-color);
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease, background 2s ease, border-color 2s ease, box-shadow 2s ease;
+  backdrop-filter: blur(10px);
+}
+.emoji-leaderboard-button:hover {
+  opacity: 0.8;
+  transform: scale(1.1);
+  box-shadow: 0 0 30px var(--avatar-glow-color);
+}
+.emoji-leaderboard-button svg {
+  width: 32px;
+  height: 32px;
+  fill: var(--avatar-border-color);
+  transition: fill 2s ease;
+}
+
 /* 出题页覆盖层 */
 .emoji-create-overlay {
   position: fixed;
@@ -2289,6 +2319,31 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
   color: var(--avatar-border-color);
   background: rgba(255,255,255,0.1);
 }
+/* 大厅标题旁的排行榜按钮 */
+.emoji-hall-leaderboard-btn {
+  width: 40px;
+  height: 40px;
+  background: var(--avatar-glow-color);
+  border: 1px solid var(--avatar-border-color);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease, background 2s ease, border-color 2s ease, box-shadow 2s ease;
+  backdrop-filter: blur(10px);
+}
+.emoji-hall-leaderboard-btn:hover {
+  opacity: 0.8;
+  transform: scale(1.1);
+  box-shadow: 0 0 20px var(--avatar-glow-color);
+}
+.emoji-hall-leaderboard-btn svg {
+  width: 22px;
+  height: 22px;
+  fill: var(--avatar-border-color);
+  transition: fill 2s ease;
+}
 .emoji-hall-list {
   max-height: calc(90vh - 150px);
   overflow-y: auto;
@@ -2364,8 +2419,166 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
   overflow-y: auto;
 }
 
-/* 响应式调整 */
-@media (max-width: 768px) {
+/* Emoji游戏 - 动态内容响应式类 */
+.emoji-display-large {
+  font-size: 64px;
+  line-height: 1.2;
+}
+
+.emoji-display-medium {
+  font-size: 48px;
+  line-height: 1.2;
+}
+
+.emoji-hall-item-emoji {
+  font-size: 48px;
+  text-align: center;
+  margin: 20px 0;
+  line-height: 1.2;
+}
+
+.emoji-guess-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  color: var(--avatar-border-color);
+  margin-bottom: 30px;
+  transition: color 2s ease;
+}
+
+.emoji-leaderboard-rank {
+  font-size: 28px;
+  font-weight: 700;
+  min-width: 50px;
+  text-align: center;
+  transition: color 2s ease;
+}
+
+.emoji-leaderboard-name {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  transition: color 2s ease;
+}
+
+/* Emoji Picker 样式 */
+.emoji-picker {
+  margin-top: 15px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.emoji-picker-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.emoji-picker-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.emoji-picker-controls input {
+  flex: 1;
+  padding: 8px 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 6px;
+  color: #f5f5f5;
+  font-size: 13px;
+}
+.emoji-picker-controls input:focus {
+  outline: none;
+  border-color: var(--avatar-border-color);
+}
+
+.emoji-picker-pager {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #bbb;
+}
+.emoji-picker-pager button {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.05);
+  color: #ccc;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.emoji-picker-pager button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.emoji-picker-pager button:not(:disabled):hover {
+  border-color: var(--avatar-border-color);
+  color: var(--avatar-border-color);
+}
+
+.emoji-picker-tab {
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  color: #999;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.emoji-picker-tab.active {
+  background: var(--avatar-glow-color);
+  border-color: var(--avatar-border-color);
+  color: var(--avatar-border-color);
+}
+
+.emoji-picker-tab:hover {
+  border-color: rgba(255,255,255,0.3);
+  color: #ccc;
+}
+
+.emoji-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.emoji-picker-item {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emoji-picker-item:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: var(--avatar-border-color);
+  transform: scale(1.15);
+}
+
+/* ========================================
+   小屏幕 (sm) - max-width: 767px (大手机)
+   Emoji游戏响应式
+   ======================================== */
+@media (max-width: 767px) {
+  /* 底部按钮 */
   .emoji-create-button {
     left: 105px;
     width: 50px;
@@ -2386,13 +2599,29 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
     height: 28px;
   }
 
+  .emoji-leaderboard-button {
+    left: 245px;
+    width: 50px;
+    height: 50px;
+  }
+  .emoji-leaderboard-button svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  /* 弹窗页面 */
   .emoji-create-page,
   .emoji-hall-page,
   .emoji-guess-modal,
   .emoji-leaderboard-page {
-    padding: 30px 20px;
+    width: 90vw !important;
+    max-width: 500px !important;
+    padding: 30px 20px !important;
+    height: 85vh !important;
+    max-height: 85vh !important;
   }
 
+  /* 大厅列表项 */
   .emoji-hall-item {
     padding: 15px !important;
   }
@@ -2401,9 +2630,115 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
     flex-direction: column;
     text-align: center;
   }
+
+  /* Emoji Picker */
+  .emoji-picker-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+  }
+
+  .emoji-picker-tab {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  /* Emoji显示大小 */
+  .emoji-display-large {
+    font-size: 56px;
+  }
+
+  .emoji-display-medium {
+    font-size: 42px;
+  }
+
+  .emoji-hall-item-emoji {
+    font-size: 42px;
+    margin: 16px 0;
+  }
+
+  .emoji-guess-title {
+    font-size: 28px;
+    margin-bottom: 24px;
+  }
+
+  .emoji-leaderboard-rank {
+    font-size: 24px;
+    min-width: 45px;
+  }
+
+  .emoji-leaderboard-name {
+    font-size: 16px;
+  }
 }
 
+/* ========================================
+   小屏幕 (sm) - max-width: 600px (手机竖屏)
+   Emoji游戏响应式
+   ======================================== */
+@media (max-width: 600px) {
+  /* 弹窗页面 */
+  .emoji-create-page,
+  .emoji-hall-page,
+  .emoji-guess-modal,
+  .emoji-leaderboard-page {
+    width: 90vw !important;
+    max-width: 550px !important;
+    padding: 25px 18px !important;
+    height: 85vh !important;
+    max-height: 85vh !important;
+  }
+
+  /* 大厅标题 */
+  .emoji-hall-header h2 {
+    font-size: 28px !important;
+  }
+
+  /* Emoji Picker */
+  .emoji-picker-grid {
+    grid-template-columns: repeat(5, 1fr);
+    max-height: 200px;
+  }
+
+  .emoji-picker-item {
+    font-size: 20px;
+    padding: 6px;
+  }
+
+  /* Emoji显示大小 */
+  .emoji-display-large {
+    font-size: 48px;
+  }
+
+  .emoji-display-medium {
+    font-size: 38px;
+  }
+
+  .emoji-hall-item-emoji {
+    font-size: 38px;
+    margin: 14px 0;
+  }
+
+  .emoji-guess-title {
+    font-size: 26px;
+    margin-bottom: 20px;
+  }
+
+  .emoji-leaderboard-rank {
+    font-size: 22px;
+    min-width: 40px;
+  }
+
+  .emoji-leaderboard-name {
+    font-size: 15px;
+  }
+}
+
+/* ========================================
+   超小屏幕 (xs) - max-width: 480px (小手机)
+   Emoji游戏响应式
+   ======================================== */
 @media (max-width: 480px) {
+  /* 底部按钮 */
   .emoji-create-button {
     left: 90px;
     width: 45px;
@@ -2431,11 +2766,154 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
     font-size: 11px;
   }
 
+  .emoji-leaderboard-button {
+    left: 215px;
+    width: 45px;
+    height: 45px;
+    bottom: 30px;
+  }
+  .emoji-leaderboard-button svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* 弹窗页面 */
   .emoji-create-page,
   .emoji-hall-page,
   .emoji-guess-modal,
   .emoji-leaderboard-page {
-    padding: 25px 15px;
+    width: 90vw !important;
+    max-width: 480px !important;
+    padding: 20px 15px !important;
+    height: 85vh !important;
+    max-height: 85vh !important;
+  }
+
+  /* 标题 */
+  .emoji-create-page h2,
+  .emoji-hall-header h2,
+  .emoji-leaderboard-page h2 {
+    font-size: 24px !important;
+    margin-bottom: 20px !important;
+  }
+
+  /* 大厅列表项 */
+  .emoji-hall-item {
+    padding: 12px !important;
+    margin-bottom: 10px !important;
+  }
+
+  /* Emoji Picker */
+  .emoji-picker {
+    padding: 10px;
+  }
+
+  .emoji-picker-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+    max-height: 180px;
+  }
+
+  .emoji-picker-item {
+    font-size: 18px;
+    padding: 5px;
+  }
+
+  .emoji-picker-tab {
+    font-size: 11px;
+    padding: 5px 8px;
+  }
+
+  /* Emoji显示大小 */
+  .emoji-display-large {
+    font-size: 42px;
+  }
+
+  .emoji-display-medium {
+    font-size: 32px;
+  }
+
+  .emoji-hall-item-emoji {
+    font-size: 32px;
+    margin: 12px 0;
+  }
+
+  .emoji-guess-title {
+    font-size: 22px;
+    margin-bottom: 18px;
+  }
+
+  .emoji-leaderboard-rank {
+    font-size: 20px;
+    min-width: 36px;
+  }
+
+  .emoji-leaderboard-name {
+    font-size: 14px;
+  }
+}
+
+/* ========================================
+   横屏模式优化 - 手机横屏
+   ======================================== */
+@media (max-height: 500px) and (orientation: landscape) {
+  /* Emoji游戏弹窗 - 减少垂直间距 */
+  .emoji-create-page,
+  .emoji-hall-page,
+  .emoji-guess-modal,
+  .emoji-leaderboard-page {
+    padding: 15px !important;
+    max-height: 95vh !important;
+  }
+
+  .emoji-create-page h2,
+  .emoji-hall-header h2,
+  .emoji-leaderboard-page h2 {
+    font-size: 22px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .emoji-display-large {
+    font-size: 36px !important;
+  }
+
+  .emoji-display-medium {
+    font-size: 28px !important;
+  }
+
+  .emoji-hall-item-emoji {
+    font-size: 28px !important;
+    margin: 8px 0 !important;
+  }
+
+  .emoji-guess-title {
+    font-size: 20px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .emoji-picker {
+    padding: 8px !important;
+    margin-top: 10px !important;
+  }
+
+  .emoji-picker-grid {
+    max-height: 120px !important;
+    gap: 4px !important;
+  }
+
+  .emoji-picker-item {
+    padding: 4px !important;
+    font-size: 16px !important;
+  }
+
+  .emoji-hall-item {
+    padding: 10px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .emoji-hall-header {
+    margin-bottom: 15px !important;
+    padding-bottom: 12px !important;
   }
 }
 

@@ -4,7 +4,10 @@
   let currentRandomTitle = '';
   let currentPuzzle = null; // 当前正在查看的题目
   let emojiPickerData = [];
-  let activeEmojiCategory = 'people';
+  let activeEmojiCategory = 'smileys';
+  let emojiPickerSearch = '';
+  let emojiPickerPage = 1;
+  const EMOJI_PAGE_SIZE = 64;
 
   // ============ 初始化 ============
 
@@ -14,7 +17,7 @@
     if (emojiInput) {
       emojiInput.addEventListener('input', validateEmojiInputUI);
     }
-    initEmojiPicker();
+    await initEmojiPicker();
 
     // 更新badge数字
     await updateHallBadge();
@@ -169,7 +172,7 @@
             </svg>
           ` : ''}
         </div>
-        <div style="font-size: 48px; text-align: center; margin: 20px 0; line-height: 1.2;">${puzzle.emoji_text}</div>
+        <div class="emoji-hall-item-emoji">${puzzle.emoji_text}</div>
         <div style="text-align: center; color: #aaa; font-size: 13px;">${puzzle.emoji_count}个emoji</div>
       </div>
     `).join('');
@@ -239,21 +242,73 @@
   }
 
   // ============ Emoji 快选面板 ============
-  function initEmojiPicker() {
-    emojiPickerData = [
-      { key: 'people', label: '😃💁 People', emojis: '😀 😃 😄 😁 😆 😅 😂 🤣 😊 🙂 🙃 😉 😌 😍 🥰 😘 😗 😙 😚 😋 😜 🤪 🤗 🤔 🤨 😐 😑 😶 🙄 😏 😣 😥 😮 🤐 😯 😪 😫 😴 😷 🤒 🤕 🤢 🤮 🤧 😵 🥵 🥶 🥴 😎 🤓 🧐 🤠 🥳 😇 🤡 👻 💁 🙋 🙇 🤷 🙆 🙅 🙎 🙍 🤦'.split(' ') },
-      { key: 'animals', label: '🐻🌻 Animals', emojis: '🐶 🐱 🐭 🐹 🐰 🦊 🐻 🐼 🐻‍❄️ 🐨 🐯 🦁 🦄 🐮 🐷 🐸 🐵 🦍 🦧 🐔 🐧 🐦 🦉 🦇 🐤 🐣 🐺 🐗 🐴 🐝 🐛 🦋 🐌 🐞 🦗 🕷️ 🐢 🐍 🦎 🦂 🐙 🐬 🐳 🐠 🐟 🐡 🦈 🦀 🦞 🦐 🌸 🌻 🌲 🌳 🌴 🌵 🍀 🍁 🍂 🍃'.split(' ') },
-      { key: 'food', label: '🍔🍹 Food', emojis: '🍏 🍎 🍐 🍊 🍋 🍌 🍉 🍇 🍓 🫐 🍈 🍒 🍑 🥭 🍍 🥥 🥝 🍅 🍆 🥑 🥦 🥬 🥒 🌶️ 🌽 🥕 🧄 🧅 🥔 🍠 🥐 🥯 🍞 🧇 🧀 🥚 🍳 🥞 🥓 🥩 🍗 🍖 🌭 🍔 🍟 🍕 🥪 🥙 🌮 🌯 🥗 🍝 🍣 🍤 🍥 🥠 🍜 🍲 🍛 🍚 🍙 🍘 🍢 🍡 🍧 🍨 🍦 🧁 🎂 🍰 🍮 🍭 🍬 🍫 🍿 🍩 🍪 ☕ 🍵 🧃 🍷 🍺 🍻 🥂 🥤'.split(' ') },
-      { key: 'activities', label: '🎷⚽️ Activities', emojis: '⚽️ 🏀 🏈 ⚾️ 🎾 🏐 🏉 🥏 🎱 🏓 🏸 🥅 🥊 🥋 🎣 🏆 🎖️ 🏅 🥇 🥈 🥉 🎯 🎳 🎮 🎲 🧩 🪁 🎷 🎸 🎺 🎻 🎹 🥁 🎤 🎧 🎬 🎭 🎨 🧵 🧶 ✂️ 🧮'.split(' ') },
-      { key: 'travel', label: '🚘🌇 Travel', emojis: '🚗 🚕 🚙 🚌 🚎 🏎️ 🚓 🚑 🚒 🚐 🛻 🚚 🚛 🚜 🏍️ 🛵 🚲 🛴 🛹 🚨 🚧 🚦 🛑 🚏 🗺️ 🧭 🏖️ 🏝️ 🏜️ 🏕️ 🏔️ 🗻 🏞️ 🏟️ 🏛️ 🏗️ 🏠 🏡 🏢 🏬 🏣 🏤 🏥 🏦 🏨 🏩 🏪 🏫 🏬 🏭 🏯 🏰 🗽 🗼 ⛩️ 🕌 🛕 ⛪'.split(' ') },
-      { key: 'objects', label: '💡🎉 Objects', emojis: '⌚ 📱 💻 ⌨️ 🖥️ 🖨️ 🕹️ 🧮 💽 💾 💿 📷 📸 🎥 🎞️ 📺 📻 ⏰ ⏳ 🔋 🔌 💡 🔦 🕯️ 🧯 🛢️ 🧨 🎉 🎊 🎈 🧸 🎁 🧳 🧵 🧶 🪢 🪤 🪜 🧰 🔧 🔨 ⚙️ 🧲 🧪 🧫 🧬 🔬 🔭 📡 📔 📕 📗 📘 📙 📓 📒 📃 📄 📜 📑 📰 📎 📐 📏 ✂️'.split(' ') },
-      { key: 'symbols', label: '💖🔣 Symbols', emojis: '❤️ 🧡 💛 💚 💙 💜 🤎 🖤 🤍 💔 ❣️ 💕 💞 💓 💗 💖 💘 💝 💟 🔥 ✨ 💫 ⭐ 🌟 ⚡ 💥 🎇 🎆 🌈 ☀️ 🌙 ⭐ ☁️ ⛅ 🌧️ ⛈️ 🌩️ 🌨️ ☂️ ☔ ❄️ ⛄ 💧 🌊 💯 🔥 ♻️ ✅ ❌ ⚠️ ⛔ 🚫 🔞 🆗 🆒 🆕 🆙 🆓 🆚'.split(' ') },
-      { key: 'flags', label: '🎌🏳️‍🌈 Flags', emojis: '🏳️ 🏴 🏁 🚩 🏳️‍🌈 🏳️‍⚧️ 🎌 🇨🇳 🇭🇰 🇹🇼 🇯🇵 🇰🇷 🇬🇧 🇫🇷 🇩🇪 🇮🇹 🇪🇸 🇷🇺 🇺🇸 🇨🇦 🇧🇷 🇦🇷 🇦🇺 🇳🇿 🇲🇽 🇮🇳 🇸🇬 🇵🇭 🇻🇳 🇹🇭 🇲🇾 🇮🇩 🇵🇰 🇦🇪 🇸🇦'.split(' ') },
-      { key: 'weather', label: '⛅🌩️ Weather/Nature', emojis: '☀️ 🌤️ ⛅ 🌥️ 🌦️ 🌧️ ⛈️ 🌩️ 🌨️ ❄️ ☃️ ⛄ 🌪️ 🌫️ 🌈 ☔ ⚡ 🌙 🌛 🌜 🌠 🌌 🌊 🔥 🪨 🏔️ 🏜️'.split(' ') }
-    ];
+  async function initEmojiPicker() {
+    const searchInput = document.getElementById('emojiPickerSearch');
+    if (searchInput && !searchInput.__bound) {
+      searchInput.addEventListener('input', (e) => {
+        emojiPickerSearch = (e.target.value || '').trim();
+        emojiPickerPage = 1;
+        renderEmojiPickerGrid(activeEmojiCategory);
+      });
+      searchInput.__bound = true;
+    }
+    const prevBtn = document.getElementById('emojiPagerPrev');
+    const nextBtn = document.getElementById('emojiPagerNext');
+    if (prevBtn && !prevBtn.__bound) {
+      prevBtn.addEventListener('click', () => {
+        if (emojiPickerPage > 1) {
+          emojiPickerPage -= 1;
+          renderEmojiPickerGrid(activeEmojiCategory);
+        }
+      });
+      prevBtn.__bound = true;
+    }
+    if (nextBtn && !nextBtn.__bound) {
+      nextBtn.addEventListener('click', () => {
+        emojiPickerPage += 1;
+        renderEmojiPickerGrid(activeEmojiCategory);
+      });
+      nextBtn.__bound = true;
+    }
+
+    try {
+      const res = await fetch('./data/emojiCatalog.json', { cache: 'no-cache' });
+      if (!res.ok) throw new Error('加载表情库失败');
+      const json = await res.json();
+      if (Array.isArray(json) && json.length) {
+        emojiPickerData = json;
+      } else {
+        throw new Error('表情库格式不正确');
+      }
+    } catch (err) {
+      console.warn('[EmojiPicker] 使用内置表情列表，原因：', err);
+      emojiPickerData = getFallbackEmojiData();
+    }
+
+    if (!emojiPickerData || !emojiPickerData.length) {
+      emojiPickerData = getFallbackEmojiData();
+    }
+
+    activeEmojiCategory = emojiPickerData[0]?.key || 'smileys';
+    emojiPickerPage = 1;
+    emojiPickerSearch = '';
 
     renderEmojiPickerTabs();
     renderEmojiPickerGrid(activeEmojiCategory);
+  }
+
+  function getFallbackEmojiData() {
+    return [
+      { key: 'smileys', label: '😊 Smileys & Emotion', emojis: '😀 😃 😄 😁 😆 😅 😂 🤣 😊 🙂 🙃 😉 😌 😍 🥰 😘 😗 😙 😚 😋 😛 😜 🤪 😝 🤑 🤗 🤭 🤫 🤔 🤨 🧐 🤓 😎 🥳 😏 😒 🙄 😬 😳 😱 😡 😤 😴 🤢 🤮 🤧 🥵 🥶 🥴 😇'.split(' ') },
+      { key: 'people', label: '🧑 People & Body', emojis: '👋 🤚 🖐️ ✋ 🖖 👌 🤌 🤏 ✌️ 🤞 🤟 🤘 🤙 👈 👉 👆 👇 ☝️ 👍 👎 ✊ 👊 🤛 🤜 👏 🙌 👐 🤲 🙏 ✍️ 💅 🤳 💪 🦾 🦵 🦿 🦶 👂 🦻 👃 👀 👁️ 🧠 🫀 🫁 🦷 👅 👄 🧑‍🎓 🧑‍💻'.split(' ') },
+      { key: 'animals', label: '🐾 Animals & Nature', emojis: '🐶 🐱 🐭 🐹 🐰 🦊 🐻 🐼 🐻‍❄️ 🐨 🐯 🦁 🐮 🐷 🐸 🐵 🐔 🐧 🦉 🦇 🐺 🦄 🐝 🦋 🐌 🐢 🐍 🦎 🦂 🦀 🦞 🦐 🦑 🐙 🐠 🐟 🐡 🦈 🐬 🐳 🐋 🦭 🐊 🐆 🐅 🦓 🦒 🦘 🐫 🐘'.split(' ') },
+      { key: 'food', label: '🍔 Food & Drink', emojis: '🍏 🍎 🍐 🍊 🍋 🍌 🍉 🍇 🍓 🫐 🍈 🍒 🍑 🥭 🍍 🥥 🥝 🍅 🥑 🥦 🥬 🥒 🌶️ 🌽 🥕 🧄 🧅 🥔 🍠 🥐 🥯 🍞 🧇 🧀 🥚 🍳 🥞 🥩 🍗 🍖 🌭 🍔 🍟 🍕 🥪 🌮 🌯 🥗 🍝 🍣'.split(' ') },
+      { key: 'travel', label: '🚌 Travel & Places', emojis: '🚗 🚕 🚙 🚌 🚎 🏎️ 🚓 🚑 🚒 🚐 🛻 🚚 🚛 🚜 🏍️ 🛵 🚲 🛴 🛹 🚨 🚧 🚦 🛑 🚏 🗺️ 🧭 🏖️ 🏝️ 🏜️ 🏕️ 🏔️ 🗻 🏞️ 🏟️ 🏛️ 🏗️ 🏠 🏡 🏢 🏬 🏤 🏥 🏦 🏨 🏩 🏪 🏫 🏭 🏯 🏰'.split(' ') },
+      { key: 'activities', label: '🎾 Activities', emojis: '⚽️ 🏀 🏈 ⚾️ 🎾 🏐 🏉 🥏 🎱 🏓 🏸 🥅 🥊 🥋 🎣 🏆 🎖️ 🏅 🥇 🥈 🥉 🎯 🎳 🎮 🎲 🪁 🎷 🎸 🎺 🎻 🎹 🥁 🎤 🎧 🎬 🎭 🎨 🧵 🧶 ✂️ 🪢 🚴 🚵 🏊 🤿 🧗 🧘 🤸 🏇'.split(' ') },
+      { key: 'objects', label: '💡 Objects', emojis: '⌚ 📱 💻 ⌨️ 🖥️ 🖨️ 🕹️ 🧮 💽 💾 💿 📷 📸 🎥 🎞️ 📺 📻 ⏰ ⏳ 🔋 🔌 💡 🔦 🕯️ 🧲 🧪 🧫 🧬 🔬 🔭 📡 📕 📗 📘 📙 📒 📃 📄 📜 📑 📰 📎 📐 📏 🧷 🪜 🧰 🔧 🔨 ⚙️'.split(' ') },
+      { key: 'symbols', label: '💖 Symbols', emojis: '❤️ 🧡 💛 💚 💙 💜 🤎 🖤 🤍 💔 ❣️ 💕 💞 💓 💗 💖 💘 💝 💟 🔥 ✨ 💫 🌟 ⭐ ⚡ 💥 🎇 🎆 🌈 ☀️ 🌙 ☁️ ⛅ 🌧️ 🌩️ 🌨️ ❄️ ☔ 💯 ✅ ❌ ⚠️ ⛔ 🚫 🔞 ♻️ ➡️ ⬅️ ⬆️ ⬇️'.split(' ') },
+      { key: 'flags', label: '🎌 Flags', emojis: '🏳️ 🏴 🏁 🏳️‍🌈 🏳️‍⚧️ 🎌 🇨🇳 🇭🇰 🇹🇼 🇯🇵 🇰🇷 🇺🇸 🇨🇦 🇲🇽 🇧🇷 🇦🇷 🇬🇧 🇫🇷 🇩🇪 🇪🇸 🇮🇹 🇵🇹 🇷🇺 🇺🇦 🇵🇱 🇸🇪 🇳🇴 🇩🇰 🇫🇮 🇳🇱 🇧🇪 🇨🇭 🇦🇹 🇨🇿 🇸🇰 🇭🇺 🇷🇴 🇹🇷 🇸🇦 🇦🇪 🇮🇱 🇮🇳 🇵🇰 🇸🇬 🇻🇳 🇹🇭 🇮🇩 🇵🇭 🇦🇺'.split(' ') }
+    ];
   }
 
   function renderEmojiPickerTabs() {
@@ -268,6 +323,7 @@
     tabsEl.querySelectorAll('.emoji-picker-tab').forEach(btn => {
       btn.addEventListener('click', () => {
         activeEmojiCategory = btn.dataset.key;
+        emojiPickerPage = 1;
         renderEmojiPickerTabs();
         renderEmojiPickerGrid(activeEmojiCategory);
       });
@@ -277,11 +333,25 @@
   function renderEmojiPickerGrid(key) {
     const gridEl = document.getElementById('emojiPickerGrid');
     const inputEl = document.getElementById('emojiInput');
+    const pagerInfo = document.getElementById('emojiPagerInfo');
+    const prevBtn = document.getElementById('emojiPagerPrev');
+    const nextBtn = document.getElementById('emojiPagerNext');
     if (!gridEl || !inputEl) return;
     const cat = emojiPickerData.find(c => c.key === key);
     if (!cat) return;
 
-    gridEl.innerHTML = cat.emojis.map(e => `
+    const searchLower = emojiPickerSearch.toLowerCase();
+    const filtered = searchLower
+      ? cat.emojis.filter(e => e.toLowerCase().includes(searchLower))
+      : cat.emojis;
+
+    const totalPages = Math.max(1, Math.ceil(filtered.length / EMOJI_PAGE_SIZE));
+    if (emojiPickerPage > totalPages) emojiPickerPage = totalPages;
+    if (emojiPickerPage < 1) emojiPickerPage = 1;
+    const start = (emojiPickerPage - 1) * EMOJI_PAGE_SIZE;
+    const pageItems = filtered.slice(start, start + EMOJI_PAGE_SIZE);
+
+    gridEl.innerHTML = pageItems.map(e => `
       <button class="emoji-picker-item" data-char="${e}">${e}</button>
     `).join('');
 
@@ -293,6 +363,12 @@
         validateEmojiInputUI();
       });
     });
+
+    if (pagerInfo) {
+      pagerInfo.textContent = `${emojiPickerPage} / ${totalPages}`;
+    }
+    if (prevBtn) prevBtn.disabled = emojiPickerPage <= 1;
+    if (nextBtn) nextBtn.disabled = emojiPickerPage >= totalPages;
   }
 
   // ============ Task 4: 猜题弹窗 ============
@@ -331,9 +407,9 @@
       // Task 4: solved 状态 - 只读显示胜者信息
       contentEl.innerHTML = `
         <div style="text-align: center; padding: 20px;">
-          <h2 style="font-family: 'Playfair Display', serif; font-size: 32px; color: var(--avatar-border-color); margin-bottom: 30px; transition: color 2s ease;">已被猜出</h2>
+          <h2 class="emoji-guess-title">已被猜出</h2>
 
-          <div style="font-size: 64px; margin: 30px 0; line-height: 1.2;">${currentPuzzle.emoji_text}</div>
+          <div class="emoji-display-large" style="margin: 30px 0;">${currentPuzzle.emoji_text}</div>
 
           <div style="background: rgba(255,255,255,0.05); border: 1px solid var(--avatar-border-color); border-radius: 12px; padding: 25px; margin: 30px 0; transition: border-color 2s ease;">
             <div style="font-size: 14px; color: #888; margin-bottom: 10px;">答案是</div>
@@ -357,9 +433,9 @@
       // Task 4: open 状态 - 允许输入答案
       contentEl.innerHTML = `
         <div style="text-align: center; padding: 20px;">
-          <h2 style="font-family: 'Playfair Display', serif; font-size: 32px; color: var(--avatar-border-color); margin-bottom: 30px; transition: color 2s ease;">猜猜这是什么电影</h2>
+          <h2 class="emoji-guess-title">猜猜这是什么电影</h2>
 
-          <div style="font-size: 64px; margin: 30px 0; line-height: 1.2;">${currentPuzzle.emoji_text}</div>
+          <div class="emoji-display-large" style="margin: 30px 0;">${currentPuzzle.emoji_text}</div>
 
           ${isAuthor ? `
             <div style="margin: 10px 0 24px; padding: 12px 14px; background: rgba(255,255,255,0.04); border: 1px dashed rgba(255,255,255,0.2); border-radius: 8px; color: #aaa; font-size: 14px;">
@@ -538,14 +614,14 @@
 
       return `
         <div style="background: rgba(20,20,20,0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 20px; margin-bottom: 12px; display: flex; align-items: center; gap: 20px;">
-          <div style="font-size: 28px; font-weight: 700; color: ${rankColor}; min-width: 50px; text-align: center; transition: color 2s ease;">
+          <div class="emoji-leaderboard-rank" style="color: ${rankColor};">
             ${rankIcon || (index + 1)}
           </div>
           <div style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid ${rankColor}; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 0 15px rgba(212,175,55,0.3); transition: all 2s ease; overflow: hidden;">
             ${avatarContent}
           </div>
           <div style="flex: 1;">
-            <div style="font-size: 18px; font-weight: 600; color: ${rankColor}; margin-bottom: 4px; transition: color 2s ease;">${user.user_name}</div>
+            <div class="emoji-leaderboard-name" style="color: ${rankColor};">${user.user_name}</div>
             <div style="font-size: 14px; color: #888;">猜对 ${user.correct_guess_count} 道题</div>
           </div>
         </div>
