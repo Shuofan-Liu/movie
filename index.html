@@ -82,6 +82,24 @@
     </svg>
   </div>
 
+  <!-- emoji游戏出题按钮（登录后显示，位置：左下角第二个） -->
+  <div class="emoji-create-button" id="emojiCreateButton" onclick="showEmojiCreatePage()" title="出题" style="display:none;">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+      <circle cx="8.5" cy="9.5" r="1.5"/>
+      <circle cx="15.5" cy="9.5" r="1.5"/>
+      <path d="M12 17.5c2.33 0 4.32-1.45 5.12-3.5H6.88c.8 2.05 2.79 3.5 5.12 3.5z"/>
+    </svg>
+  </div>
+
+  <!-- emoji游戏大厅按钮（登录后显示，位置：底部中间） -->
+  <div class="emoji-hall-button" id="emojiHallButton" onclick="showEmojiHallPage()" title="猜题大厅" style="display:none;">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+    </svg>
+    <div class="emoji-hall-badge" id="emojiHallBadge" style="display:none;">0</div>
+  </div>
+
   <!-- 右下角弹幕墙按钮（仅登录后显示，电影摄影机icon） -->
   <div class="danmaku-icon-button" id="danmakuButton" onclick="toggleDanmakuWall()" title="留言墙" style="display:none;">
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
@@ -397,6 +415,70 @@
     </div>
   </div>
 
+  <!-- Emoji游戏 - 出题页 -->
+  <div class="emoji-create-overlay" id="emojiCreateOverlay" style="display:none;">
+    <div class="emoji-create-page">
+      <span class="modal-close" onclick="closeEmojiCreatePage()">&times;</span>
+      <h2 style="font-family: 'Playfair Display', serif; font-size: 36px; margin-bottom: 30px; color: var(--avatar-border-color); transition: color 2s ease;">出题</h2>
+
+      <div style="margin-bottom: 30px;">
+        <label style="display: block; font-size: 14px; margin-bottom: 10px; color: #ccc;">电影名 <span style="color: #ff4444;">*</span></label>
+        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+          <div id="randomTitleDisplay" style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--avatar-border-color); border-radius: 8px; padding: 12px 15px; color: var(--avatar-border-color); font-size: 16px; font-weight: 500; transition: all 2s ease;"></div>
+          <button id="refreshTitleBtn" onclick="refreshRandomTitle()" style="padding: 12px 20px; background: var(--avatar-glow-color); border: 1px solid var(--avatar-border-color); color: var(--avatar-border-color); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease, background 2s ease, border-color 2s ease;">🔄 换一个</button>
+        </div>
+        <input type="text" id="customTitleInput" placeholder="或者输入自定义电影名..." style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 12px 15px; color: #f5f5f5; font-size: 14px;" />
+      </div>
+
+      <div style="margin-bottom: 30px;">
+        <label style="display: block; font-size: 14px; margin-bottom: 10px; color: #ccc;">用emoji表达这部电影 (1-6个) <span style="color: #ff4444;">*</span></label>
+        <input type="text" id="emojiInput" placeholder="输入1-6个emoji..." style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 12px 15px; color: #f5f5f5; font-size: 24px;" />
+        <div id="emojiValidationMsg" style="margin-top: 8px; font-size: 13px; color: #ff4444; min-height: 18px;"></div>
+      </div>
+
+      <div style="display: flex; gap: 12px; justify-content: flex-end;">
+        <button onclick="closeEmojiCreatePage()" style="padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #ccc; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">取消</button>
+        <button id="publishPuzzleBtn" onclick="publishPuzzle()" disabled style="padding: 12px 24px; background: var(--avatar-glow-color); border: 1px solid var(--avatar-border-color); color: var(--avatar-border-color); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease, background 2s ease, border-color 2s ease; opacity: 0.5;">发布题目</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Emoji游戏 - 大厅页 -->
+  <div class="emoji-hall-overlay" id="emojiHallOverlay" style="display:none;">
+    <div class="emoji-hall-page">
+      <div class="emoji-hall-header">
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 36px; color: var(--avatar-border-color); transition: color 2s ease;">猜题大厅</h2>
+        <span class="modal-close" onclick="closeEmojiHallPage()">&times;</span>
+      </div>
+      <div id="emojiHallList" class="emoji-hall-list">
+        <!-- 题目列表动态插入 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Emoji游戏 - 猜题弹窗 -->
+  <div class="emoji-guess-overlay" id="emojiGuessOverlay" style="display:none;">
+    <div class="emoji-guess-modal">
+      <span class="modal-close" onclick="closeEmojiGuessModal()">&times;</span>
+      <div id="emojiGuessContent">
+        <!-- 猜题内容动态插入 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Emoji游戏 - 排行榜页 -->
+  <div class="emoji-leaderboard-overlay" id="emojiLeaderboardOverlay" style="display:none;">
+    <div class="emoji-leaderboard-page">
+      <div class="emoji-hall-header">
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 36px; color: var(--avatar-border-color); transition: color 2s ease;">排行榜</h2>
+        <span class="modal-close" onclick="closeEmojiLeaderboard()">&times;</span>
+      </div>
+      <div id="emojiLeaderboardList" class="emoji-leaderboard-list">
+        <!-- 排行榜列表动态插入 -->
+      </div>
+    </div>
+  </div>
+
   <!-- 通用确认对话框 -->
   <div class="confirm-dialog-overlay" id="confirmDialogOverlay"></div>
   <div class="confirm-dialog" id="confirmDialog">
@@ -420,6 +502,8 @@
   <script src="./js/messages.js"></script>
   <script src="./js/timeTheme.js"></script>
   <script src="./js/danmaku.js"></script>
+  <script src="./js/emojiQuiz.js"></script>
+  <script src="./js/emojiQuizUI.js"></script>
   <script>
     // 初始化
     document.addEventListener('DOMContentLoaded', function(){
@@ -428,6 +512,7 @@
       if (window.initUserCorner) window.initUserCorner();
       if (window.initUsersSidebarTab) window.initUsersSidebarTab();
       if (window.initTimeTheme) window.initTimeTheme();
+      if (window.initEmojiQuizUI) window.initEmojiQuizUI();
     });
   </script>
 </body>

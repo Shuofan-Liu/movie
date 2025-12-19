@@ -36,5 +36,80 @@ service cloud.firestore {
       allow create: if true; // 允许创建弹幕
       allow delete: if true; // 允许删除弹幕
     }
+
+    // ============ Emoji猜电影游戏相关集合 ============
+
+    // 辅助函数：检查用户是否已登录
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // 辅助函数：检查是否为资源的作者
+    function isAuthor(authorId) {
+      return isSignedIn() && request.auth.uid == authorId;
+    }
+
+    // puzzles 集合：emoji猜电影题目
+    match /puzzles/{puzzleId} {
+      // 读取权限：已登录用户可以读取未删除的题目
+      allow read: if isSignedIn() &&
+                     resource.data.is_deleted == false;
+
+      // 创建权限：已登录用户可以创建题目，且必须满足字段要求
+      allow create: if isSignedIn() &&
+                       request.resource.data.author_id == request.auth.uid &&
+                       request.resource.data.status == 'open' &&
+                       request.resource.data.is_deleted == false &&
+                       request.resource.data.emoji_count >= 1 &&
+                       request.resource.data.emoji_count <= 6 &&
+                       request.resource.data.answer_norm is string &&
+                       request.resource.data.answer_display is string;
+
+      // 更新权限：两种情况允许更新
+      allow update: if isSignedIn() && (
+        // 情况1: 猜题成功 - 任何用户都可以将 open 状态改为 solved
+        (resource.data.status == 'open' &&
+         request.resource.data.status == 'solved' &&
+         request.resource.data.solved_by_user_id == request.auth.uid &&
+         // 确保关键字段不被篡改
+         resource.data.author_id == request.resource.data.author_id &&
+         resource.data.emoji_text == request.resource.data.emoji_text &&
+         resource.data.answer_norm == request.resource.data.answer_norm &&
+         resource.data.is_deleted == request.resource.data.is_deleted)
+        ||
+        // 情况2: 作者删除自己的题目 - 仅当状态为 open 时可以软删除
+        (isAuthor(resource.data.author_id) &&
+         resource.data.status == 'open' &&
+         request.resource.data.is_deleted == true &&
+         // 确保其他字段不被修改
+         resource.data.status == request.resource.data.status &&
+         resource.data.emoji_text == request.resource.data.emoji_text &&
+         resource.data.answer_norm == request.resource.data.answer_norm)
+      );
+
+      // 禁止物理删除，只允许软删除
+      allow delete: if false;
+    }
+
+    // user_stats 集合：用户猜题统计（排行榜）
+    match /user_stats/{userId} {
+      // 读取权限：所有已登录用户可以读取（用于显示排行榜）
+      allow read: if isSignedIn();
+
+      // 创建权限：只能创建自己的统计记录
+      allow create: if isSignedIn() &&
+                       userId == request.auth.uid &&
+                       request.resource.data.user_id == request.auth.uid &&
+                       request.resource.data.correct_guess_count >= 0;
+
+      // 更新权限：只能更新自己的统计记录，且 correct_guess_count 只能递增
+      allow update: if isSignedIn() &&
+                       userId == request.auth.uid &&
+                       request.resource.data.user_id == resource.data.user_id &&
+                       request.resource.data.correct_guess_count >= resource.data.correct_guess_count;
+
+      // 禁止删除统计记录
+      allow delete: if false;
+    }
   }
 }

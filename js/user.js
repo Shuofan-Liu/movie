@@ -1633,6 +1633,11 @@
       if (quizButton) quizButton.style.display = 'flex';
       // 显示弹幕墙按钮
       if (danmakuButton) danmakuButton.style.display = 'flex';
+      // 显示emoji游戏按钮
+      const emojiCreateButton = document.getElementById('emojiCreateButton');
+      const emojiHallButton = document.getElementById('emojiHallButton');
+      if (emojiCreateButton) emojiCreateButton.style.display = 'flex';
+      if (emojiHallButton) emojiHallButton.style.display = 'flex';
       // 显示右侧抽屉标签
       if (sidebarTab) sidebarTab.style.display = 'flex';
       
