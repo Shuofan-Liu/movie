@@ -2161,8 +2161,8 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 .emoji-hall-button {
   position: fixed;
   bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 200px; /* 再往右排一位 */
+  transform: none;
   width: 65px;
   height: 65px;
   background: var(--avatar-glow-color);
@@ -2179,7 +2179,7 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 }
 .emoji-hall-button:hover {
   opacity: 0.8;
-  transform: translateX(-50%) scale(1.1);
+  transform: scale(1.1);
   box-shadow: 0 0 30px var(--avatar-glow-color);
 }
 .emoji-hall-button svg {
@@ -2358,6 +2358,7 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
   }
 
   .emoji-hall-button {
+    left: 180px;
     width: 50px;
     height: 50px;
   }
@@ -2396,6 +2397,7 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
   }
 
   .emoji-hall-button {
+    left: 155px;
     width: 45px;
     height: 45px;
     bottom: 30px;

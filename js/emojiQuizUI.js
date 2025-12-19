@@ -82,7 +82,7 @@
     }
   }
 
-  window.publishPuzzle = async function() {
+  window.publishPuzzleUI = async function() {
     const customTitle = document.getElementById('customTitleInput').value.trim();
     const answerDisplay = customTitle || currentRandomTitle;
     const emojiText = document.getElementById('emojiInput').value.trim();
@@ -101,6 +101,7 @@
     // 显示加载
     showLoading('发布中...');
 
+    // 调用后端发布逻辑（emojiQuiz.js）
     const result = await window.publishPuzzle({
       emoji_text: emojiText,
       answer_display: answerDisplay
