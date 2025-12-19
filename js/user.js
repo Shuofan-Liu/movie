@@ -998,9 +998,9 @@
 
       ${relationHtml}
 
-      <div class="user-actions" style="margin-top: 16px; display:flex; gap:10px; flex-wrap: wrap;">
-        <button class="view-messages-btn" onclick="showUserMessages('${userId}')">📬 查看留言</button>
-        ${canApplyRelation ? `<button class="view-messages-btn" onclick="applyRelationship('${userId}')">🤝 建立关系</button>` : ''}
+      <div class="user-actions" style="margin-top: 16px; display:flex; gap:10px; flex-wrap: wrap; justify-content:flex-start;">
+        <button class="view-messages-btn" style="flex:1; min-width: 140px;" onclick="showUserMessages('${userId}')">📬 查看留言</button>
+        ${canApplyRelation ? `<button class="view-messages-btn" style="flex:1; min-width: 140px;" onclick="applyRelationship('${userId}')">🤝 建立关系</button>` : ''}
       </div>
     `;
 
