@@ -3,6 +3,8 @@
 
   let currentRandomTitle = '';
   let currentPuzzle = null; // 当前正在查看的题目
+  let emojiPickerData = [];
+  let activeEmojiCategory = 'people';
 
   // ============ 初始化 ============
 
@@ -12,6 +14,7 @@
     if (emojiInput) {
       emojiInput.addEventListener('input', validateEmojiInputUI);
     }
+    initEmojiPicker();
 
     // 更新badge数字
     await updateHallBadge();
@@ -233,6 +236,63 @@
       if (map[avatarData.type]) return map[avatarData.type];
     }
     return getDefaultAvatar(nickname);
+  }
+
+  // ============ Emoji 快选面板 ============
+  function initEmojiPicker() {
+    emojiPickerData = [
+      { key: 'people', label: '😃💁 People', emojis: '😀 😃 😄 😁 😆 😅 😂 🤣 😊 🙂 🙃 😉 😌 😍 🥰 😘 😗 😙 😚 😋 😜 🤪 🤗 🤔 🤨 😐 😑 😶 🙄 😏 😣 😥 😮 🤐 😯 😪 😫 😴 😷 🤒 🤕 🤢 🤮 🤧 😵 🥵 🥶 🥴 😎 🤓 🧐 🤠 🥳 😇 🤡 👻 💁 🙋 🙇 🤷 🙆 🙅 🙎 🙍 🤦'.split(' ') },
+      { key: 'animals', label: '🐻🌻 Animals', emojis: '🐶 🐱 🐭 🐹 🐰 🦊 🐻 🐼 🐻‍❄️ 🐨 🐯 🦁 🦄 🐮 🐷 🐸 🐵 🦍 🦧 🐔 🐧 🐦 🦉 🦇 🐤 🐣 🐺 🐗 🐴 🐝 🐛 🦋 🐌 🐞 🦗 🕷️ 🐢 🐍 🦎 🦂 🐙 🐬 🐳 🐠 🐟 🐡 🦈 🦀 🦞 🦐 🌸 🌻 🌲 🌳 🌴 🌵 🍀 🍁 🍂 🍃'.split(' ') },
+      { key: 'food', label: '🍔🍹 Food', emojis: '🍏 🍎 🍐 🍊 🍋 🍌 🍉 🍇 🍓 🫐 🍈 🍒 🍑 🥭 🍍 🥥 🥝 🍅 🍆 🥑 🥦 🥬 🥒 🌶️ 🌽 🥕 🧄 🧅 🥔 🍠 🥐 🥯 🍞 🧇 🧀 🥚 🍳 🥞 🥓 🥩 🍗 🍖 🌭 🍔 🍟 🍕 🥪 🥙 🌮 🌯 🥗 🍝 🍣 🍤 🍥 🥠 🍜 🍲 🍛 🍚 🍙 🍘 🍢 🍡 🍧 🍨 🍦 🧁 🎂 🍰 🍮 🍭 🍬 🍫 🍿 🍩 🍪 ☕ 🍵 🧃 🍷 🍺 🍻 🥂 🥤'.split(' ') },
+      { key: 'activities', label: '🎷⚽️ Activities', emojis: '⚽️ 🏀 🏈 ⚾️ 🎾 🏐 🏉 🥏 🎱 🏓 🏸 🥅 🥊 🥋 🎣 🏆 🎖️ 🏅 🥇 🥈 🥉 🎯 🎳 🎮 🎲 🧩 🪁 🎷 🎸 🎺 🎻 🎹 🥁 🎤 🎧 🎬 🎭 🎨 🧵 🧶 ✂️ 🧮'.split(' ') },
+      { key: 'travel', label: '🚘🌇 Travel', emojis: '🚗 🚕 🚙 🚌 🚎 🏎️ 🚓 🚑 🚒 🚐 🛻 🚚 🚛 🚜 🏍️ 🛵 🚲 🛴 🛹 🚨 🚧 🚦 🛑 🚏 🗺️ 🧭 🏖️ 🏝️ 🏜️ 🏕️ 🏔️ 🗻 🏞️ 🏟️ 🏛️ 🏗️ 🏠 🏡 🏢 🏬 🏣 🏤 🏥 🏦 🏨 🏩 🏪 🏫 🏬 🏭 🏯 🏰 🗽 🗼 ⛩️ 🕌 🛕 ⛪'.split(' ') },
+      { key: 'objects', label: '💡🎉 Objects', emojis: '⌚ 📱 💻 ⌨️ 🖥️ 🖨️ 🕹️ 🧮 💽 💾 💿 📷 📸 🎥 🎞️ 📺 📻 ⏰ ⏳ 🔋 🔌 💡 🔦 🕯️ 🧯 🛢️ 🧨 🎉 🎊 🎈 🧸 🎁 🧳 🧵 🧶 🪢 🪤 🪜 🧰 🔧 🔨 ⚙️ 🧲 🧪 🧫 🧬 🔬 🔭 📡 📔 📕 📗 📘 📙 📓 📒 📃 📄 📜 📑 📰 📎 📐 📏 ✂️'.split(' ') },
+      { key: 'symbols', label: '💖🔣 Symbols', emojis: '❤️ 🧡 💛 💚 💙 💜 🤎 🖤 🤍 💔 ❣️ 💕 💞 💓 💗 💖 💘 💝 💟 🔥 ✨ 💫 ⭐ 🌟 ⚡ 💥 🎇 🎆 🌈 ☀️ 🌙 ⭐ ☁️ ⛅ 🌧️ ⛈️ 🌩️ 🌨️ ☂️ ☔ ❄️ ⛄ 💧 🌊 💯 🔥 ♻️ ✅ ❌ ⚠️ ⛔ 🚫 🔞 🆗 🆒 🆕 🆙 🆓 🆚'.split(' ') },
+      { key: 'flags', label: '🎌🏳️‍🌈 Flags', emojis: '🏳️ 🏴 🏁 🚩 🏳️‍🌈 🏳️‍⚧️ 🎌 🇨🇳 🇭🇰 🇹🇼 🇯🇵 🇰🇷 🇬🇧 🇫🇷 🇩🇪 🇮🇹 🇪🇸 🇷🇺 🇺🇸 🇨🇦 🇧🇷 🇦🇷 🇦🇺 🇳🇿 🇲🇽 🇮🇳 🇸🇬 🇵🇭 🇻🇳 🇹🇭 🇲🇾 🇮🇩 🇵🇰 🇦🇪 🇸🇦'.split(' ') },
+      { key: 'weather', label: '⛅🌩️ Weather/Nature', emojis: '☀️ 🌤️ ⛅ 🌥️ 🌦️ 🌧️ ⛈️ 🌩️ 🌨️ ❄️ ☃️ ⛄ 🌪️ 🌫️ 🌈 ☔ ⚡ 🌙 🌛 🌜 🌠 🌌 🌊 🔥 🪨 🏔️ 🏜️'.split(' ') }
+    ];
+
+    renderEmojiPickerTabs();
+    renderEmojiPickerGrid(activeEmojiCategory);
+  }
+
+  function renderEmojiPickerTabs() {
+    const tabsEl = document.getElementById('emojiPickerTabs');
+    if (!tabsEl) return;
+    tabsEl.innerHTML = emojiPickerData.map(cat => `
+      <button class="emoji-picker-tab ${cat.key === activeEmojiCategory ? 'active' : ''}" data-key="${cat.key}">
+        ${cat.label}
+      </button>
+    `).join('');
+
+    tabsEl.querySelectorAll('.emoji-picker-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeEmojiCategory = btn.dataset.key;
+        renderEmojiPickerTabs();
+        renderEmojiPickerGrid(activeEmojiCategory);
+      });
+    });
+  }
+
+  function renderEmojiPickerGrid(key) {
+    const gridEl = document.getElementById('emojiPickerGrid');
+    const inputEl = document.getElementById('emojiInput');
+    if (!gridEl || !inputEl) return;
+    const cat = emojiPickerData.find(c => c.key === key);
+    if (!cat) return;
+
+    gridEl.innerHTML = cat.emojis.map(e => `
+      <button class="emoji-picker-item" data-char="${e}">${e}</button>
+    `).join('');
+
+    gridEl.querySelectorAll('.emoji-picker-item').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const current = inputEl.value || '';
+        const next = `${current}${btn.dataset.char}`.trim();
+        inputEl.value = next;
+        validateEmojiInputUI();
+      });
+    });
   }
 
   // ============ Task 4: 猜题弹窗 ============
