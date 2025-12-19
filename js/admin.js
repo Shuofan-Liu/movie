@@ -55,53 +55,6 @@
   // 注意：不要覆盖 user.js 中的 logoutUser 函数
   // window.logoutUser 由 user.js 提供
 
-  // 管理员专用操作，避免与用户版函数冲突
-  window.adminDeleteSubmission = async function(id){
-    if (!window.APP_STATE.isAdmin) { const ok = await promptAdminSecret(); if (!ok) return; }
-    const ok = await showConfirmDialog({
-      title: '删除留言',
-      message: '确认删除这条留言吗？',
-      confirmText: '删除',
-      cancelText: '取消',
-      isDanger: true
-    });
-    if (!ok) return;
-    const success = await window.deleteSubmissionById?.(id);
-    if (success) {
-      await window.showWall?.();
-      await window.updateSidebarContent?.();
-    } else {
-      showInlineAlert('删除失败', 'error');
-    }
-  }
-
-  window.adminEditSubmission = async function(id){
-    if (!window.APP_STATE.isAdmin) { const ok = await promptAdminSecret(); if (!ok) return; }
-    // 进入留言簿编辑页面（无需检查昵称匹配）
-    const submissions = await window.getSubmissions?.() || [];
-    const submission = submissions.find(s => s.id === id);
-    if (!submission) {
-      showInlineAlert('留言不存在！', 'warn');
-      return;
-    }
-    // 显示 quiz-overlay 弹窗
-    document.getElementById('quizOverlay').classList.add('active');
-    // 显示留言簿页面并填充数据
-    document.getElementById('quizPage').classList.add('hidden');
-    document.getElementById('wallPage').classList.add('hidden');
-    document.getElementById('guestbookPage').classList.remove('hidden');
-    // 填充表单
-    document.getElementById('nickname').value = submission.nickname;
-    document.getElementById('favorite').value = submission.favorite || '';
-    document.getElementById('dream').value = submission.dream || '';
-    document.getElementById('password').value = submission.password;
-    // 保存编辑 ID
-    window.editingId = id;
-    // 修改提交按钮文本
-    const submitBtn = document.querySelector('#guestbookForm button[type="submit"]');
-    if (submitBtn) submitBtn.textContent = '更新留言';
-  }
-
   window.toggleAdminPanel = function(){
     const panel = el('adminPanel');
     if (!panel) return;

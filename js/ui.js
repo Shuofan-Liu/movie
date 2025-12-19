@@ -175,6 +175,20 @@
     });
   };
 
+  // 功能菜单展开/收起切换
+  window.toggleFunctionMenu = function() {
+    const subButtons = document.getElementById('subFunctionButtons');
+    if (!subButtons) return;
+
+    if (subButtons.classList.contains('expanded')) {
+      // 收起
+      subButtons.classList.remove('expanded');
+    } else {
+      // 展开
+      subButtons.classList.add('expanded');
+    }
+  };
+
   // 初始挂载
   document.addEventListener('DOMContentLoaded', function(){
     try {

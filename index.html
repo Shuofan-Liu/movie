@@ -75,42 +75,55 @@
   <!-- 流动诗意排版的导演名字 -->
   <div class="directors-layer" id="directorsLayer"></div>
 
-  <!-- 左下角测验按钮（仅登录后显示） -->
-  <div class="quiz-icon-button" id="quizIconButton" onclick="startQuiz()" title="开始测验" style="display:none;">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-      <path d="M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/>
-    </svg>
-  </div>
+  <!-- 左下角功能菜单 -->
+  <div class="function-menu-container" id="functionMenuContainer" style="display:none;">
+    <!-- 主功能键（网格图标） -->
+    <div class="main-function-button" id="mainFunctionButton" onclick="toggleFunctionMenu()" title="功能菜单">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+        <path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/>
+      </svg>
+    </div>
 
-  <!-- emoji游戏出题按钮（登录后显示，位置：左下角第二个） -->
-  <div class="emoji-create-button" id="emojiCreateButton" onclick="showEmojiCreatePage()" title="出题" style="display:none;">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-      <path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/>
-      <path d="M5.5 16c.83 0 1.5-.67 1.5-1.5S6.33 13 5.5 13 4 13.67 4 14.5 4.67 16 5.5 16z"/>
-      <path d="M18.5 16c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5z"/>
-    </svg>
-  </div>
+    <!-- 子功能按钮容器 -->
+    <div class="sub-function-buttons" id="subFunctionButtons">
+      <!-- 测验按钮 -->
+      <div class="sub-function-button" onclick="startQuiz()" title="开始测验">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <path d="M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/>
+        </svg>
+      </div>
 
-  <!-- emoji游戏大厅按钮（登录后显示，位置：底部中间） -->
-  <div class="emoji-hall-button" id="emojiHallButton" onclick="showEmojiHallPage()" title="猜题大厅" style="display:none;">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-      <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM7.76 16.24l-1.41 1.41C4.78 16.1 4 14.05 4 12c0-2.05.78-4.1 2.34-5.66l1.41 1.41C6.59 8.93 6 10.46 6 12s.59 3.07 1.76 4.24zM12 16l-4-4h8l-4 4zm5.66 1.66l-1.41-1.41C17.41 15.07 18 13.54 18 12s-.59-3.07-1.76-4.24l1.41-1.41C19.22 7.9 20 9.95 20 12c0 2.05-.78 4.1-2.34 5.66z"/>
-    </svg>
-    <div class="emoji-hall-badge" id="emojiHallBadge" style="display:none;">0</div>
-  </div>
+      <!-- 出题按钮 -->
+      <div class="sub-function-button" onclick="showEmojiCreatePage()" title="出题">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/>
+          <path d="M5.5 16c.83 0 1.5-.67 1.5-1.5S6.33 13 5.5 13 4 13.67 4 14.5 4.67 16 5.5 16z"/>
+          <path d="M18.5 16c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5z"/>
+        </svg>
+      </div>
 
-  <!-- emoji游戏排行榜按钮（登录后显示，紧邻大厅按钮） -->
-  <div class="emoji-leaderboard-button" id="emojiLeaderboardButton" onclick="showEmojiLeaderboard()" title="排行榜" style="display:none;">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-      <path d="M16 11V3H8v6H2v12h20V11h-6zm-6-6h4v14h-4V5zm-6 6h4v8H4v-8zm16 8h-4v-6h4v6z"/>
-    </svg>
-  </div>
+      <!-- 猜题大厅按钮 -->
+      <div class="sub-function-button" onclick="showEmojiHallPage()" title="猜题大厅">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM7.76 16.24l-1.41 1.41C4.78 16.1 4 14.05 4 12c0-2.05.78-4.1 2.34-5.66l1.41 1.41C6.59 8.93 6 10.46 6 12s.59 3.07 1.76 4.24zM12 16l-4-4h8l-4 4zm5.66 1.66l-1.41-1.41C17.41 15.07 18 13.54 18 12s-.59-3.07-1.76-4.24l1.41-1.41C19.22 7.9 20 9.95 20 12c0 2.05-.78 4.1-2.34 5.66z"/>
+        </svg>
+        <div class="emoji-hall-badge" id="emojiHallBadge" style="display:none;">0</div>
+      </div>
 
-  <!-- 右下角弹幕墙按钮（仅登录后显示，电影摄影机icon） -->
-  <div class="danmaku-icon-button" id="danmakuButton" onclick="toggleDanmakuWall()" title="留言墙" style="display:none;">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-      <path d="M18,11.34V6.11C18,5.5,17.5,5,16.89,5H5.11C4.5,5,4,5.5,4,6.11v11.78C4,18.5,4.5,19,5.11,19h11.78c0.61,0,1.11-0.5,1.11-1.11v-5.23l4,3.62V7.72L18,11.34z M7,9h2v2H7V9z M7,13h2v2H7V13z M15,13v2h-2v-2H15z M15,9v2h-2V9H15z"/>
-    </svg>
+      <!-- 排行榜按钮 -->
+      <div class="sub-function-button" onclick="showEmojiLeaderboard()" title="排行榜">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <path d="M16 11V3H8v6H2v12h20V11h-6zm-6-6h4v14h-4V5zm-6 6h4v8H4v-8zm16 8h-4v-6h4v6z"/>
+        </svg>
+      </div>
+
+      <!-- 留言墙按钮 -->
+      <div class="sub-function-button" onclick="toggleDanmakuWall()" title="留言墙">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <path d="M18,11.34V6.11C18,5.5,17.5,5,16.89,5H5.11C4.5,5,4,5.5,4,6.11v11.78C4,18.5,4.5,19,5.11,19h11.78c0.61,0,1.11-0.5,1.11-1.11v-5.23l4,3.62V7.72L18,11.34z M7,9h2v2H7V9z M7,13h2v2H7V13z M15,13v2h-2v-2H15z M15,9v2h-2V9H15z"/>
+        </svg>
+      </div>
+    </div>
   </div>
 
   <!-- 导演弹窗 -->

@@ -1579,11 +1579,7 @@
   async function updateUserCorner(){
     const cornerFlame = document.getElementById('cornerFlame');
     const cornerAvatar = document.getElementById('cornerAvatar');
-    const quizButton = document.getElementById('quizIconButton');
-    const danmakuButton = document.getElementById('danmakuButton');
-    const emojiCreateButton = document.getElementById('emojiCreateButton');
-    const emojiHallButton = document.getElementById('emojiHallButton');
-    const emojiLeaderboardButton = document.getElementById('emojiLeaderboardButton');
+    const functionMenuContainer = document.getElementById('functionMenuContainer');
     const sidebarTab = document.getElementById('usersSidebarTab');
     
     if (window.currentUser) {
@@ -1632,14 +1628,8 @@
         }
       }
       
-      // 显示测验按钮
-      if (quizButton) quizButton.style.display = 'flex';
-      // 显示弹幕墙按钮
-      if (danmakuButton) danmakuButton.style.display = 'flex';
-      // 显示emoji游戏按钮
-      if (emojiCreateButton) emojiCreateButton.style.display = 'flex';
-      if (emojiHallButton) emojiHallButton.style.display = 'flex';
-      if (emojiLeaderboardButton) emojiLeaderboardButton.style.display = 'flex';
+      // 显示功能菜单容器
+      if (functionMenuContainer) functionMenuContainer.style.display = 'flex';
       // 显示右侧抽屉标签
       if (sidebarTab) sidebarTab.style.display = 'flex';
       
@@ -1657,14 +1647,8 @@
       if (cornerFlame) cornerFlame.style.display = 'flex';
       if (cornerAvatar) cornerAvatar.style.display = 'none';
 
-        // 隐藏测验按钮
-        if (quizButton) quizButton.style.display = 'none';
-        // 隐藏弹幕墙按钮
-        if (danmakuButton) danmakuButton.style.display = 'none';
-        // 隐藏emoji游戏按钮
-        if (emojiCreateButton) emojiCreateButton.style.display = 'none';
-        if (emojiHallButton) emojiHallButton.style.display = 'none';
-        if (emojiLeaderboardButton) emojiLeaderboardButton.style.display = 'none';
+        // 隐藏功能菜单容器
+        if (functionMenuContainer) functionMenuContainer.style.display = 'none';
         // 隐藏右侧抽屉标签
         if (sidebarTab) sidebarTab.style.display = 'none';
 

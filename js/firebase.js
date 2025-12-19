@@ -138,9 +138,6 @@
       const msgQuery2 = await db.collection('messages').where('toUserId','==',id).get();
       msgQuery1.forEach(doc => deletePromises.push(doc.ref.delete()));
       msgQuery2.forEach(doc => deletePromises.push(doc.ref.delete()));
-      // 删除用户提交的guestbook记录
-      const submissionQuery = await db.collection('submissions').where('userId','==',id).get();
-      submissionQuery.forEach(doc => deletePromises.push(doc.ref.delete()));
       // 删除用户所有弹幕 danmaku_messages
       const danmakuQuery = await db.collection('danmaku_messages').where('userId','==',id).get();
       danmakuQuery.forEach(doc => deletePromises.push(doc.ref.delete()));

@@ -93,47 +93,109 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 .dropdown-btn.danger { background: rgba(255,0,0,0.2); border-color: rgba(255,68,68,0.4); color: #ff4444; }
 .dropdown-btn.danger:hover { background: rgba(255,0,0,0.3); }
 
-/* 左下角测验按钮 */
-.quiz-icon-button { position: fixed; bottom: 40px; left: 30px; width: 65px; height: 65px; background: var(--avatar-glow-color); border: 2px solid var(--avatar-border-color); border-radius: 50%; cursor: pointer; z-index: 999; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease, background 2s ease, border-color 2s ease, box-shadow 2s ease; backdrop-filter: blur(10px); }
-.quiz-icon-button:hover { background: var(--avatar-glow-color); opacity: 0.8; border-color: var(--avatar-border-color); transform: scale(1.1); box-shadow: 0 0 30px var(--avatar-glow-color); }
-.quiz-icon-button svg { width: 35px; height: 35px; fill: var(--avatar-border-color); transition: fill 2s ease; }
-
-/* 右下角弹幕墙按钮（与测验按钮对齐） */
-.danmaku-icon-button { position: fixed; bottom: 40px; right: 30px; width: 65px; height: 65px; background: var(--avatar-glow-color); border: 2px solid var(--avatar-border-color); border-radius: 50%; cursor: pointer; z-index: 999; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease, background 2s ease, border-color 2s ease, box-shadow 2s ease; backdrop-filter: blur(10px); }
-.danmaku-icon-button:hover { background: var(--avatar-glow-color); opacity: 0.8; border-color: var(--avatar-border-color); transform: scale(1.1); box-shadow: 0 0 30px var(--avatar-glow-color); }
-.danmaku-icon-button svg { width: 35px; height: 35px; fill: var(--avatar-border-color); transition: fill 2s ease; }
-
-/* 右下角弹幕墙按钮 */
-.danmaku-icon-button {
+/* 左下角功能菜单 */
+.function-menu-container {
   position: fixed;
   bottom: 40px;
-  right: 30px;
+  left: 30px;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* 主功能键 */
+.main-function-button {
   width: 65px;
   height: 65px;
   background: var(--avatar-glow-color);
   border: 2px solid var(--avatar-border-color);
   border-radius: 50%;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
-  cursor: pointer;
-  z-index: 999;
   transition: all 0.3s ease, background 2s ease, border-color 2s ease, box-shadow 2s ease;
   backdrop-filter: blur(10px);
 }
-.danmaku-icon-button:hover {
-  background: var(--avatar-glow-color);
+
+.main-function-button:hover {
   opacity: 0.8;
-  border-color: var(--avatar-border-color);
   transform: scale(1.1);
   box-shadow: 0 0 30px var(--avatar-glow-color);
 }
-.danmaku-icon-button svg {
+
+.main-function-button svg {
   width: 35px;
   height: 35px;
   fill: var(--avatar-border-color);
   transition: fill 2s ease;
+}
+
+/* 子功能按钮容器 */
+.sub-function-buttons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-20px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sub-function-buttons.expanded {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+/* 子功能按钮 */
+.sub-function-button {
+  position: relative;
+  width: 65px;
+  height: 65px;
+  background: var(--avatar-glow-color);
+  border: 2px solid var(--avatar-border-color);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease, background 2s ease, border-color 2s ease, box-shadow 2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.sub-function-button:hover {
+  opacity: 0.8;
+  transform: scale(1.1);
+  box-shadow: 0 0 30px var(--avatar-glow-color);
+}
+
+.sub-function-button svg {
+  width: 32px;
+  height: 32px;
+  fill: var(--avatar-border-color);
+  transition: fill 2s ease;
+}
+
+/* emoji大厅徽章 */
+.emoji-hall-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--avatar-border-color);
+  color: #0a0a0a;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  border: 2px solid #0a0a0a;
+  box-shadow: 0 0 10px var(--avatar-glow-color);
+  transition: all 2s ease;
 }
 
 /* Intro */
@@ -747,23 +809,32 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
   }
   .user-dropdown-body { max-height: 120px; }
 
-  /* 固定角标按钮尺寸与间距 - 统一大小 */
-  .quiz-icon-button {
+  /* 功能菜单按钮 - 平板适配 */
+  .function-menu-container {
     bottom: 24px;
     left: 20px;
+    gap: 12px;
+  }
+  .main-function-button {
     width: 56px;
     height: 56px;
   }
-  .danmaku-icon-button {
-    bottom: 24px;
-    right: 20px;
+  .main-function-button svg {
+    width: 30px;
+    height: 30px;
+  }
+  .sub-function-button {
     width: 56px;
     height: 56px;
   }
-  .quiz-icon-button svg,
-  .danmaku-icon-button svg {
-    width: 28px !important;
-    height: 28px !important;
+  .sub-function-button svg {
+    width: 28px;
+    height: 28px;
+  }
+  .emoji-hall-badge {
+    width: 22px;
+    height: 22px;
+    font-size: 11px;
   }
 
   /* 导演层 */
@@ -1089,23 +1160,34 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
     font-size: 13px;
   }
 
-  /* 角标按钮 - 统一大小 */
-  .quiz-icon-button {
+  /* 功能菜单按钮 - 手机适配（缩小尺寸） */
+  .function-menu-container {
     bottom: 20px;
     left: 16px;
+    gap: 10px;
+  }
+  .main-function-button {
     width: 50px;
     height: 50px;
   }
-  .danmaku-icon-button {
-    bottom: 20px;
-    right: 16px;
+  .main-function-button svg {
+    width: 26px;
+    height: 26px;
+  }
+  .sub-function-button {
     width: 50px;
     height: 50px;
   }
-  .quiz-icon-button svg,
-  .danmaku-icon-button svg {
-    width: 24px !important;
-    height: 24px !important;
+  .sub-function-button svg {
+    width: 24px;
+    height: 24px;
+  }
+  .emoji-hall-badge {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+    top: -4px;
+    right: -4px;
   }
 
   /* 导演层 */
@@ -1492,28 +1574,26 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
    大屏幕优化 - min-width: 1200px
    ======================================== */
 @media (min-width: 1200px) {
-  .quiz-icon-button {
-    width: 48px !important;
-    height: 48px !important;
+  /* 功能菜单按钮 - 大屏优化 */
+  .function-menu-container {
+    bottom: 20px !important;
     left: 20px !important;
-    bottom: 20px !important;
-    font-size: 20px !important;
-    padding: 0 !important;
-    z-index: 999 !important;
   }
-  .danmaku-icon-button {
+  .main-function-button {
     width: 48px !important;
     height: 48px !important;
-    right: 20px !important;
-    bottom: 20px !important;
-    font-size: 20px !important;
-    padding: 0 !important;
-    z-index: 999 !important;
   }
-  .quiz-icon-button svg,
-  .danmaku-icon-button svg {
+  .main-function-button svg {
     width: 24px !important;
     height: 24px !important;
+  }
+  .sub-function-button {
+    width: 48px !important;
+    height: 48px !important;
+  }
+  .sub-function-button svg {
+    width: 22px !important;
+    height: 22px !important;
   }
   .users-page { max-width: 1300px; }
 
@@ -2127,112 +2207,7 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 
 /* ============ Emoji 猜电影游戏样式 ============ */
 
-/* 左下角emoji游戏出题按钮（第二个位置） */
-.emoji-create-button {
-  position: fixed;
-  bottom: 40px;
-  left: 115px; /* 测验按钮右侧 */
-  width: 65px;
-  height: 65px;
-  background: var(--avatar-glow-color);
-  border: 2px solid var(--avatar-border-color);
-  border-radius: 50%;
-  cursor: pointer;
-  z-index: 999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease, background 2s ease, border-color 2s ease, box-shadow 2s ease;
-  backdrop-filter: blur(10px);
-}
-.emoji-create-button:hover {
-  opacity: 0.8;
-  transform: scale(1.1);
-  box-shadow: 0 0 30px var(--avatar-glow-color);
-}
-.emoji-create-button svg {
-  width: 35px;
-  height: 35px;
-  fill: var(--avatar-border-color);
-  transition: fill 2s ease;
-}
-
-/* 底部左侧emoji游戏大厅按钮（紧邻出题按钮） */
-.emoji-hall-button {
-  position: fixed;
-  bottom: 40px;
-  left: 200px; /* 在出题按钮右侧，间距20px */
-  width: 65px;
-  height: 65px;
-  background: var(--avatar-glow-color);
-  border: 2px solid var(--avatar-border-color);
-  border-radius: 50%;
-  cursor: pointer;
-  z-index: 999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease, background 2s ease, border-color 2s ease, box-shadow 2s ease;
-  backdrop-filter: blur(10px);
-}
-.emoji-hall-button:hover {
-  opacity: 0.8;
-  transform: scale(1.1);
-  box-shadow: 0 0 30px var(--avatar-glow-color);
-}
-.emoji-hall-button svg {
-  width: 32px;
-  height: 32px;
-  fill: var(--avatar-border-color);
-  transition: fill 2s ease;
-}
-.emoji-hall-badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background: var(--avatar-border-color);
-  color: #fff;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: bold;
-  box-shadow: 0 0 10px var(--avatar-glow-color);
-  transition: all 2s ease;
-}
-
-/* 排行榜按钮（紧邻大厅按钮） */
-.emoji-leaderboard-button {
-  position: fixed;
-  bottom: 40px;
-  left: 285px; /* 在大厅按钮右侧，间距20px */
-  width: 65px;
-  height: 65px;
-  background: var(--avatar-glow-color);
-  border: 2px solid var(--avatar-border-color);
-  border-radius: 50%;
-  cursor: pointer;
-  z-index: 999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease, background 2s ease, border-color 2s ease, box-shadow 2s ease;
-  backdrop-filter: blur(10px);
-}
-.emoji-leaderboard-button:hover {
-  opacity: 0.8;
-  transform: scale(1.1);
-  box-shadow: 0 0 30px var(--avatar-glow-color);
-}
-.emoji-leaderboard-button svg {
-  width: 32px;
-  height: 32px;
-  fill: var(--avatar-border-color);
-  transition: fill 2s ease;
-}
+/* 旧的独立按钮样式已整合到功能菜单中 */
 
 /* 出题页覆盖层 */
 .emoji-create-overlay {
@@ -2580,36 +2555,7 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
    Emoji游戏响应式
    ======================================== */
 @media (max-width: 767px) {
-  /* 底部按钮 */
-  .emoji-create-button {
-    left: 105px;
-    width: 50px;
-    height: 50px;
-  }
-  .emoji-create-button svg {
-    width: 28px;
-    height: 28px;
-  }
-
-  .emoji-hall-button {
-    left: 180px;
-    width: 50px;
-    height: 50px;
-  }
-  .emoji-hall-button svg {
-    width: 28px;
-    height: 28px;
-  }
-
-  .emoji-leaderboard-button {
-    left: 245px;
-    width: 50px;
-    height: 50px;
-  }
-  .emoji-leaderboard-button svg {
-    width: 28px;
-    height: 28px;
-  }
+  /* 底部按钮已整合到功能菜单 - 使用通用响应式样式 */
 
   /* 弹窗页面 */
   .emoji-create-page,
@@ -2740,43 +2686,35 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
    Emoji游戏响应式
    ======================================== */
 @media (max-width: 480px) {
-  /* 底部按钮 */
-  .emoji-create-button {
-    left: 90px;
+  /* 底部按钮已整合到功能菜单 - 使用通用响应式样式 */
+  /* 超小屏幕额外优化 */
+  .function-menu-container {
+    bottom: 16px;
+    left: 12px;
+    gap: 8px;
+  }
+  .main-function-button {
     width: 45px;
     height: 45px;
-    bottom: 30px;
   }
-  .emoji-create-button svg {
+  .main-function-button svg {
     width: 24px;
     height: 24px;
   }
-
-  .emoji-hall-button {
-    left: 155px;
+  .sub-function-button {
     width: 45px;
     height: 45px;
-    bottom: 30px;
   }
-  .emoji-hall-button svg {
-    width: 24px;
-    height: 24px;
+  .sub-function-button svg {
+    width: 22px;
+    height: 22px;
   }
   .emoji-hall-badge {
-    width: 20px;
-    height: 20px;
-    font-size: 11px;
-  }
-
-  .emoji-leaderboard-button {
-    left: 215px;
-    width: 45px;
-    height: 45px;
-    bottom: 30px;
-  }
-  .emoji-leaderboard-button svg {
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    top: -3px;
+    right: -3px;
   }
 
   /* 弹窗页面 */

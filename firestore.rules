@@ -9,12 +9,6 @@ service cloud.firestore {
       allow delete: if true;   // 允许删除（包括自己和管理员）
     }
     
-    // 旧的submissions集合保留（如果还有遗留数据）
-    match /submissions/{submission} {
-      allow read: if true;
-      allow write: if true;
-    }
-    
     // 留言集合：允许用户读取发给自己的留言，创建、更新和删除自己发出的留言
     match /messages/{messageId} {
       allow read: if true;  // 允许所有人读取（或限制为 request.auth != null）

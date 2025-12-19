@@ -343,10 +343,10 @@
       return;
     }
 
-    // 更新用户的徽章和风格
+    // 更新用户的徽章和风格（包含类型与分数，便于后续比对/展示）
     const updateData = {
       badges: window.APP_STATE.badges || {},
-      userStyle: userStyle ? userStyle.name : ''
+      userStyle: userStyle || ''
     };
 
     const success = await window.updateUser(window.currentUser.id, updateData);
