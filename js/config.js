@@ -4,7 +4,7 @@
     apiKey: "AIzaSyBT_H10b30bFly8RvQgOUZ9bHuSaeBzUW8",
     authDomain: "movie-2adbd.firebaseapp.com",
     projectId: "movie-2adbd",
-    storageBucket: "movie-2adbd.firebasestorage.app",
+    storageBucket: "movie-2adbd.appspot.com",
     messagingSenderId: "743700785980",
     appId: "1:743700785980:web:f6361d70a24375f3b9cc39",
     measurementId: "G-1W8MM3NTDK"
