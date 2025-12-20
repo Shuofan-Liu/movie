@@ -636,73 +636,119 @@
     <div class="potato-pet" id="potatoPet" data-variant="seed" data-eyes="open">
       <svg viewBox="0 0 160 160" aria-label="potato pet">
         <defs>
-          <linearGradient id="potatoSeedGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#f7e9c8"/>
-            <stop offset="45%" stop-color="#d4aa70"/>
-            <stop offset="100%" stop-color="#8b5b2b"/>
-          </linearGradient>
-          <linearGradient id="potatoSproutGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#f3dfb4"/>
-            <stop offset="40%" stop-color="#c89854"/>
-            <stop offset="100%" stop-color="#7b4b25"/>
-          </linearGradient>
-          <linearGradient id="potatoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#f6d9a5"/>
-            <stop offset="42%" stop-color="#c98c47"/>
-            <stop offset="100%" stop-color="#7e451f"/>
-          </linearGradient>
-          <linearGradient id="potatoHeartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#ffd8d1"/>
-            <stop offset="45%" stop-color="#e18d82"/>
-            <stop offset="100%" stop-color="#b04c4a"/>
-          </linearGradient>
+          <style>
+            .p-outline { fill: #2a170f; }
+            .p-seed-base { fill: #6b3f2a; }
+            .p-seed-mid { fill: #8a5a3c; }
+            .p-seed-hi { fill: #caa07a; }
+            .p-seed-shadow { fill: #4a2b1d; }
+            .p-seed-dent { fill: #2d180f; }
+            .p-seed-speck { fill: #7c4b33; }
+
+            .p-pot-base { fill: #a07045; }
+            .p-pot-mid { fill: #c69263; }
+            .p-pot-hi { fill: #f0d3ad; }
+            .p-pot-shadow { fill: #7c4f2f; }
+            .p-pot-dent { fill: #4a2d1a; }
+            .p-pot-speck { fill: #8a5a3b; }
+
+            .p-heart-base { fill: #b07549; }
+            .p-heart-mid { fill: #d39b69; }
+            .p-heart-hi { fill: #ffe4c8; }
+            .p-heart-shadow { fill: #835233; }
+            .p-heart-dent { fill: #4b2c19; }
+            .p-heart-speck { fill: #956042; }
+
+            .p-eye { fill: #0b1020; }
+          </style>
         </defs>
-        <g class="potato-body seed-body">
-          <path d="M62 40h30l14 12v16l-10 22-20 16H52L36 92l-6-18 8-18 16-16z" fill="url(#potatoSeedGrad)" stroke="#5a341b" stroke-width="2" stroke-linejoin="miter"/>
-          <path d="M92 40h12l10 10v12l-8 14-14 12h-14l10-12 6-16z" fill="#7a4b25" opacity="0.9"/>
-          <rect x="56" y="50" width="14" height="8" fill="#fff3d8" opacity="0.9"/>
-          <rect x="70" y="44" width="10" height="6" fill="#fff3d8" opacity="0.8"/>
-        </g>
-        <g class="potato-body sprout-body">
-          <path d="M56 34h36l16 14v18l-10 24-22 16H54L34 94l-8-20 10-20 16-14z" fill="url(#potatoSproutGrad)" stroke="#5a341b" stroke-width="2" stroke-linejoin="miter"/>
-          <path d="M96 46h12l8 10v12l-8 18-14 12H82l8-12 6-16z" fill="#6c3f1e" opacity="0.85"/>
-          <rect x="58" y="46" width="16" height="8" fill="#ffeccb" opacity="0.85"/>
-          <rect x="74" y="40" width="12" height="6" fill="#ffeccb" opacity="0.75"/>
-        </g>
-        <g class="potato-body normal-body">
-          <path d="M44 32h48l20 16v26l-12 30-26 20H46L24 116l-10-28 10-24 20-16z" fill="url(#potatoGrad)" stroke="#4e2b16" stroke-width="2" stroke-linejoin="miter"/>
-          <path d="M98 46h18l12 14v18l-10 24-20 18H92l10-18 8-22z" fill="#6a371a" opacity="0.9"/>
-          <rect x="50" y="50" width="22" height="10" fill="#ffe7c4" opacity="0.85"/>
-          <rect x="74" y="42" width="14" height="8" fill="#ffe7c4" opacity="0.75"/>
-          <rect x="60" y="74" width="10" height="8" fill="#dca86b" opacity="0.8"/>
-        </g>
-        <g class="potato-body heart-body">
-          <path d="M44 66l14-16h20l10 10 10-10h20l14 16v18l-10 22-20 20-24 14-24-14-20-22-10-22z" fill="url(#potatoHeartGrad)" stroke="#6d3632" stroke-width="2" stroke-linejoin="miter"/>
-          <path d="M102 60h18l10 12v12l-8 18-18 18-16 10h-12l16-16 14-22z" fill="#8c4643" opacity="0.9"/>
-          <rect x="54" y="70" width="18" height="10" fill="#ffe1da" opacity="0.85"/>
-          <rect x="74" y="62" width="14" height="8" fill="#ffe1da" opacity="0.75"/>
-        </g>
-        <g class="potato-sprout">
-          <rect x="76" y="22" width="8" height="26" fill="#3c7a42"/>
-          <rect x="76" y="22" width="8" height="12" fill="#47914d"/>
-          <path d="M70 24h16l-8 12h-12z" fill="#5dbb6b"/>
-          <path d="M84 28h18l-10 14H82z" fill="#4da061"/>
-        </g>
-        <g class="potato-eyes eyes-open">
-          <circle cx="76" cy="98" r="5" fill="#20130c"/>
-          <circle cx="108" cy="98" r="5" fill="#20130c"/>
-        </g>
-        <g class="potato-eyes eyes-closed">
-          <rect x="66" y="96" width="18" height="4" fill="#20130c"/>
-          <rect x="100" y="96" width="18" height="4" fill="#20130c"/>
-        </g>
-        <g class="potato-highlight">
-          <rect x="48" y="54" width="30" height="10" fill="rgba(255,255,255,0.28)"/>
-          <rect x="60" y="46" width="12" height="6" fill="rgba(255,255,255,0.32)"/>
-          <rect x="90" y="110" width="12" height="6" fill="rgba(0,0,0,0.16)"/>
+        <g transform="scale(5)" shape-rendering="crispEdges">
+          <!-- ① 种子 -->
+          <g class="potato-body seed-body">
+            <path class="p-outline" d="M10 8h12l4 4v8l-2 6-6 6h-8l-6-6-2-5v-5l4-6z"/>
+            <path class="p-seed-base" d="M11 9h10l3 3v7l-2 5-5 5h-7l-5-5-1-4v-4l3-5z"/>
+            <path class="p-seed-mid" d="M12 10h9l2 2v5l-2 5-4 4h-6l-4-4-1-3 1-4 3-4z"/>
+            <rect x="14" y="11" width="6" height="2" class="p-seed-hi"/>
+            <rect x="12" y="13" width="4" height="2" class="p-seed-hi" opacity="0.85"/>
+            <rect x="10" y="17" width="3" height="2" class="p-seed-shadow"/>
+            <rect x="20" y="17" width="3" height="2" class="p-seed-shadow"/>
+            <rect x="15" y="21" width="3" height="2" class="p-seed-dent"/>
+            <rect x="14" y="19" width="2" height="1" class="p-seed-speck"/>
+            <rect x="18" y="16" width="2" height="1" class="p-seed-speck"/>
+          </g>
+
+          <!-- ② 发芽 -->
+          <g class="potato-body sprout-body">
+            <path class="p-outline" d="M8 8h14l5 5v10l-3 7-7 6h-9l-7-7-3-7 3-8 5-6z"/>
+            <path class="p-pot-base" d="M9 9h12l4 4v9l-3 6-6 5h-8l-6-6-2-6 2-6 5-6z"/>
+            <path class="p-pot-mid" d="M10 10h11l3 3v7l-2 6-6 5h-7l-5-5-2-5 2-5 4-5z"/>
+            <rect x="12" y="11" width="6" height="2" class="p-pot-hi"/>
+            <rect x="11" y="13" width="4" height="2" class="p-pot-hi" opacity="0.85"/>
+            <rect x="22" y="15" width="3" height="2" class="p-pot-shadow"/>
+            <rect x="18" y="20" width="4" height="2" class="p-pot-dent"/>
+            <rect x="12" y="22" width="2" height="1" class="p-pot-speck"/>
+            <rect x="22" y="21" width="2" height="1" class="p-pot-speck"/>
+          </g>
+
+          <!-- ③ 成熟 -->
+          <g class="potato-body normal-body">
+            <path class="p-outline" d="M6 7h16l6 5v12l-4 9-8 7h-10l-8-8-3-8 3-8 6-7z"/>
+            <path class="p-pot-base" d="M7 8h14l5 4v11l-3 8-7 6h-9l-7-7-2-7 2-7 6-6z"/>
+            <path class="p-pot-mid" d="M8 9h13l4 4v9l-3 7-6 6h-8l-6-6-2-6 2-6 5-6z"/>
+            <rect x="10" y="10" width="7" height="3" class="p-pot-hi"/>
+            <rect x="9" y="13" width="5" height="2" class="p-pot-hi" opacity="0.85"/>
+            <rect x="23" y="14" width="4" height="3" class="p-pot-shadow"/>
+            <rect x="18" y="22" width="4" height="3" class="p-pot-dent"/>
+            <rect x="21" y="24" width="3" height="2" class="p-pot-dent"/>
+            <rect x="10" y="22" width="2" height="1" class="p-pot-speck"/>
+            <rect x="24" y="24" width="2" height="1" class="p-pot-speck"/>
+          </g>
+
+          <!-- ④ 爱心 -->
+          <g class="potato-body heart-body">
+            <path class="p-outline" d="M6 10h10l4 4 4-4h10l6 7v8l-4 8-8 8-8 5-8-5-8-8-4-8v-8z"/>
+            <path class="p-heart-base" d="M7 11h8l4 4 4-4h8l5 6v6l-4 7-7 7-6 4-6-4-7-7-3-7v-6z"/>
+            <path class="p-heart-mid" d="M8 12h7l3 3 3-3h7l4 5v5l-3 6-6 6-5 3-5-3-6-6-3-6v-5z"/>
+            <rect x="11" y="13" width="6" height="3" class="p-heart-hi"/>
+            <rect x="10" y="16" width="4" height="2" class="p-heart-hi" opacity="0.85"/>
+            <rect x="23" y="15" width="3" height="2" class="p-heart-shadow"/>
+            <rect x="20" y="22" width="4" height="3" class="p-heart-dent"/>
+            <rect x="13" y="22" width="3" height="2" class="p-heart-dent"/>
+            <rect x="12" y="23" width="2" height="1" class="p-heart-speck"/>
+            <rect x="20" y="22" width="2" height="1" class="p-heart-speck"/>
+          </g>
+
+          <!-- 芽 -->
+          <g class="potato-sprout">
+            <rect x="15" y="3" width="2" height="8" fill="#166534"/>
+            <rect x="15" y="3" width="2" height="4" fill="#22c55e"/>
+            <rect x="13" y="4" width="4" height="2" fill="#4ade80"/>
+            <rect x="12" y="5" width="2" height="2" fill="#bbf7d0"/>
+            <rect x="17" y="5" width="2" height="2" fill="#bbf7d0"/>
+          </g>
+
+          <!-- 眼睛 -->
+          <g class="potato-eyes eyes-open">
+            <rect x="14" y="19" width="3" height="1" class="p-eye"/>
+            <rect x="13" y="20" width="1" height="1" class="p-eye"/>
+            <rect x="15" y="20" width="1" height="2" class="p-eye"/>
+            <rect x="16" y="20" width="1" height="1" class="p-eye"/>
+            <rect x="14" y="21" width="3" height="1" class="p-eye"/>
+
+            <rect x="21" y="19" width="3" height="1" class="p-eye"/>
+            <rect x="20" y="20" width="1" height="1" class="p-eye"/>
+            <rect x="22" y="20" width="1" height="2" class="p-eye"/>
+            <rect x="23" y="20" width="1" height="1" class="p-eye"/>
+            <rect x="21" y="21" width="3" height="1" class="p-eye"/>
+          </g>
+          <g class="potato-eyes eyes-closed">
+            <rect x="13" y="20" width="6" height="1" class="p-eye"/>
+            <rect x="20" y="20" width="6" height="1" class="p-eye"/>
+          </g>
         </g>
       </svg>
     </div>
+    <div class="potato-bubble" id="potatoBubble" role="status" aria-live="polite"></div>
   </div>
 
   <!-- 通用确认对话框 -->

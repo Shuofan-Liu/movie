@@ -2,6 +2,7 @@
 (function () {
   const layerId = 'potatoLayer';
   const petId = 'potatoPet';
+  const bubbleId = 'potatoBubble';
   const PET_SIZE = 120;
   const BLINK_MIN = 2600;
   const BLINK_MAX = 5200;
@@ -50,6 +51,7 @@
     timers: {
       blinkAt: 0,
       randomAt: 0,
+      bubbleHide: null,
     },
     frameWriting: false,
   };
@@ -146,12 +148,14 @@
     const variant = profile ? profile.variant : 'seed';
     petEl.dataset.variant = variant || 'seed';
     petEl.dataset.eyes = state.eyeMode;
+    positionBubble();
   }
 
   function positionPet() {
     const petEl = $(petId);
     if (!petEl) return;
     petEl.style.transform = `translate(${state.pos.x}px, ${state.pos.y}px) rotate(${state.rot}deg)`;
+    positionBubble();
   }
 
   function scheduleBlink() {
@@ -165,15 +169,9 @@
   function pulseQuote() {
     const petEl = $(petId);
     if (!petEl) return;
-    petEl.classList.remove('potato-bounce');
-    // 使用自定义属性记住当前平移，避免动画覆盖位移
-    petEl.style.setProperty('--px', `${state.pos.x}px`);
-    petEl.style.setProperty('--py', `${state.pos.y}px`);
-    void petEl.offsetWidth; // 强制重排
-    petEl.classList.add('potato-bounce');
-
+    hopTwice();
     const quote = quotes.length ? quotes[Math.floor(Math.random() * quotes.length)] : 'Keep growing.';
-    toast(quote, 'info');
+    showBubble(quote);
   }
 
   function randomizeVelocity() {
@@ -187,6 +185,52 @@
     const angle = rand(0, Math.PI * 2);
     state.vel.x = Math.cos(angle) * speed;
     state.vel.y = Math.sin(angle) * speed;
+  }
+
+  function positionBubble() {
+    const bubble = $(bubbleId);
+    if (!bubble) return;
+    if (!bubble.classList.contains('show')) return;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const top = Math.max(8, Math.min(vh - bubble.offsetHeight - 8, state.pos.y - bubble.offsetHeight - 12));
+    const left = Math.min(
+      Math.max(8, state.pos.x + PET_SIZE / 2 - bubble.offsetWidth / 2),
+      Math.max(8, vw - bubble.offsetWidth - 8)
+    );
+    bubble.style.left = `${left}px`;
+    bubble.style.top = `${top}px`;
+  }
+
+  function hopTwice() {
+    const petEl = $(petId);
+    if (!petEl) return;
+    state.rot = 0;
+    positionPet();
+    petEl.classList.remove('potato-hop');
+    petEl.style.setProperty('--px', `${state.pos.x}px`);
+    petEl.style.setProperty('--py', `${state.pos.y}px`);
+    void petEl.offsetWidth;
+    petEl.classList.add('potato-hop');
+    petEl.addEventListener('animationend', () => {
+      petEl.classList.remove('potato-hop');
+    }, { once: true });
+  }
+
+  function showBubble(msg, durationMs) {
+    const bubble = $(bubbleId);
+    if (!bubble) return;
+    bubble.textContent = msg;
+    bubble.classList.add('show');
+    positionBubble();
+    if (state.timers.bubbleHide) {
+      clearTimeout(state.timers.bubbleHide);
+    }
+    const delay = durationMs || 3200;
+    state.timers.bubbleHide = setTimeout(() => {
+      bubble.classList.remove('show');
+      state.timers.bubbleHide = null;
+    }, delay);
   }
 
   function tick(last) {
@@ -396,6 +440,8 @@
     window.addEventListener('pointerup', onDragEnd);
     petEl.addEventListener('click', (e) => {
       e.stopPropagation();
+      state.rot = 0;
+      positionPet();
       if (state.profile && state.profile.variant === 'seed') {
         claimSeed();
       } else {
@@ -430,6 +476,7 @@
     state.pos.x = Math.min(state.pos.x, maxX);
     state.pos.y = Math.min(state.pos.y, maxY);
     positionPet();
+    positionBubble();
   }
 
   window.initPotatoPet = function initPotatoPet() {
