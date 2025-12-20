@@ -65,11 +65,17 @@
     }
     await initEmojiPicker();
 
-    // 更新badge数字
+    // 更新所有badge数字
     await updateHallBadge();
+    await updateDanmakuBadge();
+    await updateMainFunctionBadge();
 
     // 定期更新badge（每30秒）
-    setInterval(updateHallBadge, 30000);
+    setInterval(async () => {
+      await updateHallBadge();
+      await updateDanmakuBadge();
+      await updateMainFunctionBadge();
+    }, 30000);
   };
 
   // ============ Task 1: 更新大厅badge数字 ============
@@ -84,6 +90,39 @@
       badgeEl.style.display = count > 0 ? 'flex' : 'none';
     }
   }
+
+  // 更新留言墙badge数字
+  async function updateDanmakuBadge() {
+    if (!window.currentUser) return;
+
+    const count = await window.getUnreadDanmakuCount();
+    const badgeEl = document.getElementById('danmakuBadge');
+    if (badgeEl) {
+      badgeEl.textContent = count;
+      badgeEl.style.display = count > 0 ? 'flex' : 'none';
+    }
+  }
+
+  // 暴露为全局函数，供 danmaku.js 调用
+  window.updateDanmakuBadge = updateDanmakuBadge;
+
+  // 更新主功能键badge数字（留言墙未读数 + 猜题大厅未猜数）
+  async function updateMainFunctionBadge() {
+    if (!window.currentUser) return;
+
+    const hallCount = await window.getOpenPuzzlesCount();
+    const danmakuCount = await window.getUnreadDanmakuCount();
+    const totalCount = hallCount + danmakuCount;
+
+    const badgeEl = document.getElementById('mainFunctionBadge');
+    if (badgeEl) {
+      badgeEl.textContent = totalCount;
+      badgeEl.style.display = totalCount > 0 ? 'flex' : 'none';
+    }
+  }
+
+  // 暴露为全局函数，供 danmaku.js 调用
+  window.updateMainFunctionBadge = updateMainFunctionBadge;
 
   // ============ Task 2: 出题页 ============
 
@@ -183,6 +222,9 @@
 
     // 加载题目列表
     await loadPuzzlesList();
+
+    // 更新徽章（确保数字最新）
+    await updateHallBadge();
   };
 
   window.closeEmojiHallPage = function() {
@@ -646,6 +688,8 @@
 
   // ============ Task 8: 排行榜 ============
 
+  let currentLeaderboardTab = 'guess'; // 'guess' 或 'influence'
+
   window.showEmojiLeaderboard = async function() {
     if (!window.currentUser) {
       showToast('请先登录', 'warn');
@@ -654,7 +698,9 @@
 
     document.getElementById('emojiLeaderboardOverlay').style.display = 'flex';
 
-    // 加载排行榜
+    // 默认显示猜对榜
+    currentLeaderboardTab = 'guess';
+    updateTabButtons();
     await loadLeaderboard();
   };
 
@@ -662,6 +708,45 @@
     document.getElementById('emojiLeaderboardOverlay').style.display = 'none';
   };
 
+  // Tab 切换函数
+  window.switchLeaderboardTab = async function(tab) {
+    if (currentLeaderboardTab === tab) return;
+
+    currentLeaderboardTab = tab;
+    updateTabButtons();
+
+    if (tab === 'guess') {
+      await loadLeaderboard();
+    } else if (tab === 'influence') {
+      await loadInfluenceLeaderboard();
+    }
+  };
+
+  // 更新 Tab 按钮样式
+  function updateTabButtons() {
+    const guessBtn = document.getElementById('guessTabBtn');
+    const influenceBtn = document.getElementById('influenceTabBtn');
+
+    if (currentLeaderboardTab === 'guess') {
+      guessBtn.style.background = 'var(--avatar-glow-color)';
+      guessBtn.style.borderColor = 'var(--avatar-border-color)';
+      guessBtn.style.color = 'var(--avatar-border-color)';
+
+      influenceBtn.style.background = 'rgba(255,255,255,0.05)';
+      influenceBtn.style.borderColor = 'rgba(255,255,255,0.2)';
+      influenceBtn.style.color = '#ccc';
+    } else {
+      influenceBtn.style.background = 'var(--avatar-glow-color)';
+      influenceBtn.style.borderColor = 'var(--avatar-border-color)';
+      influenceBtn.style.color = 'var(--avatar-border-color)';
+
+      guessBtn.style.background = 'rgba(255,255,255,0.05)';
+      guessBtn.style.borderColor = 'rgba(255,255,255,0.2)';
+      guessBtn.style.color = '#ccc';
+    }
+  }
+
+  // 加载猜对榜
   async function loadLeaderboard() {
     showLoading('加载中...');
 
@@ -698,6 +783,53 @@
           <div style="flex: 1;">
             <div class="emoji-leaderboard-name" style="color: ${rankColor};">${user.user_name}</div>
             <div style="font-size: 14px; color: #888;">猜对 ${user.correct_guess_count} 道题</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // 加载影响力榜（新增）
+  async function loadInfluenceLeaderboard() {
+    showLoading('加载中...');
+
+    const leaderboard = await window.getInfluenceLeaderboard(20);
+
+    hideLoading();
+
+    const listEl = document.getElementById('emojiLeaderboardList');
+    if (!listEl) return;
+
+    if (leaderboard.length === 0) {
+      listEl.innerHTML = '<div style="text-align:center; padding:60px 20px; color:#888; font-size:16px;">暂无数据</div>';
+      return;
+    }
+
+    listEl.innerHTML = leaderboard.map((user, index) => {
+      const rankColor = index === 0 ? '#FFD700' : index === 1 ? '#C0C0C0' : index === 2 ? '#CD7F32' : 'var(--avatar-border-color)';
+      const rankIcon = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
+
+      const puzzleCreated = user.puzzle_created_count || 0;
+      const puzzleSolved = user.puzzle_solved_count || 0;
+      const influenceScore = user.influenceScore || 0;
+
+      // 使用renderAvatarInline正确渲染头像对象
+      const avatarHtml = renderAvatarInline(user.user_avatar_url, user.user_name, 50, 24, false);
+      const avatarContentMatch = avatarHtml.match(/<div[^>]*>(.*?)<\/div>/);
+      const avatarContent = avatarContentMatch ? avatarContentMatch[1] : (user.user_avatar_url || getDefaultAvatar(user.user_name));
+
+      return `
+        <div style="background: rgba(20,20,20,0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 20px; margin-bottom: 12px; display: flex; align-items: center; gap: 20px;">
+          <div class="emoji-leaderboard-rank" style="color: ${rankColor};">
+            ${rankIcon || (index + 1)}
+          </div>
+          <div style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid ${rankColor}; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 0 15px rgba(212,175,55,0.3); transition: all 2s ease; overflow: hidden;">
+            ${avatarContent}
+          </div>
+          <div style="flex: 1;">
+            <div class="emoji-leaderboard-name" style="color: ${rankColor};">${user.user_name}</div>
+            <div style="font-size: 14px; color: #aaa; margin-top: 4px;">出题 ${puzzleCreated} | 猜中 ${puzzleSolved}</div>
+            <div style="font-size: 13px; color: ${rankColor}; margin-top: 4px;">⭐ 综合: ${influenceScore}分</div>
           </div>
         </div>
       `;

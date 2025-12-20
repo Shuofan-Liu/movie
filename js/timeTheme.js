@@ -6,16 +6,16 @@
     const hour = new Date().getHours();
 
     if (hour >= 6 && hour < 9) {
-      // 清晨 6-9点 - 浅蓝色调
+      // 清晨 6-9点 - 雾蓝偏白
       return {
         name: 'dawn',
-        avatarBorder: '#87ceeb',
-        avatarGlow: 'rgba(135, 206, 235, 0.4)',
+        avatarBorder: '#9bc9ff',
+        avatarGlow: 'rgba(155, 201, 255, 0.4)',
         filmOpacity: 0.15,
-        filmFilter: 'brightness(1.1) saturate(0.8) hue-rotate(-10deg)',
-        directorBaseColor: '#f0f8ff',
-        directorHoverColor: '#87ceeb',
-        badgeGlow: 'rgba(135, 206, 235, 0.4)',
+        filmFilter: 'brightness(1.1) saturate(0.75) hue-rotate(-5deg)',
+        directorBaseColor: '#cfe8ff',
+        directorHoverColor: '#9bc9ff',
+        badgeGlow: 'rgba(155, 201, 255, 0.4)',
         badgeGlowSize: '10px'
       };
     } else if (hour >= 9 && hour < 12) {
@@ -58,42 +58,42 @@
         badgeGlowSize: '15px'
       };
     } else if (hour >= 19 && hour < 21) {
-      // 黄昏 19-21点 - 蓝色调
+      // 黄昏 19-21点 - 莓紫偏红
       return {
         name: 'dusk',
-        avatarBorder: '#4682b4',
-        avatarGlow: 'rgba(70, 130, 180, 0.5)',
+        avatarBorder: '#d781b5',
+        avatarGlow: 'rgba(179, 107, 156, 0.55)',
         filmOpacity: 0.3,
-        filmFilter: 'brightness(0.9) saturate(1.0) contrast(1.05)',
-        directorBaseColor: '#e0f2ff',
-        directorHoverColor: '#4682b4',
-        badgeGlow: 'rgba(70, 130, 180, 0.6)',
+        filmFilter: 'brightness(0.92) saturate(1.05) hue-rotate(8deg)',
+        directorBaseColor: '#f1d8e8',
+        directorHoverColor: '#d781b5',
+        badgeGlow: 'rgba(179, 107, 156, 0.55)',
         badgeGlowSize: '18px'
       };
     } else if (hour >= 21 && hour < 24) {
-      // 夜晚 21-24点 - 紫色调
+      // 夜晚 21-24点 - 深蓝带紫
       return {
         name: 'night',
-        avatarBorder: '#9370db',
-        avatarGlow: 'rgba(147, 112, 219, 0.6)',
+        avatarBorder: '#5a63b8',
+        avatarGlow: 'rgba(63, 75, 138, 0.6)',
         filmOpacity: 0.35,
-        filmFilter: 'brightness(0.85) saturate(1.1) contrast(1.1)',
-        directorBaseColor: '#e6e6fa',
-        directorHoverColor: '#9370db',
-        badgeGlow: 'rgba(147, 112, 219, 0.7)',
+        filmFilter: 'brightness(0.82) saturate(1.1) contrast(1.12)',
+        directorBaseColor: '#d7dcf5',
+        directorHoverColor: '#5a63b8',
+        badgeGlow: 'rgba(63, 75, 138, 0.65)',
         badgeGlowSize: '22px'
       };
     } else {
-      // 深夜 0-6点 - 深紫蓝
+      // 深夜 0-6点 - 深蓝
       return {
         name: 'midnight',
-        avatarBorder: '#483d8b',
-        avatarGlow: 'rgba(72, 61, 139, 0.6)',
+        avatarBorder: '#274a7c',
+        avatarGlow: 'rgba(15, 35, 71, 0.7)',
         filmOpacity: 0.4,
-        filmFilter: 'brightness(0.75) saturate(1.2) contrast(1.15)',
-        directorBaseColor: '#dcd0ff',
-        directorHoverColor: '#6a5acd',
-        badgeGlow: 'rgba(72, 61, 139, 0.75)',
+        filmFilter: 'brightness(0.72) saturate(1.15) contrast(1.18)',
+        directorBaseColor: '#c7d4e8',
+        directorHoverColor: '#274a7c',
+        badgeGlow: 'rgba(15, 35, 71, 0.7)',
         badgeGlowSize: '25px'
       };
     }
@@ -133,4 +133,6 @@
   window.applyTimeTheme = applyTimeTheme;
   window.getTimeTheme = getTimeTheme;
 
+  // 首屏尽早应用，减少主题闪烁
+  applyTimeTheme();
 })();

@@ -38,6 +38,17 @@
     // 加载最近50条留言
     await loadDanmakuMessages();
 
+    // 更新用户的最后查看时间
+    await updateLastDanmakuViewTime();
+
+    // 更新徽章（清零）
+    if (window.updateDanmakuBadge) {
+      await window.updateDanmakuBadge();
+    }
+    if (window.updateMainFunctionBadge) {
+      await window.updateMainFunctionBadge();
+    }
+
     // 开始循环显示
     startDanmakuDisplay();
   }
@@ -374,6 +385,10 @@
       // 清空输入框
       input.value = '';
 
+      // 通知其他用户更新徽章（新留言发布）
+      // 注意：用户自己发的留言不会增加自己的未读数，但会增加其他用户的未读数
+      // 这里无需更新当前用户的徽章，因为自己的留言不计入未读
+
       console.log('[Danmaku] Message sent successfully');
 
       // 显示成功提示
@@ -558,6 +573,63 @@
       }
     }
   }
+
+  // 更新用户的最后查看留言墙时间
+  async function updateLastDanmakuViewTime() {
+    if (!window.currentUser || !window.db) return;
+
+    try {
+      await window.db.collection('users').doc(window.currentUser.id).update({
+        lastDanmakuViewTime: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      console.log('[Danmaku] Updated lastDanmakuViewTime');
+    } catch (error) {
+      console.error('[Danmaku] Failed to update lastDanmakuViewTime:', error);
+    }
+  }
+
+  // 获取未读弹幕数量（其他用户发的新留言）
+  window.getUnreadDanmakuCount = async function() {
+    if (!window.currentUser || !window.db) return 0;
+
+    try {
+      // 获取用户的最后查看时间
+      const userDoc = await window.db.collection('users').doc(window.currentUser.id).get();
+      const userData = userDoc.data();
+      const lastViewTime = userData?.lastDanmakuViewTime;
+
+      // 如果没有查看记录，返回所有非本人的留言数
+      if (!lastViewTime) {
+        const snapshot = await window.db.collection('danmaku_messages').get();
+        let count = 0;
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          if (data.userId !== window.currentUser.id) {
+            count++;
+          }
+        });
+        return count;
+      }
+
+      // 获取上次查看后的新留言（排除自己发的）
+      const snapshot = await window.db.collection('danmaku_messages')
+        .where('timestamp', '>', lastViewTime)
+        .get();
+
+      let count = 0;
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        if (data.userId !== window.currentUser.id) {
+          count++;
+        }
+      });
+
+      return count;
+    } catch (error) {
+      console.error('[Danmaku] Failed to get unread count:', error);
+      return 0;
+    }
+  };
 
   console.log('[Danmaku] Module loaded');
 
