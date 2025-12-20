@@ -5,18 +5,17 @@
   opacity: 0;
 }
 #potatoCameraFlash.flash {
-  animation: cameraFlashAnim 2.4s cubic-bezier(.46,0,.26,1);
+  animation: cameraFlashAnim 2.5s cubic-bezier(.46,0,.26,1);
   opacity: 1;
 }
 @keyframes cameraFlashAnim {
-  0% { opacity: 0; transform: translate(8px, 8px) scale(0.88); filter: brightness(1); }
+  0% { opacity: 0; transform: translate(6px, 6px) scale(0.9); filter: brightness(1); }
   10% { opacity: 1; transform: translate(0, 0) scale(1); filter: brightness(1.2); }
-  22% { opacity: 1; filter: brightness(2.8); }
-  32% { opacity: 1; filter: brightness(1.15); }
-  52% { opacity: 1; filter: brightness(2.8); }
-  62% { opacity: 1; filter: brightness(1.2); }
-  78% { opacity: 0.95; filter: brightness(1.05); }
-  100% { opacity: 0; transform: translate(0, 0) scale(1); filter: brightness(1); }
+  60% { opacity: 1; filter: brightness(1.2); }
+  70% { opacity: 1; filter: brightness(3); }
+  80% { opacity: 1; filter: brightness(1.4); }
+  90% { opacity: 1; filter: brightness(3); }
+  100% { opacity: 0; transform: translate(0, 0) scale(1); filter: brightness(1.2); }
 }
 /* 时间感知CSS变量 - 由timeTheme.js动态更新 */
 :root {

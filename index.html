@@ -205,6 +205,43 @@
     </div>
   </div>
 
+  <!-- 用户详情弹窗 -->
+  <div class="user-modal-overlay" id="userModalOverlay" onclick="closeUserModal()"></div>
+  <div class="user-modal" id="userModal">
+    <div class="user-modal-header" style="display:flex; justify-content: flex-end;">
+      <span class="user-close" onclick="closeUserModal()">&times;</span>
+    </div>
+    <div id="userContent" class="user-modal-body"></div>
+  </div>
+  <!-- 我的留言 -->
+  <div class="user-modal-overlay" id="myMessagesOverlay" onclick="closeMyMessages()"></div>
+  <div class="user-modal" id="myMessagesPage">
+    <div class="user-modal-header" style="display:flex; justify-content: space-between; align-items:center;">
+      <h3 style="margin:0; font-size:18px;">我的留言</h3>
+      <span class="user-close" onclick="closeMyMessages()">&times;</span>
+    </div>
+    <div id="myMessagesList" class="messages-board"></div>
+  </div>
+  <!-- 用户列表页面 -->
+  <div class="users-page-overlay" id="usersPageOverlay" onclick="closeUsersPage()"></div>
+  <div class="users-page" id="usersPage">
+    <div class="sidebar-header" style="margin-bottom:16px;">
+      <div class="sidebar-title" style="font-size:22px;">用户列表</div>
+      <span class="sidebar-close" onclick="closeUsersPage()">&times;</span>
+    </div>
+    <div id="usersGrid" class="users-grid"></div>
+  </div>
+  <!-- 右侧用户列表侧边栏 -->
+  <div class="users-sidebar-overlay" id="usersSidebarOverlay" onclick="closeUsersSidebar()"></div>
+  <div class="users-sidebar" id="usersSidebar">
+    <div class="sidebar-header" style="padding:16px; margin-bottom:12px;">
+      <div class="sidebar-title" style="font-size:20px;">用户列表</div>
+      <span class="sidebar-close" onclick="closeUsersSidebar()">&times;</span>
+    </div>
+    <div id="usersSidebarGrid" class="sidebar-users-grid"></div>
+  </div>
+  <div class="users-sidebar-tab" id="usersSidebarTab" onclick="toggleUsersSidebarTab()">&lt;</div>
+
   <!-- 徽章提示气泡 -->
   <div class="badge-toast hidden" id="badgeToast">
     <span class="badge-icon-toast" id="badgeToastIcon"></span>
