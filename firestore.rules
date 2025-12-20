@@ -118,7 +118,7 @@ service cloud.firestore {
                        request.resource.data.thumb_url is string &&
                        request.resource.data.grid_revealed is list &&
                        request.resource.data.grid_revealed.size() == 12 &&
-                       request.resource.data.grid_revealed.where(g -> g == true).size() >= 3;
+                       request.resource.data.grid_revealed.where(g => g == true).size() >= 3;
 
       // 更新权限：两种情况允许更新
       allow update: if (
