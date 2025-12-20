@@ -366,6 +366,9 @@
     `;
   }
 
+  // 暴露为全局函数，供其他模块使用
+  window.renderAvatarInline = renderAvatarInline;
+
   function fallbackAvatarContent(avatarData, nickname) {
     if (!avatarData || typeof avatarData === 'string') {
       return avatarData || getDefaultAvatar(nickname);
