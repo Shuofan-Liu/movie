@@ -326,7 +326,7 @@
     }
 
     listEl.innerHTML = sorted.map(p => `
-      <div class="emoji-hall-item" onclick="showStillPuzzleDetail('${p.id}')" style="background: rgba(20,20,20,0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px; margin-bottom: 14px; cursor: pointer; transition: all 0.3s ease;">
+      <div class="emoji-hall-item still-hall-item" onclick="showStillPuzzleDetail('${p.id}')" style="background: rgba(20,20,20,0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 14px; margin-bottom: 12px; cursor: pointer; transition: all 0.3s ease;">
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
           ${renderAvatarInline(p.author_avatar_url, p.author_name, 40, 20)}
           <div style="flex:1;">
@@ -335,12 +335,12 @@
           </div>
           ${p.status === 'solved' ? '<span style="color: var(--avatar-border-color); font-size:16px;">✓</span>' : ''}
         </div>
-        <div style="position:relative; border-radius:10px; overflow:hidden; border:1px solid rgba(255,255,255,0.1);">
-          <img src="${p.thumb_url}" alt="thumb" style="width:100%; display:block; object-fit:cover;">
-          <div style="position:absolute; inset:0; display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(3,1fr); background:rgba(0,0,0,0.35);">
+        <div class="still-hall-thumb">
+          <img src="${p.thumb_url}" alt="thumb" class="still-hall-thumb-img">
+          <div style="position:absolute; inset:0; display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(3,1fr); background:rgba(0,0,0,0.6);">
             ${Array.from({length: GRID_SIZE}).map((_, idx) => {
               const revealed = (p.grid_revealed || [])[idx];
-              return `<div style="border:1px solid rgba(255,255,255,0.08); ${revealed ? 'background:transparent;' : 'background:rgba(0,0,0,0.7);'}"></div>`;
+              return `<div style="border:1px solid rgba(255,255,255,0.08); ${revealed ? 'background:transparent;' : 'background:rgba(0,0,0,1);'}"></div>`;
             }).join('')}
           </div>
         </div>
@@ -409,7 +409,7 @@
           <div style="position:absolute; inset:0; display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(3,1fr);">
             ${Array.from({length: GRID_SIZE}).map((_, idx) => {
               const revealed = revealGrid[idx];
-              return `<div style="border:1px solid rgba(255,255,255,0.08); ${revealed ? 'background: transparent;' : 'background: rgba(0,0,0,0.75);'}"></div>`;
+              return `<div style="border:1px solid rgba(255,255,255,0.08); ${revealed ? 'background: transparent;' : 'background: rgba(0,0,0,1);'}"></div>`;
             }).join('')}
           </div>
         </div>
@@ -430,7 +430,7 @@
         </div>
         <div style="margin-top: 24px; padding: 16px; background: rgba(255,255,255,0.03); border-radius: 8px;">
           <div style="display:flex; align-items:center; gap:12px; justify-content:center;">
-            ${renderAvatarInline(currentStillPuzzle.author_avatar_url, currentStillPuzzle.author_name, 40, 20, true)}
+              ${renderAvatarInline(currentStillPuzzle.author_avatar_url, currentStillPuzzle.author_name, 40, 20)}
             <div style="text-align:left;">
               <div style="font-size:14px; color:#ccc;">${currentStillPuzzle.author_name}</div>
               <div style="font-size:12px; color:#666;">${window.formatDateTime(currentStillPuzzle.created_at)} 出题</div>

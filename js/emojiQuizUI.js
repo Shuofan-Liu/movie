@@ -663,7 +663,7 @@
 
           <div style="margin-top: 30px; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 8px;">
             <div style="display: flex; align-items: center; gap: 12px; justify-content: center; margin-bottom: 10px;">
-              ${renderAvatarInline(currentPuzzle.author_avatar_url, currentPuzzle.author_name, 40, 20, true)}
+              ${renderAvatarInline(currentPuzzle.author_avatar_url, currentPuzzle.author_name, 40, 20)}
               <div style="text-align: left;">
                 <div style="font-size: 14px; color: #ccc;">${currentPuzzle.author_name}</div>
                 <div style="font-size: 12px; color: #666;">${window.formatDateTime(currentPuzzle.created_at)} 出题</div>

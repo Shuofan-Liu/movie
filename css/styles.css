@@ -2352,7 +2352,7 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 .emoji-hall-item:hover {
   border-color: var(--avatar-border-color) !important;
   transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(212,175,55,0.2);
+  box-shadow: 0 4px 20px rgba(212,175,55,0.2), 0 0 0 1px var(--avatar-border-color);
 }
 
 /* 猜题弹窗覆盖层 */
@@ -2487,9 +2487,9 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
   position: absolute;
   top: -8px;
   left: -8px;
-  background: var(--avatar-border-color);
-  color: #000;
-  border: 2px solid #111;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  border: 2px solid #fff;
   border-radius: 999px;
   min-width: 20px;
   height: 20px;
@@ -2518,6 +2518,24 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+.still-hall-item {
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.still-hall-thumb {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.12);
+  max-height: 320px;
+}
+.still-hall-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 .still-grid {
   position: absolute;
@@ -2724,6 +2742,15 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
     margin: 16px 0;
   }
 
+  .still-hall-item {
+    padding: 12px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .still-hall-thumb {
+    max-height: 240px;
+  }
+
   .emoji-guess-title {
     font-size: 28px;
     margin-bottom: 24px;
@@ -2784,6 +2811,15 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
   .emoji-hall-item-emoji {
     font-size: 38px;
     margin: 14px 0;
+  }
+
+  .still-hall-item {
+    padding: 11px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .still-hall-thumb {
+    max-height: 210px;
   }
 
   .emoji-guess-title {
@@ -2861,6 +2897,15 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
   .emoji-hall-item {
     padding: 12px !important;
     margin-bottom: 10px !important;
+  }
+
+  .still-hall-item {
+    padding: 10px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .still-hall-thumb {
+    max-height: 190px;
   }
 
   /* Emoji Picker */
