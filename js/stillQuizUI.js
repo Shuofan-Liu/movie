@@ -233,24 +233,18 @@
       return;
     }
 
-    showLoading('上传中...');
+    showLoading('处理中...');
     try {
-      const storage = firebase.storage();
       const docId = firebase.firestore().collection('still_puzzles').doc().id;
-      const basePath = `stills/${window.currentUser.id}/${docId}`;
 
-      const mainRef = storage.ref().child(`${basePath}/main`);
-      const thumbRef = storage.ref().child(`${basePath}/thumb`);
-
-      await mainRef.put(createImageState.mainBlob, { contentType: createImageState.mainMime });
-      await thumbRef.put(createImageState.thumbBlob, { contentType: createImageState.thumbMime });
-
-      const [mainUrl, thumbUrl] = await Promise.all([mainRef.getDownloadURL(), thumbRef.getDownloadURL()]);
+      // 转换为 Base64（不使用 Storage，直接存 Firestore）
+      const mainDataUrl = await blobToDataUrl(createImageState.mainBlob);
+      const thumbDataUrl = await blobToDataUrl(createImageState.thumbBlob);
 
       const result = await window.publishStillPuzzle({
         id: docId,
-        image_url: mainUrl,
-        thumb_url: thumbUrl,
+        image_url: mainDataUrl,
+        thumb_url: thumbDataUrl,
         grid_revealed: createGrid.slice(),
         hint: document.getElementById('stillHintInput')?.value || '',
         answer_display: answerDisplay
