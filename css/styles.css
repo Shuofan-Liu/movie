@@ -1211,7 +1211,7 @@ input, textarea, button, select, [contenteditable="true"] { user-select: text; -
 
   /* 头像右下角关系徽章：手机端稍向右偏移 */
   .relation-chip-embedded {
-    right: -24px;
+    right: -30px;
     bottom: -6px;
   }
 
