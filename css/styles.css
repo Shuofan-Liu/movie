@@ -5,14 +5,18 @@
   opacity: 0;
 }
 #potatoCameraFlash.flash {
-  animation: cameraFlashAnim 0.38s cubic-bezier(.7,0,.7,1);
+  animation: cameraFlashAnim 2s cubic-bezier(.46,0,.26,1);
   opacity: 1;
 }
 @keyframes cameraFlashAnim {
-  0% { opacity: 0; filter: brightness(1); }
-  20% { opacity: 1; filter: brightness(2.5); }
-  60% { opacity: 1; filter: brightness(1.2); }
-  100% { opacity: 0; filter: brightness(1); }
+  0% { opacity: 0; transform: translate(8px, 8px) scale(0.88); filter: brightness(1); }
+  10% { opacity: 1; transform: translate(0, 0) scale(1); filter: brightness(1.2); }
+  22% { opacity: 1; filter: brightness(2.8); }
+  32% { opacity: 1; filter: brightness(1.15); }
+  52% { opacity: 1; filter: brightness(2.8); }
+  62% { opacity: 1; filter: brightness(1.2); }
+  78% { opacity: 0.95; filter: brightness(1.05); }
+  100% { opacity: 0; transform: translate(0, 0) scale(1); filter: brightness(1); }
 }
 /* 时间感知CSS变量 - 由timeTheme.js动态更新 */
 :root {
@@ -3104,21 +3108,10 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
   width: 80px;
   height: 80px;
   transform-origin: center;
-  filter: drop-shadow(0 10px 24px rgba(0,0,0,0.25));
   cursor: grab;
   pointer-events: auto;
   transition: transform 0.18s ease, opacity 0.3s ease;
   position: relative;
-}
-
-.potato-pet::before {
-  content: '';
-  position: absolute;
-  inset: -4px;
-  background: radial-gradient(circle at 50% 55%, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.7) 55%, rgba(0,0,0,0) 75%);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
 }
 
 .potato-pet:active {
