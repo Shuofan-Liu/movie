@@ -1,0 +1,102 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 用户集合：允许公开读取，允许创建和更新（小规模信任场景）
+    match /users/{userId} {
+      allow read: if true;     // 所有人可查看用户信息
+      allow create: if true;   // 允许注册
+      allow update: if true;   // 允许更新（包括自己和管理员）
+      allow delete: if true;   // 允许删除（包括自己和管理员）
+    }
+
+    // 留言集合：允许用户读取发给自己的留言，创建、更新和删除自己发出的留言
+    match /messages/{messageId} {
+      allow read: if true;  // 允许所有人读取（或限制为 request.auth != null）
+      allow create: if true; // 允许创建留言
+      allow update, delete: if true; // 允许更新和删除
+    }
+
+    // 关系集合：允许创建和读取关系申请
+    match /relationships/{relationshipId} {
+      allow read: if true;  // 允许读取
+      allow create: if true; // 允许创建申请
+      allow update: if true; // 允许更新状态
+      allow delete: if true; // 允许删除
+    }
+
+    // 弹幕留言集合：允许所有人读取和创建弹幕
+    match /danmaku_messages/{messageId} {
+      allow read: if true;   // 允许所有人读取弹幕
+      allow create: if true; // 允许创建弹幕
+      allow delete: if true; // 允许删除弹幕
+    }
+
+    // ============ Emoji猜电影游戏相关集合 ============
+
+    // 辅助函数：检查用户是否已登录
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // 辅助函数：检查是否为资源的作者
+    function isAuthor(authorId) {
+      return isSignedIn() && request.auth.uid == authorId;
+    }
+
+    // puzzles 集合：emoji猜电影题目
+    match /puzzles/{puzzleId} {
+      // ⚠️ 临时修改：允许读取所有题目（包括已删除的）- 用于数据迁移
+      allow read: if true;
+
+      // 创建权限：所有人可以创建题目，且必须满足字段要求
+      allow create: if request.resource.data.status == 'open' &&
+                       request.resource.data.is_deleted == false &&
+                       request.resource.data.emoji_count >= 1 &&
+                       request.resource.data.emoji_count <= 6 &&
+                       request.resource.data.answer_norm is string &&
+                       request.resource.data.answer_display is string &&
+                       request.resource.data.author_id is string &&
+                       request.resource.data.author_name is string;
+
+      // 更新权限：两种情况允许更新
+      allow update: if (
+        // 情况1: 猜题成功 - 任何用户都可以将 open 状态改为 solved
+        (resource.data.status == 'open' &&
+         request.resource.data.status == 'solved' &&
+         request.resource.data.solved_by_user_id is string &&
+         // 确保关键字段不被篡改
+         resource.data.author_id == request.resource.data.author_id &&
+         resource.data.emoji_text == request.resource.data.emoji_text &&
+         resource.data.answer_norm == request.resource.data.answer_norm &&
+         resource.data.is_deleted == request.resource.data.is_deleted)
+        ||
+        // 情况2: 软删除题目 - 仅当状态为 open 时可以软删除
+        (resource.data.status == 'open' &&
+         request.resource.data.is_deleted == true &&
+         // 确保其他字段不被修改
+         resource.data.status == request.resource.data.status &&
+         resource.data.emoji_text == request.resource.data.emoji_text &&
+         resource.data.answer_norm == request.resource.data.answer_norm)
+      );
+
+      // 禁止物理删除，只允许软删除
+      allow delete: if false;
+    }
+
+    // user_stats 集合：用户猜题统计（排行榜）
+    match /user_stats/{userId} {
+      // 读取权限：所有人可以读取（用于显示排行榜）
+      allow read: if true;
+
+      // 创建权限：所有人可以创建统计记录
+      allow create: if request.resource.data.user_id is string &&
+                       request.resource.data.correct_guess_count >= 0;
+
+      // ⚠️ 临时修改：允许直接更新字段值 - 用于数据迁移
+      allow update: if true;
+
+      // 禁止删除统计记录
+      allow delete: if false;
+    }
+  }
+}
