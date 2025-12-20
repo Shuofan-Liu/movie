@@ -220,7 +220,7 @@
       localStorage.setItem('currentUserId', user.id);
       updateUserStatus();
       closeLoginModal();
-        showInlineAlert(`欢迎回来，${nickname}！`, 'success');
+        showInlineAlert(`欢迎回来，${nickname}`, 'success');
     } finally {
       // 恢复按钮状态
       isLoggingIn = false;
@@ -340,7 +340,7 @@
       updateUserCorner();
       closeLoginModal();
       loadingEl.classList.remove('active');
-      showInlineAlert(`注册成功，欢迎 ${nickname}！`, 'success');
+      showInlineAlert(`注册成功，欢迎 ${nickname}`, 'success');
 
       // 清空表单
       document.getElementById('regForm').reset();
@@ -1376,7 +1376,7 @@
       if (updateData.recentFilm !== undefined) window.currentUser.recentFilm = updateData.recentFilm;
       if (updateData.thoughts !== undefined) window.currentUser.thoughts = updateData.thoughts;
 
-      showInlineAlert('资料已更新！', 'success');
+      showInlineAlert('资料已更新', 'success');
 
       // 立即更新左上角和下拉菜单的头像显示（使用已更新的本地数据）
       if (window.updateUserCorner) {

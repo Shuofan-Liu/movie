@@ -171,7 +171,7 @@
             window.APP_STATE.badges.potato = true;
             if (window.showBadgeToast) {
               // 文案不含前置表情，图标后置展示
-              showBadgeToast('你获得了瓦尔达的土豆徽章!', '🥔');
+              showBadgeToast('你获得了瓦尔达的土豆徽章', '🥔');
             }
           }
         }
@@ -369,7 +369,7 @@
     const userStyle = classifyUserStyle();
     
     if (!window.currentUser) {
-      showInlineAlert('测验完成！你的电影风格：' + (userStyle ? userStyle.name : '未知') + '。请先登录以保存你的徽章和风格', 'info');
+      showInlineAlert('测验完成，你的电影风格：' + (userStyle ? userStyle.name : '未知') + '。请先登录以保存你的徽章和风格', 'info');
       closeQuiz();
       return;
     }
@@ -401,7 +401,7 @@
       // 显示徽章提示
       showBadgeToast();
       
-      showInlineAlert(`恭喜完成测验！你的电影风格：${userStyle ? userStyle.name : '未知'}。徽章和风格已保存到你的个人页面`, 'success');
+      showInlineAlert(`恭喜完成测验，你的电影风格：${userStyle ? userStyle.name : '未知'}。徽章和风格已保存到你的个人页面`, 'success');
       closeQuiz();
       
       // 可选：自动打开用户页面
