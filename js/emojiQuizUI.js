@@ -7,6 +7,8 @@
   let activeEmojiCategory = 'smileys';
   let emojiPickerSearch = '';
   let emojiPickerPage = 1;
+  let hallPuzzles = [];
+  let hallActiveTab = 'open';
   const EMOJI_PAGE_SIZE = 64;
   // Emoji 关键字搜索映射（支持中英文关键词）
   const EMOJI_KEYWORD_MAP = {
@@ -220,6 +222,9 @@
 
     document.getElementById('emojiHallOverlay').style.display = 'flex';
 
+    hallActiveTab = 'open';
+    updateHallTabButtons();
+
     // 加载题目列表
     await loadPuzzlesList();
 
@@ -234,19 +239,60 @@
   async function loadPuzzlesList() {
     showLoading('加载中...');
 
-    const puzzles = await window.getPuzzlesList();
+    updateHallTabButtons();
+    hallPuzzles = await window.getPuzzlesList();
 
     hideLoading();
 
+    renderHallList();
+  }
+
+  window.switchHallTab = function(tab) {
+    if (tab === hallActiveTab) return;
+    hallActiveTab = tab;
+    updateHallTabButtons();
+    renderHallList();
+  };
+
+  function updateHallTabButtons() {
+    const openBtn = document.getElementById('hallTabOpenBtn');
+    const solvedBtn = document.getElementById('hallTabSolvedBtn');
+    if (!openBtn || !solvedBtn) return;
+
+    openBtn.classList.toggle('active', hallActiveTab === 'open');
+    solvedBtn.classList.toggle('active', hallActiveTab === 'solved');
+  }
+
+  function getTimestampValue(ts) {
+    if (!ts) return 0;
+    if (typeof ts.toDate === 'function') return ts.toDate().getTime();
+    const d = new Date(ts);
+    return Number.isNaN(d.getTime()) ? 0 : d.getTime();
+  }
+
+  function renderHallList() {
     const listEl = document.getElementById('emojiHallList');
     if (!listEl) return;
 
-    if (puzzles.length === 0) {
-      listEl.innerHTML = '<div style="text-align:center; padding:60px 20px; color:#888; font-size:16px;">暂无题目</div>';
+    const source = Array.isArray(hallPuzzles) ? hallPuzzles : [];
+    const filtered = source.filter(p => hallActiveTab === 'open' ? p.status === 'open' : p.status === 'solved');
+
+    const sorted = filtered.sort((a, b) => {
+      if (hallActiveTab === 'open') {
+        return getTimestampValue(b.created_at) - getTimestampValue(a.created_at);
+      }
+      const bTime = getTimestampValue(b.solved_at || b.created_at);
+      const aTime = getTimestampValue(a.solved_at || a.created_at);
+      return bTime - aTime;
+    });
+
+    if (sorted.length === 0) {
+      const emptyText = hallActiveTab === 'open' ? '暂无未猜出的题目' : '暂无已猜出的题目';
+      listEl.innerHTML = `<div style="text-align:center; padding:60px 20px; color:#888; font-size:16px;">${emptyText}</div>`;
       return;
     }
 
-    listEl.innerHTML = puzzles.map(puzzle => `
+    listEl.innerHTML = sorted.map(puzzle => `
       <div class="emoji-hall-item" onclick="showPuzzleDetail('${puzzle.id}')" style="background: rgba(20,20,20,0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 20px; margin-bottom: 15px; cursor: pointer; transition: all 0.3s ease;">
         <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
           ${renderAvatarInline(puzzle.author_avatar_url, puzzle.author_name, 45, 22)}

@@ -493,6 +493,10 @@
         </div>
         <span class="modal-close" onclick="closeEmojiHallPage()">&times;</span>
       </div>
+      <div class="emoji-hall-tabs">
+        <button id="hallTabOpenBtn" class="emoji-hall-tab-btn active" onclick="switchHallTab('open')">未猜出</button>
+        <button id="hallTabSolvedBtn" class="emoji-hall-tab-btn" onclick="switchHallTab('solved')">已猜出</button>
+      </div>
       <div id="emojiHallList" class="emoji-hall-list">
         <!-- 题目列表动态插入 -->
       </div>
