@@ -139,6 +139,23 @@
       }
     },
   };
+  // 动态加载SVG像素土豆
+  function updateVisual() {
+    const petEl = $(petId);
+    if (!petEl) return;
+    const profile = state.profile;
+    const variant = profile ? profile.variant : 'seed';
+    const eyes = state.eyeMode === 'closed' ? 'Slit' : 'Dot';
+    // 文件名规则: seedDot-px96.svg
+    const svgFile = `/SVG/${variant}${eyes}-px96.svg`;
+    fetch(svgFile)
+      .then(res => res.text())
+      .then(svg => {
+        const svgWrap = document.getElementById('potatoSVG');
+        if (svgWrap) svgWrap.innerHTML = svg;
+      });
+    positionBubble();
+  }
 
   // ===== UI & motion =====
   function updateVisual() {
