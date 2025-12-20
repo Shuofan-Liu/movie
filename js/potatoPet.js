@@ -73,6 +73,10 @@
     return new Date().toISOString().slice(0, 10);
   }
 
+  function currentNickname() {
+    return (window.currentUser && window.currentUser.nickname) || null;
+  }
+
   function diffDays(prev, curr) {
     if (!prev) return null;
     const a = new Date(prev + 'T00:00:00');
@@ -338,6 +342,7 @@
   function defaultProfile(userId) {
     return {
       userId,
+      nickname: currentNickname(),
       variant: 'seed',
       heartUnlocked: false,
       streak: 0,
@@ -352,6 +357,10 @@
   async function loadProfile(userId) {
     const existing = await storage.loadProfile(userId);
     state.profile = existing || defaultProfile(userId);
+    if (currentNickname() && state.profile.nickname !== currentNickname()) {
+      state.profile.nickname = currentNickname();
+      await storage.saveProfile(userId, state.profile);
+    }
     state.pos = { ...(state.profile.pos || {}) };
     state.vel = { ...(state.profile.vel || { x: 0, y: 30 }) };
     state.rot = state.profile.rot || 0;
