@@ -29,6 +29,7 @@
   let stillHallPuzzles = [];
   let currentStillPuzzle = null;
   let currentStillLeaderboardTab = 'guess';
+  const maskedImageCache = new Map();
 
   window.initStillQuizUI = function() {
     renderCreateGrid();
@@ -211,6 +212,59 @@
     });
   }
 
+  function loadImageFromUrl(src) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('图片加载失败'));
+      img.src = src;
+    });
+  }
+
+  async function getMaskedImageDataUrl(src, grid) {
+    if (!src || !Array.isArray(grid)) return src;
+    const gridKey = grid.map(g => (g ? '1' : '0')).join('');
+    const cacheKey = `${gridKey}-${src.length}-${src.slice(0, 24)}`;
+    if (maskedImageCache.has(cacheKey)) return maskedImageCache.get(cacheKey);
+    const img = await loadImageFromUrl(src);
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const cellW = canvas.width / GRID_COLS;
+    const cellH = canvas.height / GRID_ROWS;
+    ctx.fillStyle = 'rgba(0,0,0,0.97)';
+    grid.forEach((revealed, idx) => {
+      if (revealed) return;
+      const col = idx % GRID_COLS;
+      const row = Math.floor(idx / GRID_COLS);
+      const x = Math.round(col * cellW);
+      const y = Math.round(row * cellH);
+      ctx.fillRect(x, y, Math.ceil(cellW), Math.ceil(cellH));
+    });
+    const maskedUrl = canvas.toDataURL('image/webp', 0.92);
+    maskedImageCache.set(cacheKey, maskedUrl);
+    return maskedUrl;
+  }
+
+  async function applyMaskedImage(src, grid, imgId) {
+    const imgEl = document.getElementById(imgId);
+    if (!imgEl) return;
+    imgEl.setAttribute('draggable', 'false');
+    imgEl.setAttribute('oncontextmenu', 'return false;');
+    imgEl.classList.add('no-peek-img');
+    try {
+      const maskedUrl = await getMaskedImageDataUrl(src, grid);
+      if (imgEl.dataset.currentMasked === maskedUrl) return;
+      imgEl.dataset.currentMasked = maskedUrl;
+      imgEl.src = maskedUrl;
+    } catch (err) {
+      console.error('生成遮挡剧照失败', err);
+      imgEl.src = src;
+    }
+  }
+
   // ============ 发布剧照题 ============
   window.publishStillPuzzleUI = async function() {
     if (!window.currentUser) {
@@ -325,7 +379,9 @@
       return;
     }
 
-    listEl.innerHTML = sorted.map(p => `
+    listEl.innerHTML = sorted.map(p => {
+      const imgId = `still-thumb-${p.id}`;
+      return `
       <div class="emoji-hall-item still-hall-item" onclick="showStillPuzzleDetail('${p.id}')" style="background: rgba(20,20,20,0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 14px; margin-bottom: 12px; cursor: pointer; transition: all 0.3s ease;">
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
           ${renderAvatarInline(p.author_avatar_url, p.author_name, 40, 20)}
@@ -335,9 +391,9 @@
           </div>
           ${p.status === 'solved' ? '<span style="color: var(--avatar-border-color); font-size:16px;">✓</span>' : ''}
         </div>
-        <div class="still-hall-thumb">
-          <img src="${p.thumb_url}" alt="thumb" class="still-hall-thumb-img">
-          <div style="position:absolute; inset:0; display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(3,1fr); background:rgba(0,0,0,0.6);">
+        <div class="still-hall-thumb no-peek-shell" oncontextmenu="return false;">
+          <img src="" alt="thumb" class="still-hall-thumb-img no-peek-img" id="${imgId}">
+          <div style="position:absolute; inset:0; display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(3,1fr); pointer-events:none;">
             ${Array.from({length: GRID_SIZE}).map((_, idx) => {
               const revealed = (p.grid_revealed || [])[idx];
               return `<div style="border:1px solid rgba(255,255,255,0.08); ${revealed ? 'background:transparent;' : 'background:rgba(0,0,0,1);'}"></div>`;
@@ -346,7 +402,10 @@
         </div>
         ${p.hint ? `<div style="margin-top:10px; color:#aaa; font-size:13px;">💡 提示：${p.hint}</div>` : ''}
       </div>
-    `).join('');
+    `;
+    }).join('');
+
+    sorted.forEach(p => applyMaskedImage(p.thumb_url, p.grid_revealed || [], `still-thumb-${p.id}`));
   }
 
   // ============ 猜题 ============
@@ -401,12 +460,13 @@
       return;
     }
 
+    const stillImgId = 'stillGuessImg';
     el.innerHTML = `
       <div style="text-align:center; padding:20px;">
         <h2 class="emoji-guess-title">猜猜这是什么电影</h2>
-        <div style="position:relative; border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,0.15); margin:20px 0;">
-          <img src="${currentStillPuzzle.image_url}" alt="still" style="width:100%; display:block; object-fit:cover; filter: brightness(0.9);">
-          <div style="position:absolute; inset:0; display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(3,1fr);">
+        <div class="no-peek-shell" style="position:relative; border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,0.15); margin:20px 0;" oncontextmenu="return false;">
+          <img id="${stillImgId}" alt="still" class="no-peek-img" style="width:100%; display:block; object-fit:cover; filter: brightness(0.9);">
+          <div style="position:absolute; inset:0; display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(3,1fr); pointer-events:none;">
             ${Array.from({length: GRID_SIZE}).map((_, idx) => {
               const revealed = revealGrid[idx];
               return `<div style="border:1px solid rgba(255,255,255,0.08); ${revealed ? 'background: transparent;' : 'background: rgba(0,0,0,1);'}"></div>`;
@@ -439,6 +499,7 @@
         </div>
       </div>
     `;
+    applyMaskedImage(currentStillPuzzle.image_url, revealGrid, stillImgId);
   }
 
   window.submitStillGuess = async function() {
