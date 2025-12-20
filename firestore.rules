@@ -156,5 +156,13 @@ service cloud.firestore {
                        request.resource.data.correct_guess_count >= resource.data.correct_guess_count;
       allow delete: if false;
     }
+
+    // ============ 土豆桌宠（信任版） ============
+    match /potato_users/{userId} {
+      allow read, write: if true;
+      match /frames/{day} {
+        allow read, write: if true;
+      }
+    }
   }
 }
