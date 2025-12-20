@@ -1,3 +1,19 @@
+/* 像素风相机闪烁动画 */
+#potatoCameraFlash {
+  transition: opacity 0.18s;
+  z-index: 10;
+  opacity: 0;
+}
+#potatoCameraFlash.flash {
+  animation: cameraFlashAnim 0.38s cubic-bezier(.7,0,.7,1);
+  opacity: 1;
+}
+@keyframes cameraFlashAnim {
+  0% { opacity: 0; filter: brightness(1); }
+  20% { opacity: 1; filter: brightness(2.5); }
+  60% { opacity: 1; filter: brightness(1.2); }
+  100% { opacity: 0; filter: brightness(1); }
+}
 /* 时间感知CSS变量 - 由timeTheme.js动态更新 */
 :root {
   --avatar-border-color: #d4af37;

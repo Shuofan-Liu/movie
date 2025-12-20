@@ -424,8 +424,29 @@
       state.eyeMode = 'closed';
       setTimeout(() => { state.eyeMode = 'open'; updateVisual(); }, 220);
       updateVisual();
+      showCameraFlash();
       pulseQuote();
       toast('今日一帧已保存', 'success');
+      // ===== 相机闪烁动画 =====
+      function showCameraFlash() {
+        const petEl = $(petId);
+        const flash = document.getElementById('potatoCameraFlash');
+        if (!petEl || !flash) return;
+        // 定位到土豆右下方
+        const petRect = petEl.getBoundingClientRect();
+        const layerRect = $(layerId).getBoundingClientRect();
+        // 右下偏移（不遮住土豆）
+        const offsetX = petRect.right - layerRect.left - 8;
+        const offsetY = petRect.bottom - layerRect.top - 4;
+        flash.style.left = offsetX + 'px';
+        flash.style.top = offsetY + 'px';
+        flash.classList.remove('flash');
+        void flash.offsetWidth;
+        flash.classList.add('flash');
+        setTimeout(() => {
+          flash.classList.remove('flash');
+        }, 400);
+      }
     } catch (e) {
       console.error('[potato] leave frame error', e);
       toast('保存失败，请稍后再试', 'error');
