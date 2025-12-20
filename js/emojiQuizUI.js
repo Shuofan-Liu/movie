@@ -344,12 +344,13 @@
   }
 
   // 统一轻量提示（替代 alert），跟随站内主题
-  function showToast(message, type = 'info', icon) {
+  function showToast(message, type = 'info', icon, options) {
     if (window.showInlineAlert) {
-      if (icon && window.showBadgeToast && type === 'success') {
-        window.showBadgeToast(message, icon);
+      // 有跳转动作或图标时使用内置 toast 组件
+      if ((options && options.actionText) || (icon && window.showBadgeToast && type === 'success')) {
+        window.showBadgeToast(message, icon, options);
       } else {
-        window.showInlineAlert(message, type);
+        window.showInlineAlert(message, type, options);
       }
     } else {
       alert(message);
@@ -702,7 +703,12 @@
 
     if (result.success) {
       // 猜对了！
-      showToast('恭喜你猜对了', 'success', '!');
+      const solvedId = currentPuzzle ? currentPuzzle.id : null;
+      showToast('恭喜你猜对了', 'success', '!', solvedId ? {
+        actionText: '查看详情',
+        onAction: () => showPuzzleDetail(solvedId),
+        duration: 3000
+      } : { duration: 3000 });
       closeEmojiGuessModal();
       // 刷新列表和badge
       if (document.getElementById('emojiHallOverlay').style.display === 'flex') {

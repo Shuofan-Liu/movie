@@ -86,29 +86,55 @@
 
   // 徽章提示
   let badgeTimer = null;
-  window.showBadgeToast = function(text, icon){
+  window.showBadgeToast = function(text, icon, options){
     const toast = el('badgeToast');
     if (!toast) return;
-    // 前缀图标不再显示，图标后置到文本末尾
-    el('badgeToastIcon').textContent = '';
-    el('badgeToastText').textContent = icon ? `${text || ''} ${icon}` : (text || '');
+    const opts = options || {};
+    const iconEl = el('badgeToastIcon');
+    const textEl = el('badgeToastText');
+    const actionBtn = el('badgeToastAction');
+
+    if (iconEl) iconEl.textContent = icon || '';
+    if (textEl) textEl.textContent = text || '';
+
+    if (actionBtn) {
+      if (opts.actionText && typeof opts.onAction === 'function') {
+        actionBtn.textContent = opts.actionText;
+        actionBtn.onclick = () => {
+          opts.onAction();
+          toast.classList.add('hidden');
+        };
+        actionBtn.classList.remove('hidden');
+      } else {
+        actionBtn.classList.add('hidden');
+        actionBtn.onclick = null;
+      }
+    }
+
     toast.classList.remove('hidden');
     clearTimeout(badgeTimer);
-    badgeTimer = setTimeout(()=> toast.classList.add('hidden'), 2500);
+    const duration = opts.duration || 3000;
+    badgeTimer = setTimeout(()=> toast.classList.add('hidden'), duration);
   }
 
   // 统一的页面内提示（替代 alert）
   // type: info | success | warn | error
-  window.showInlineAlert = function(message, type){
+  window.showInlineAlert = function(message, type, options){
     const toast = el('badgeToast');
     if (!toast) return;
+    const actionBtn = el('badgeToastAction');
+    if (actionBtn) {
+      actionBtn.classList.add('hidden');
+      actionBtn.onclick = null;
+    }
     const t = (type || 'info').toLowerCase();
     toast.classList.remove('info','success','warn','error','hidden');
     if (['success','warn','error'].includes(t)) toast.classList.add(t); else toast.classList.add('info');
     el('badgeToastIcon').textContent = '';
     el('badgeToastText').textContent = message || '';
     clearTimeout(badgeTimer);
-    badgeTimer = setTimeout(()=> toast.classList.add('hidden'), 2500);
+    const duration = (options && options.duration) || 2500;
+    badgeTimer = setTimeout(()=> toast.classList.add('hidden'), duration);
   }
 
   // 手势已移除：不再监听滚轮左右滑动
