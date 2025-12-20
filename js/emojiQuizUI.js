@@ -338,6 +338,9 @@
     }
   }
 
+  // 暴露为全局函数，供其他模块使用
+  window.showToast = showToast;
+
   // 统一确认对话（替代 confirm）
   function showConfirmDialogSafe(options) {
     if (window.showConfirmDialog) {
