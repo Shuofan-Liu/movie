@@ -526,8 +526,14 @@
         <span class="modal-close" onclick="closeEmojiHallPage()">&times;</span>
       </div>
       <div class="quiz-type-tabs" style="margin-bottom:14px; display:flex; gap:10px; justify-content:center;">
-        <button id="hallTabEmoji" class="quiz-type-tab-btn active" onclick="switchHallQuizType('emoji')">Emoji</button>
-        <button id="hallTabStill" class="quiz-type-tab-btn" onclick="switchHallQuizType('still')">剧照</button>
+        <button id="hallTabEmoji" class="quiz-type-tab-btn active" onclick="switchHallQuizType('emoji')">
+          Emoji
+          <span id="hallTabEmojiBadge" class="quiz-type-tab-badge" style="display:none;">0</span>
+        </button>
+        <button id="hallTabStill" class="quiz-type-tab-btn" onclick="switchHallQuizType('still')">
+          剧照
+          <span id="hallTabStillBadge" class="quiz-type-tab-badge" style="display:none;">0</span>
+        </button>
       </div>
 
       <div id="emojiHallSection">

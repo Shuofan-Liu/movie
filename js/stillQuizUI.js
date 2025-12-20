@@ -294,6 +294,10 @@
   async function loadStillPuzzlesList() {
     showLoading('加载剧照题目...');
     stillHallPuzzles = await window.getStillPuzzlesList();
+    if (window.setHallTabBadge) {
+      const openCount = (Array.isArray(stillHallPuzzles) ? stillHallPuzzles : []).filter(p => p.status === 'open').length;
+      window.setHallTabBadge('still', openCount);
+    }
     hideLoading();
     renderStillHallList();
   }

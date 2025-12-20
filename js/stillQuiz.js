@@ -18,7 +18,7 @@
     return { valid: true };
   }
 
-  // 获取未解决题目数量（剧照玩法）
+  // 获取未解决题目数量（剧照玩法，包含自己出的题目）
   window.getStillOpenPuzzlesCount = async function() {
     try {
       if (!window.currentUser) return 0;
@@ -27,12 +27,7 @@
         .where('is_deleted', '==', false)
         .where('status', '==', 'open')
         .get();
-      let count = 0;
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        if (data.author_id !== window.currentUser.id) count++;
-      });
-      return count;
+      return snapshot.size;
     } catch (err) {
       console.error('获取 still 题目数量失败:', err);
       return 0;

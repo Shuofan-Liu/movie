@@ -57,6 +57,16 @@
     '花': ['🌸', '🌼', '🌹', '🌷', '💐'],
   };
 
+  function setHallTabBadge(type, count) {
+    const id = type === 'emoji' ? 'hallTabEmojiBadge' : 'hallTabStillBadge';
+    const el = document.getElementById(id);
+    if (!el) return;
+    const safeCount = Math.max(0, Number(count) || 0);
+    el.textContent = safeCount;
+    el.style.display = safeCount > 0 ? 'flex' : 'none';
+  }
+  window.setHallTabBadge = setHallTabBadge;
+
   // ============ 初始化 ============
 
   window.initEmojiQuizUI = async function() {
@@ -91,6 +101,10 @@
     const count = await window.getOpenPuzzlesCount();
     const stillCount = window.getStillOpenPuzzlesCount ? await window.getStillOpenPuzzlesCount() : 0;
     const total = count + stillCount;
+
+    setHallTabBadge('emoji', count);
+    setHallTabBadge('still', stillCount);
+
     const badgeEl = document.getElementById('emojiHallBadge');
     if (badgeEl) {
       badgeEl.textContent = total;
@@ -252,6 +266,7 @@
 
     updateHallTabButtons();
     hallPuzzles = await window.getPuzzlesList();
+    setHallTabBadge('emoji', (Array.isArray(hallPuzzles) ? hallPuzzles : []).filter(p => p.status === 'open').length);
 
     hideLoading();
 

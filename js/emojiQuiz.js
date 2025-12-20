@@ -77,7 +77,7 @@
 
   // ============ Firestore 操作 ============
 
-  // 获取未解决题目数量（排除当前用户自己出的题目）
+  // 获取未解决题目数量（包含自己出的题目）
   window.getOpenPuzzlesCount = async function() {
     try {
       if (!window.currentUser) return 0;
@@ -88,16 +88,7 @@
         .where('status', '==', 'open')
         .get();
 
-      // 手动过滤掉当前用户作为作者的题目
-      let count = 0;
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        if (data.author_id !== window.currentUser.id) {
-          count++;
-        }
-      });
-
-      return count;
+      return snapshot.size;
     } catch (error) {
       console.error('获取题目数量失败:', error);
       return 0;
