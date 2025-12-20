@@ -1216,7 +1216,7 @@ input, textarea, button, select, [contenteditable="true"] { user-select: text; -
   }
   /* 主页左上角头像徽章：再向右外偏一点，避免遮挡头像 */
   #cornerRelationBadge .relation-chip-embedded {
-    right: -10px;
+    right: -12px;
     bottom: 0;
   }
 
