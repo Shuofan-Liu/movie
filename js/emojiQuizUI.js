@@ -352,6 +352,9 @@
     return Promise.resolve(confirm(options.message || '确认操作？'));
   }
 
+  // 暴露为全局函数，供其他模块使用
+  window.showConfirmDialogSafe = showConfirmDialogSafe;
+
   // 头像渲染：优先使用全局 renderAvatar，兼容 avatar 对象/字符串
   function renderAvatarInline(avatarData, nickname, size = 45, fontSize = 22, useLightBorder = false) {
     const borderColor = useLightBorder ? 'rgba(255,255,255,0.2)' : 'var(--avatar-border-color)';

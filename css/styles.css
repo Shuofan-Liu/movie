@@ -2373,6 +2373,8 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 .emoji-guess-modal {
   max-width: 600px;
   width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
   background: rgba(20,20,20,0.95);
   border: 1px solid var(--avatar-border-color);
   border-radius: 12px;
@@ -2513,7 +2515,7 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 .still-cell .mask {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.75);
+  background: rgba(0,0,0,1); /* 纯黑色遮挡 */
 }
 .still-cell.revealed .mask {
   display: none;

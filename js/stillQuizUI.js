@@ -17,7 +17,7 @@
     { size: 480, quality: 0.66 },
   ];
 
-  let createGrid = Array(GRID_SIZE).fill(false).map((_, idx) => idx < 3);
+  let createGrid = Array(GRID_SIZE).fill(true); // 默认全部显示，点击遮挡
   let createImageState = {
     previewUrl: '',
     mainBlob: null,
@@ -267,7 +267,7 @@
   };
 
   function resetStillCreate() {
-    createGrid = Array(GRID_SIZE).fill(false).map((_, idx) => idx < 3);
+    createGrid = Array(GRID_SIZE).fill(true); // 默认全部显示
     createImageState = { previewUrl: '', mainBlob: null, mainMime: '', thumbBlob: null, thumbMime: '' };
     const imgEl = document.getElementById('stillPreviewImage');
     if (imgEl) imgEl.src = '';
