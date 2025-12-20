@@ -3,7 +3,7 @@
   const layerId = 'potatoLayer';
   const petId = 'potatoPet';
   const bubbleId = 'potatoBubble';
-  const PET_SIZE = 120;
+  const PET_SIZE = 80;
   const BLINK_MIN = 2600;
   const BLINK_MAX = 5200;
   const RANDOM_MOVE_MIN = 2000;
@@ -192,11 +192,14 @@
     if (!bubble.classList.contains('show')) return;
     const vw = window.innerWidth;
     const vh = window.innerHeight;
-    const top = Math.max(8, Math.min(vh - bubble.offsetHeight - 8, state.pos.y - bubble.offsetHeight - 12));
-    const left = Math.min(
-      Math.max(8, state.pos.x + PET_SIZE / 2 - bubble.offsetWidth / 2),
-      Math.max(8, vw - bubble.offsetWidth - 8)
-    );
+    // 头部右上角：以pet为基准，右上偏移
+    const offsetX = PET_SIZE * 0.62; // 右上角
+    const offsetY = -bubble.offsetHeight * 0.6;
+    let left = state.pos.x + offsetX;
+    let top = state.pos.y + offsetY;
+    // 边界限制
+    left = Math.max(8, Math.min(left, vw - bubble.offsetWidth - 8));
+    top = Math.max(8, Math.min(top, vh - bubble.offsetHeight - 8));
     bubble.style.left = `${left}px`;
     bubble.style.top = `${top}px`;
   }
