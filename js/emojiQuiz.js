@@ -241,6 +241,10 @@
           return { success: false, incorrect: true };
         }
 
+        // 读取出题人的统计文档（在任何写入前完成所有读取）
+        const authorStatsRef = db.collection('user_stats').doc(puzzleData.author_id);
+        const authorStatsDoc = await transaction.get(authorStatsRef);
+
         // 答案正确，更新为 solved
         transaction.update(puzzleRef, {
           status: 'solved',
@@ -272,9 +276,6 @@
         }
 
         // 读取并更新出题人的 puzzle_solved_count（新增）
-        const authorStatsRef = db.collection('user_stats').doc(puzzleData.author_id);
-        const authorStatsDoc = await transaction.get(authorStatsRef);
-
         if (authorStatsDoc.exists) {
           transaction.update(authorStatsRef, {
             puzzle_solved_count: firebase.firestore.FieldValue.increment(1),

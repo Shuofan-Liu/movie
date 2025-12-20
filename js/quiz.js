@@ -221,60 +221,90 @@
     const q2 = answers[8]; // 你如何看待电影的叙事性？
     const q3 = answers[9]; // 镜头语言和场面调度偏好？
     const q4 = answers[10]; // 希望电影结束后给你留下什么感觉？
-    
+
     // 如果没有全部回答，返回null
     if (!q1 || !q2 || !q3 || !q4) {
       return null;
     }
-    
+
     const types = {
       "T1": { name: "诗性沉浸派", director: "Chloé Zhao", score: 0 },
       "T2": { name: "人物关系叙事派", director: "Greta Gerwig", score: 0 },
       "T3": { name: "黑色类型讽刺派", director: "Emerald Fennell", score: 0 },
       "T4": { name: "议题史诗动员派", director: "Ava DuVernay", score: 0 }
     };
-    
+
+    // 存储每题的详细得分
+    const questionScores = [];
+
     // Q1 主题
+    const q1Scores = { T1: 0, T2: 0, T3: 0, T4: 0 };
     if (q1 === 'A') {
       types.T1.score += 2;
       types.T2.score += 2;
+      q1Scores.T1 = 2;
+      q1Scores.T2 = 2;
     } else if (q1 === 'B') {
       types.T3.score += 3;
       types.T4.score += 1;
+      q1Scores.T3 = 3;
+      q1Scores.T4 = 1;
     } else if (q1 === 'C') {
       types.T4.score += 3;
       types.T2.score += 1;
+      q1Scores.T4 = 3;
+      q1Scores.T2 = 1;
     }
-    
+    questionScores.push({ question: 8, answer: q1, scores: q1Scores });
+
     // Q2 叙事观
+    const q2Scores = { T1: 0, T2: 0, T3: 0, T4: 0 };
     if (q2 === 'A') {
       types.T1.score += 2;
       types.T3.score += 1;
+      q2Scores.T1 = 2;
+      q2Scores.T3 = 1;
     } else if (q2 === 'B') {
       types.T2.score += 2;
       types.T4.score += 2;
+      q2Scores.T2 = 2;
+      q2Scores.T4 = 2;
     }
-    
+    questionScores.push({ question: 9, answer: q2, scores: q2Scores });
+
     // Q3 镜头
+    const q3Scores = { T1: 0, T2: 0, T3: 0, T4: 0 };
     if (q3 === 'A') {
       types.T1.score += 2;
       types.T4.score += 1;
+      q3Scores.T1 = 2;
+      q3Scores.T4 = 1;
     } else if (q3 === 'B') {
       types.T3.score += 2;
+      q3Scores.T3 = 2;
     } else if (q3 === 'C') {
       types.T2.score += 2;
       types.T4.score += 1;
+      q3Scores.T2 = 2;
+      q3Scores.T4 = 1;
     }
-    
+    questionScores.push({ question: 10, answer: q3, scores: q3Scores });
+
     // Q4 结尾
+    const q4Scores = { T1: 0, T2: 0, T3: 0, T4: 0 };
     if (q4 === 'A') {
       types.T1.score += 1;
       types.T2.score += 2;
+      q4Scores.T1 = 1;
+      q4Scores.T2 = 2;
     } else if (q4 === 'B') {
       types.T3.score += 2;
+      q4Scores.T3 = 2;
     } else if (q4 === 'C') {
       types.T4.score += 2;
+      q4Scores.T4 = 2;
     }
+    questionScores.push({ question: 11, answer: q4, scores: q4Scores });
     
     // 找出最高分
     const maxScore = Math.max(types.T1.score, types.T2.score, types.T3.score, types.T4.score);
@@ -327,9 +357,10 @@
         T2: types.T2.score,
         T3: types.T3.score,
         T4: types.T4.score
-      }
+      },
+      questionScores: questionScores
     };
-    
+
     return window.APP_STATE.userStyle;
   }
 
