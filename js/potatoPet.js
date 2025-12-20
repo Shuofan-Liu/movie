@@ -2,40 +2,42 @@
 (function () {
   const layerId = 'potatoLayer';
   const petId = 'potatoPet';
-  const statusId = 'potatoStatus';
-  const frameBtnId = 'potatoFrameBtn';
-  const PET_SIZE = 150;
+  const PET_SIZE = 120;
   const BLINK_MIN = 2600;
   const BLINK_MAX = 5200;
   const RANDOM_MOVE_MIN = 2000;
   const RANDOM_MOVE_MAX = 8000;
 
   const quotes = [
-  "If we opened people up, we'd find landscapes.",
-  "You have to invent life.",
-  "I didn't have a career; I made films.",
-  "I am still alive. I am still curious.",
-  "I'm just saying, I'm not dead yet.",
-  "I enjoy the time passing.",
-  "I'm curious. Period.",
-  "Aging is interesting, you know?",
-  "Aging for me is not a condition but a subject.",
-  "Hands are the tool of the painter, the artist.",
-  "My mind is often half-sleeping, like in a daydream.",
-  "I had flops, I had success.",
-  "I am small.",
-  "I've always loved polka dots.",
-  "It was so silent.",
-  "What is before and after the snapshot intrigues me.",
-  "The tool of every self-portrait is the mirror.",
-  "Cinema is my home.",
-  "In my films, I always wanted to make people see deeply.",
-  "I don't want to show things, but to give people the desire to see.",
-  "I think I was a feminist before being born.",
-  "I started to get old at a very young age.",
-  "There's only one age: alive.",
-  "It's not protecting the old age."
-];
+    // 可在此替换/增补瓦尔达英文短句
+    "If we opened people up, we'd find landscapes.",
+    "You have to invent life.",
+    "I am still alive. I am still curious.",
+    "I don't want to show things, but to give people the desire to see.",
+    "Cinema is my home.",
+    "There's only one age: alive.",
+    "I didn't have a career; I made films.",
+    "I'm just saying, I'm not dead yet.",
+    "I enjoy the time passing.",
+    "I'm curious. Period.",
+    "Aging is interesting, you know?",
+    "Aging for me is not a condition but a subject.",
+    "Hands are the tool of the painter, the artist.",
+    "My mind is often half-sleeping, like in a daydream.",
+    "I had flops, I had success.",
+    "I am small.",
+    "I've always loved polka dots.",
+    "It was so silent.",
+    "What is before and after the snapshot intrigues me.",
+    "The tool of every self-portrait is the mirror.",
+    "Cinema is my home.",
+    "In my films, I always wanted to make people see deeply.",
+    "I don't want to show things, but to give people the desire to see.",
+    "I think I was a feminist before being born.",
+    "I started to get old at a very young age.",
+    "There's only one age: alive.",
+    "It's not protecting the old age."
+  ];
 
   const state = {
     userId: null,
@@ -139,25 +141,11 @@
   // ===== UI & motion =====
   function updateVisual() {
     const petEl = $(petId);
-    const statusEl = $(statusId);
-    if (!petEl || !statusEl) return;
-
+    if (!petEl) return;
     const profile = state.profile;
     const variant = profile ? profile.variant : 'seed';
     petEl.dataset.variant = variant || 'seed';
     petEl.dataset.eyes = state.eyeMode;
-    const streak = profile ? profile.streak || 0 : 0;
-    const total = profile ? profile.totalFrames || 0 : 0;
-    const lastDay = profile ? profile.lastFrameDay || '—' : '—';
-    const unlocked = profile && profile.heartUnlocked;
-
-    if (!state.userId) {
-      statusEl.textContent = '等待登录后培育土豆';
-    } else {
-      statusEl.textContent = unlocked
-        ? `已解锁爱心土豆 · 连续 ${streak} 天 · 共 ${total} 帧 · 上次 ${lastDay}`
-        : `连拍 ${streak} 天 / 24 天解锁爱心 · 共 ${total} 帧 · 上次 ${lastDay}`;
-    }
   }
 
   function positionPet() {
@@ -172,6 +160,20 @@
 
   function scheduleRandomMove() {
     state.timers.randomAt = nowMs() + rand(RANDOM_MOVE_MIN, RANDOM_MOVE_MAX);
+  }
+
+  function pulseQuote() {
+    const petEl = $(petId);
+    if (!petEl) return;
+    petEl.classList.remove('potato-bounce');
+    // 使用自定义属性记住当前平移，避免动画覆盖位移
+    petEl.style.setProperty('--px', `${state.pos.x}px`);
+    petEl.style.setProperty('--py', `${state.pos.y}px`);
+    void petEl.offsetWidth; // 强制重排
+    petEl.classList.add('potato-bounce');
+
+    const quote = quotes.length ? quotes[Math.floor(Math.random() * quotes.length)] : 'Keep growing.';
+    toast(quote, 'info');
   }
 
   function randomizeVelocity() {
@@ -325,11 +327,9 @@
   async function leaveFrame() {
     if (!state.userId) return toast('请先登录', 'warn');
     if (state.frameWriting) return;
-    const btn = $(frameBtnId);
     const day = todayId();
     try {
       state.frameWriting = true;
-      if (btn) btn.disabled = true;
       await ensureProfile(state.userId);
 
       const exists = await storage.getFrame(state.userId, day);
@@ -377,31 +377,31 @@
       state.eyeMode = 'closed';
       setTimeout(() => { state.eyeMode = 'open'; updateVisual(); }, 220);
       updateVisual();
+      pulseQuote();
       toast('今日一帧已保存', 'success');
     } catch (e) {
       console.error('[potato] leave frame error', e);
       toast('保存失败，请稍后再试', 'error');
     } finally {
       state.frameWriting = false;
-      if (btn) btn.disabled = false;
       updateVisual();
     }
   }
 
   function wireEvents() {
     const petEl = $(petId);
-    const btn = $(frameBtnId);
-    if (!petEl || !btn) return;
+    if (!petEl) return;
     petEl.addEventListener('pointerdown', onDragStart);
     window.addEventListener('pointermove', onDragMove);
     window.addEventListener('pointerup', onDragEnd);
     petEl.addEventListener('click', (e) => {
+      e.stopPropagation();
       if (state.profile && state.profile.variant === 'seed') {
-        e.stopPropagation();
         claimSeed();
+      } else {
+        pulseQuote();
       }
     });
-    btn.addEventListener('click', leaveFrame);
   }
 
   function watchAuth() {
@@ -435,8 +435,7 @@
   window.initPotatoPet = function initPotatoPet() {
     const layer = $(layerId);
     const petEl = $(petId);
-    const btn = $(frameBtnId);
-    if (!layer || !petEl || !btn) return;
+    if (!layer || !petEl) return;
     layer.style.display = 'block';
 
     wireEvents();
@@ -451,5 +450,6 @@
     window.addEventListener('resize', handleResize);
   };
 
+  window.leavePotatoFrame = leaveFrame;
   window.potatoPetDebug = { state };
 })();
