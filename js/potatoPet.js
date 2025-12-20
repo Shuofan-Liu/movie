@@ -47,6 +47,7 @@
     vel: { x: 0, y: 40 },
     rot: 0,
     eyeMode: 'open',
+    motionLockUntil: 0,
     drag: { active: false, offsetX: 0, offsetY: 0 },
     timers: {
       blinkAt: 0,
@@ -82,6 +83,18 @@
     const a = new Date(prev + 'T00:00:00');
     const b = new Date(curr + 'T00:00:00');
     return Math.round((b - a) / 86400000);
+  }
+
+  function maybeGrowSeed() {
+    if (!state.profile) return false;
+    if (state.profile.variant !== 'seed') return false;
+    if (!state.profile.seedClaimedAt) return false;
+    const diff = diffDays(state.profile.seedClaimedAt, todayId());
+    if (diff !== null && diff >= 7) {
+      state.profile.variant = 'sprout';
+      return true;
+    }
+    return false;
   }
 
   function toast(msg, type) {
@@ -262,8 +275,13 @@
     const loop = (ts) => {
       const dt = last ? (ts - last) / 1000 : 0;
       last = ts;
+      const now = nowMs();
+      const locked = state.motionLockUntil && now < state.motionLockUntil;
+      if (!locked && state.motionLockUntil && now >= state.motionLockUntil) {
+        state.motionLockUntil = 0;
+      }
 
-      if (!state.drag.active) {
+      if (!state.drag.active && !locked) {
         state.pos.x += state.vel.x * dt;
         state.pos.y += state.vel.y * dt;
 
@@ -282,9 +300,12 @@
         }
 
         state.rot += (state.vel.x + state.vel.y) * 0.02;
+      } else if (locked) {
+        state.vel.x = 0;
+        state.vel.y = 0;
+        state.rot = 0;
       }
 
-      const now = nowMs();
       if (now > state.timers.blinkAt) {
         state.eyeMode = 'closed';
         setTimeout(() => {
@@ -344,6 +365,7 @@
       userId,
       nickname: currentNickname(),
       variant: 'seed',
+      seedClaimedAt: null,
       heartUnlocked: false,
       streak: 0,
       totalFrames: 0,
@@ -361,6 +383,8 @@
       state.profile.nickname = currentNickname();
       await storage.saveProfile(userId, state.profile);
     }
+    const grew = maybeGrowSeed();
+    if (grew) await storage.saveProfile(userId, state.profile);
     state.pos = { ...(state.profile.pos || {}) };
     state.vel = { ...(state.profile.vel || { x: 0, y: 30 }) };
     state.rot = state.profile.rot || 0;
@@ -390,7 +414,18 @@
     if (!state.userId) return toast('请先登录', 'warn');
     await ensureProfile(state.userId);
     if (state.profile.variant !== 'seed') return;
-    state.profile.variant = 'sprout';
+    if (!state.profile.seedClaimedAt) {
+      state.profile.seedClaimedAt = todayId();
+      toast('种子种下啦，7 天后发芽', 'info');
+    } else {
+      const diff = diffDays(state.profile.seedClaimedAt, todayId()) || 0;
+      const remain = Math.max(0, 7 - diff);
+      if (remain <= 0 && maybeGrowSeed()) {
+        toast('小土豆发芽啦！', 'success');
+      } else {
+        toast(`再等 ${remain} 天就发芽啦`, 'info');
+      }
+    }
     state.profile.totalFrames = state.profile.totalFrames || 0;
     await storage.saveProfile(state.userId, state.profile);
     updateVisual();
@@ -402,7 +437,12 @@
     const day = todayId();
     try {
       state.frameWriting = true;
+      state.motionLockUntil = nowMs() + 2500;
+      state.vel.x = 0;
+      state.vel.y = 0;
       await ensureProfile(state.userId);
+      const grewNow = maybeGrowSeed();
+      if (grewNow) await storage.saveProfile(state.userId, state.profile);
 
       const exists = await storage.getFrame(state.userId, day);
       if (exists) {
@@ -471,8 +511,8 @@
         // 右下偏移，放在土豆外侧，不遮挡
         const flashW = flash.offsetWidth || 28;
         const flashH = flash.offsetHeight || 22;
-        let offsetX = petRect.right - layerRect.left + 6;
-        let offsetY = petRect.bottom - layerRect.top + 6;
+        let offsetX = petRect.right - layerRect.left + 2;
+        let offsetY = petRect.bottom - layerRect.top + 2;
         const maxX = window.innerWidth - flashW - 4;
         const maxY = window.innerHeight - flashH - 4;
         flash.style.left = Math.min(offsetX, maxX) + 'px';
@@ -482,7 +522,7 @@
         flash.classList.add('flash');
         setTimeout(() => {
           flash.classList.remove('flash');
-        }, 2100);
+        }, 2600);
       }
     } catch (e) {
       console.error('[potato] leave frame error', e);

@@ -5,7 +5,7 @@
   opacity: 0;
 }
 #potatoCameraFlash.flash {
-  animation: cameraFlashAnim 2s cubic-bezier(.46,0,.26,1);
+  animation: cameraFlashAnim 2.4s cubic-bezier(.46,0,.26,1);
   opacity: 1;
 }
 @keyframes cameraFlashAnim {
