@@ -54,6 +54,7 @@
       bubbleHide: null,
     },
     frameWriting: false,
+    svgKey: null,
   };
 
   function $(id) {
@@ -139,32 +140,30 @@
       }
     },
   };
-  // 动态加载SVG像素土豆
-  function updateVisual() {
-    const petEl = $(petId);
-    if (!petEl) return;
-    const profile = state.profile;
-    const variant = profile ? profile.variant : 'seed';
-    const eyes = state.eyeMode === 'closed' ? 'Slit' : 'Dot';
-    // 文件名规则: seedDot-px96.svg
-    const svgFile = `/SVG/${variant}${eyes}-px96.svg`;
-    fetch(svgFile)
-      .then(res => res.text())
-      .then(svg => {
-        const svgWrap = document.getElementById('potatoSVG');
-        if (svgWrap) svgWrap.innerHTML = svg;
-      });
-    positionBubble();
-  }
-
   // ===== UI & motion =====
   function updateVisual() {
     const petEl = $(petId);
     if (!petEl) return;
     const profile = state.profile;
     const variant = profile ? profile.variant : 'seed';
+    const variantKey = variant === 'normal' ? 'mature' : variant; // 与 SVG 文件名对齐
+    const eyes = state.eyeMode === 'closed' ? 'Slit' : 'Dot';
+    const svgKey = `${variantKey}-${eyes}`;
+
+    // 将当前状态同步到 DOM，用于 CSS 选择器
     petEl.dataset.variant = variant || 'seed';
     petEl.dataset.eyes = state.eyeMode;
+
+    // 仅在 variant/眼睛状态变化时加载对应 SVG，避免在动画帧里重复请求
+    if (state.svgKey !== svgKey) {
+      state.svgKey = svgKey;
+      const svgFile = `/SVG/${variantKey}${eyes}-px96.svg`;
+      fetch(svgFile)
+        .then(res => (res.ok ? res.text() : Promise.reject(res.status)))
+        .then(svg => { petEl.innerHTML = svg; })
+        .catch(err => console.warn('[potato] load svg failed', svgFile, err));
+    }
+
     positionBubble();
   }
 
