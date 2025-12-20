@@ -11,9 +11,9 @@ service firebase.storage {
       allow write: if true;
     }
 
-    // 剧照玩法：允许已登录用户上传到 stills 目录
+    // 剧照玩法：允许所有用户上传到 stills 目录（前端控制权限）
     match /stills/{userId}/{allPaths=**} {
-      allow write: if request.auth != null && request.auth.uid == userId;
+      allow write: if true;
     }
   }
 }
