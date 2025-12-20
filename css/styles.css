@@ -4,18 +4,21 @@
   z-index: 10;
   opacity: 0;
 }
+#potatoCameraFlash svg {
+  filter: drop-shadow(0 0 22px rgba(255,255,255,0.55));
+}
 #potatoCameraFlash.flash {
   animation: cameraFlashAnim 2.5s cubic-bezier(.46,0,.26,1);
   opacity: 1;
 }
 @keyframes cameraFlashAnim {
-  0% { opacity: 0; transform: translate(6px, 6px) scale(0.9); filter: brightness(1); }
-  10% { opacity: 1; transform: translate(0, 0) scale(1); filter: brightness(1.2); }
-  60% { opacity: 1; filter: brightness(1.2); }
-  70% { opacity: 1; filter: brightness(3); }
-  80% { opacity: 1; filter: brightness(1.4); }
-  90% { opacity: 1; filter: brightness(3); }
-  100% { opacity: 0; transform: translate(0, 0) scale(1); filter: brightness(1.2); }
+  0% { opacity: 0; transform: translate(4px, 4px) scale(0.95); filter: brightness(1); }
+  10% { opacity: 1; transform: translate(0, 0) scale(1.05); filter: brightness(1.4); }
+  58% { opacity: 1; filter: brightness(1.6) saturate(1.1); }
+  70% { opacity: 1; transform: translate(0, 0) scale(1.22); filter: brightness(3.4) saturate(1.2); }
+  82% { opacity: 1; transform: translate(0, 0) scale(1.18); filter: brightness(1.5) saturate(1.1); }
+  92% { opacity: 1; transform: translate(0, 0) scale(1.28); filter: brightness(3.2) saturate(1.25); }
+  100% { opacity: 0; transform: translate(0, 0) scale(1.1); filter: brightness(1.2) saturate(1.05); }
 }
 /* 时间感知CSS变量 - 由timeTheme.js动态更新 */
 :root {
@@ -31,7 +34,8 @@
 
 /* 基础重置 */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overflow-x: hidden; }
+body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overflow-x: hidden; user-select: none; -webkit-user-select: none; }
+input, textarea, button, select, [contenteditable="true"] { user-select: text; -webkit-user-select: text; }
 .hidden { display: none !important; }
 
 /* 电影海报背景层 */
@@ -728,6 +732,17 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
   transition: border-color 2s ease;
 }
 .user-modal.active { display: block; animation: modalSlideIn 0.4s ease-out; }
+.user-close {
+  font-size: 28px;
+  font-weight: bold;
+  color: #888;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+.user-close:hover { color: var(--avatar-border-color); }
 
 /* 用户详情左右切换按钮（固定定位到视口，不受模态框overflow影响） */
 .user-chevron {
@@ -1172,6 +1187,12 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
   }
   .badge-icon-toast { font-size: 16px; }
   .badge-toast-action { padding: 6px 10px; font-size: 12px; }
+
+  /* 头像右下角关系徽章：手机端稍向右偏移 */
+  .relation-chip-embedded {
+    right: -18px;
+    bottom: -6px;
+  }
 
   /* 功能键：小屏竖直展开，避免出屏 */
   .function-menu-container {
@@ -3133,7 +3154,7 @@ body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overfl
 }
 
 .potato-pet:hover {
-  filter: drop-shadow(0 12px 28px rgba(255, 220, 150, 0.5));
+  filter: drop-shadow(0 14px 34px rgba(255, 225, 170, 0.68));
 }
 
 .potato-pet svg {

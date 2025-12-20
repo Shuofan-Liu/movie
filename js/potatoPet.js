@@ -511,8 +511,8 @@
         // 右下偏移，放在土豆外侧，不遮挡
         const flashW = flash.offsetWidth || 28;
         const flashH = flash.offsetHeight || 22;
-        let offsetX = petRect.right - layerRect.left;
-        let offsetY = petRect.bottom - layerRect.top;
+        let offsetX = petRect.right - layerRect.left - 6;
+        let offsetY = petRect.bottom - layerRect.top - 4;
         const maxX = window.innerWidth - flashW - 4;
         const maxY = window.innerHeight - flashH - 4;
         flash.style.left = Math.min(offsetX, maxX) + 'px';
