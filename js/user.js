@@ -221,6 +221,7 @@
       updateUserStatus();
       closeLoginModal();
         showInlineAlert(`欢迎回来，${nickname}`, 'success');
+      if (window.startMyPuzzleWatcher) window.startMyPuzzleWatcher(true);
     } finally {
       // 恢复按钮状态
       isLoggingIn = false;
@@ -341,6 +342,7 @@
       closeLoginModal();
       loadingEl.classList.remove('active');
       showInlineAlert(`注册成功，欢迎 ${nickname}`, 'success');
+      if (window.startMyPuzzleWatcher) window.startMyPuzzleWatcher(true);
 
       // 清空表单
       document.getElementById('regForm').reset();
@@ -364,6 +366,7 @@
   // ============ 用户状态更新 ============
   
   window.logoutUser = function(){
+    if (window.stopMyPuzzleWatcher) window.stopMyPuzzleWatcher();
     window.currentUser = null;
     localStorage.removeItem('currentUserId');
     

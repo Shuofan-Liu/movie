@@ -9,6 +9,9 @@
   let emojiPickerPage = 1;
   let hallPuzzles = [];
   let hallActiveTab = 'open';
+  let myPuzzleWatcher = null;
+  let myPuzzleStatusKey = null;
+  const myPuzzleStatus = new Map();
   const EMOJI_PAGE_SIZE = 64;
   // Emoji 关键字搜索映射（支持中英文关键词）
   const EMOJI_KEYWORD_MAP = {
@@ -91,7 +94,67 @@
 
     // 默认切换到 emoji 出题 tab
     if (window.switchCreateQuizType) window.switchCreateQuizType('emoji');
+
+    // 登录后开启出题结果轮询
+    if (window.currentUser) startMyPuzzleWatcher();
   };
+
+  // 轮询自己出的题目是否被猜出（无需实时监听/额外费用）
+  window.startMyPuzzleWatcher = async function(seed = false) {
+    if (!window.currentUser || myPuzzleWatcher) return;
+    prepareMyPuzzleStatusStore();
+    await refreshMyPuzzleStatus(seed);
+    myPuzzleWatcher = setInterval(() => refreshMyPuzzleStatus(false), 60000);
+  };
+
+  window.stopMyPuzzleWatcher = function() {
+    if (myPuzzleWatcher) clearInterval(myPuzzleWatcher);
+    myPuzzleWatcher = null;
+    myPuzzleStatusKey = null;
+    myPuzzleStatus.clear();
+  };
+
+  function prepareMyPuzzleStatusStore() {
+    if (!window.currentUser) return;
+    myPuzzleStatusKey = `myPuzzleStatus_${window.currentUser.id}`;
+    // 读本地记录，避免多次登录重复提示
+    try {
+      const raw = localStorage.getItem(myPuzzleStatusKey);
+      if (raw) {
+        const obj = JSON.parse(raw);
+        Object.keys(obj || {}).forEach(k => myPuzzleStatus.set(k, obj[k]));
+      }
+    } catch (e) {
+      console.warn('[PuzzleWatcher] 读取本地记录失败', e);
+    }
+  }
+
+  function persistMyPuzzleStatus() {
+    if (!myPuzzleStatusKey) return;
+    try {
+      const obj = {};
+      myPuzzleStatus.forEach((v, k) => { obj[k] = v; });
+      localStorage.setItem(myPuzzleStatusKey, JSON.stringify(obj));
+    } catch (e) {
+      console.warn('[PuzzleWatcher] 写入本地记录失败', e);
+    }
+  }
+
+  async function refreshMyPuzzleStatus(skipNotify) {
+    if (!window.currentUser) return;
+    const all = await window.getPuzzlesList();
+    const mine = (Array.isArray(all) ? all : []).filter(p => p.author_id === window.currentUser.id);
+    mine.forEach(p => {
+      const prev = myPuzzleStatus.get(p.id);
+      const nowStatus = p.status;
+      if (!skipNotify && nowStatus === 'solved' && prev !== 'solved') {
+        const solver = p.solved_by_user_name || '有人';
+        showToast(`你的题「${p.answer_display}」被 ${solver} 猜对了`, 'info', null, { sticky: true, closeText: '知道了' });
+      }
+      myPuzzleStatus.set(p.id, nowStatus);
+    });
+    persistMyPuzzleStatus();
+  }
 
   // ============ Task 1: 更新大厅badge数字 ============
 

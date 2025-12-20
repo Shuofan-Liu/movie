@@ -122,10 +122,18 @@
   window.showInlineAlert = function(message, type, options){
     const toast = el('badgeToast');
     if (!toast) return;
+    const opts = options || {};
     const actionBtn = el('badgeToastAction');
+    const isSticky = !!opts.sticky;
     if (actionBtn) {
-      actionBtn.classList.add('hidden');
-      actionBtn.onclick = null;
+      if (isSticky) {
+        actionBtn.textContent = opts.closeText || '关闭';
+        actionBtn.classList.remove('hidden');
+        actionBtn.onclick = () => toast.classList.add('hidden');
+      } else {
+        actionBtn.classList.add('hidden');
+        actionBtn.onclick = null;
+      }
     }
     const t = (type || 'info').toLowerCase();
     toast.classList.remove('info','success','warn','error','hidden');
@@ -133,8 +141,12 @@
     el('badgeToastIcon').textContent = '';
     el('badgeToastText').textContent = message || '';
     clearTimeout(badgeTimer);
-    const duration = (options && options.duration) || 2500;
-    badgeTimer = setTimeout(()=> toast.classList.add('hidden'), duration);
+    const duration = isSticky ? null : ((opts && opts.duration) || 2500);
+    if (duration !== null) {
+      badgeTimer = setTimeout(()=> toast.classList.add('hidden'), duration);
+    } else {
+      badgeTimer = null;
+    }
   }
 
   // 手势已移除：不再监听滚轮左右滑动
