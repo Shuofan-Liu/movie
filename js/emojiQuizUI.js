@@ -98,6 +98,9 @@
     }
   }
 
+  // 暴露为全局函数，供其他模块使用
+  window.updateHallBadge = updateHallBadge;
+
   // 更新留言墙badge数字
   async function updateDanmakuBadge() {
     if (!window.currentUser) return;
