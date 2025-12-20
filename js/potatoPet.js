@@ -437,7 +437,8 @@
     const day = todayId();
     try {
       state.frameWriting = true;
-      state.motionLockUntil = nowMs() + 1500;
+      // 拍照+说话期间锁定运动
+      state.motionLockUntil = nowMs() + 3800;
       state.vel.x = 0;
       state.vel.y = 0;
       await ensureProfile(state.userId);
@@ -511,8 +512,8 @@
         // 右下偏移，放在土豆外侧，不遮挡
         const flashW = flash.offsetWidth || 28;
         const flashH = flash.offsetHeight || 22;
-        let offsetX = petRect.right - layerRect.left - 6;
-        let offsetY = petRect.bottom - layerRect.top - 4;
+        let offsetX = petRect.right - layerRect.left - 10;
+        let offsetY = petRect.bottom - layerRect.top - 8;
         const maxX = window.innerWidth - flashW - 4;
         const maxY = window.innerHeight - flashH - 4;
         flash.style.left = Math.min(offsetX, maxX) + 'px';
