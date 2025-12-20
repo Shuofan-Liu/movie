@@ -545,7 +545,11 @@
       state.rot = 0;
       positionPet();
       if (state.profile && state.profile.variant === 'seed') {
-        claimSeed();
+        if (state.profile.seedClaimedAt) {
+          pulseQuote();
+        } else {
+          claimSeed();
+        }
       } else {
         pulseQuote();
       }
