@@ -78,6 +78,9 @@
       await updateDanmakuBadge();
       await updateMainFunctionBadge();
     }, 30000);
+
+    // 默认切换到 emoji 出题 tab
+    if (window.switchCreateQuizType) window.switchCreateQuizType('emoji');
   };
 
   // ============ Task 1: 更新大厅badge数字 ============
@@ -86,10 +89,12 @@
     if (!window.currentUser) return;
 
     const count = await window.getOpenPuzzlesCount();
+    const stillCount = window.getStillOpenPuzzlesCount ? await window.getStillOpenPuzzlesCount() : 0;
+    const total = count + stillCount;
     const badgeEl = document.getElementById('emojiHallBadge');
     if (badgeEl) {
-      badgeEl.textContent = count;
-      badgeEl.style.display = count > 0 ? 'flex' : 'none';
+      badgeEl.textContent = total;
+      badgeEl.style.display = total > 0 ? 'flex' : 'none';
     }
   }
 
@@ -113,8 +118,9 @@
     if (!window.currentUser) return;
 
     const hallCount = await window.getOpenPuzzlesCount();
+    const stillCount = window.getStillOpenPuzzlesCount ? await window.getStillOpenPuzzlesCount() : 0;
     const danmakuCount = await window.getUnreadDanmakuCount();
-    const totalCount = hallCount + danmakuCount;
+    const totalCount = hallCount + stillCount + danmakuCount;
 
     const badgeEl = document.getElementById('mainFunctionBadge');
     if (badgeEl) {
@@ -134,6 +140,7 @@
       return;
     }
 
+    if (window.switchCreateQuizType) window.switchCreateQuizType('emoji');
     document.getElementById('emojiCreateOverlay').style.display = 'flex';
 
     // 显示随机电影名
@@ -220,6 +227,7 @@
       return;
     }
 
+    if (window.switchHallQuizType) window.switchHallQuizType('emoji');
     document.getElementById('emojiHallOverlay').style.display = 'flex';
 
     hallActiveTab = 'open';
@@ -742,6 +750,7 @@
       return;
     }
 
+    if (window.switchLeaderboardQuizType) window.switchLeaderboardQuizType('emoji');
     document.getElementById('emojiLeaderboardOverlay').style.display = 'flex';
 
     // 默认显示猜对榜

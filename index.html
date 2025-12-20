@@ -442,39 +442,70 @@
   <div class="emoji-create-overlay" id="emojiCreateOverlay" style="display:none;">
     <div class="emoji-create-page">
       <span class="modal-close" onclick="closeEmojiCreatePage()">&times;</span>
-      <h2 style="font-family: 'Playfair Display', serif; font-size: 36px; margin-bottom: 30px; color: var(--avatar-border-color); transition: color 2s ease;">出题</h2>
+      <h2 style="font-family: 'Playfair Display', serif; font-size: 36px; margin-bottom: 20px; color: var(--avatar-border-color); transition: color 2s ease;">出题</h2>
 
-      <div style="margin-bottom: 30px;">
-        <label style="display: block; font-size: 14px; margin-bottom: 10px; color: #ccc;">电影名 <span style="color: #ff4444;">*</span></label>
-        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-          <div id="randomTitleDisplay" style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--avatar-border-color); border-radius: 8px; padding: 12px 15px; color: var(--avatar-border-color); font-size: 16px; font-weight: 500; transition: all 2s ease;"></div>
-          <button id="refreshTitleBtn" onclick="refreshRandomTitle()" style="padding: 12px 20px; background: var(--avatar-glow-color); border: 1px solid var(--avatar-border-color); color: var(--avatar-border-color); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease, background 2s ease, border-color 2s ease;">🔄 换一个</button>
-        </div>
-        <input type="text" id="customTitleInput" placeholder="或者输入自定义电影名..." style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 12px 15px; color: #f5f5f5; font-size: 14px;" />
+      <div class="quiz-type-tabs" style="margin-bottom: 18px; display:flex; gap:10px;">
+        <button id="createTabEmoji" class="quiz-type-tab-btn active" onclick="switchCreateQuizType('emoji')">Emoji</button>
+        <button id="createTabStill" class="quiz-type-tab-btn" onclick="switchCreateQuizType('still')">剧照</button>
       </div>
 
-      <div style="margin-bottom: 30px;">
-        <label style="display: block; font-size: 14px; margin-bottom: 10px; color: #ccc;">用emoji表达这部电影 (1-6个) <span style="color: #ff4444;">*</span></label>
-        <input type="text" id="emojiInput" placeholder="输入1-6个emoji..." style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 12px 15px; color: #f5f5f5; font-size: 24px;" />
-        <div id="emojiValidationMsg" style="margin-top: 8px; font-size: 13px; color: #ff4444; min-height: 18px;"></div>
-        <!-- Emoji 分类面板 -->
-        <div id="emojiPicker" class="emoji-picker">
-          <div class="emoji-picker-tabs" id="emojiPickerTabs"></div>
-          <div class="emoji-picker-controls">
-            <input id="emojiPickerSearch" type="text" placeholder="搜索表情..." aria-label="搜索表情" />
-            <div class="emoji-picker-pager">
-              <button id="emojiPagerPrev" type="button">‹</button>
-              <span id="emojiPagerInfo">1 / 1</span>
-              <button id="emojiPagerNext" type="button">›</button>
-            </div>
+      <div id="emojiCreateSection">
+        <div style="margin-bottom: 30px;">
+          <label style="display: block; font-size: 14px; margin-bottom: 10px; color: #ccc;">电影名 <span style="color: #ff4444;">*</span></label>
+          <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <div id="randomTitleDisplay" style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--avatar-border-color); border-radius: 8px; padding: 12px 15px; color: var(--avatar-border-color); font-size: 16px; font-weight: 500; transition: all 2s ease;"></div>
+            <button id="refreshTitleBtn" onclick="refreshRandomTitle()" style="padding: 12px 20px; background: var(--avatar-glow-color); border: 1px solid var(--avatar-border-color); color: var(--avatar-border-color); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease, background 2s ease, border-color 2s ease;">🔄 换一个</button>
           </div>
-          <div class="emoji-picker-grid" id="emojiPickerGrid"></div>
+          <input type="text" id="customTitleInput" placeholder="或者输入自定义电影名..." style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 12px 15px; color: #f5f5f5; font-size: 14px;" />
+        </div>
+
+        <div style="margin-bottom: 30px;">
+          <label style="display: block; font-size: 14px; margin-bottom: 10px; color: #ccc;">用emoji表达这部电影 (1-6个) <span style="color: #ff4444;">*</span></label>
+          <input type="text" id="emojiInput" placeholder="输入1-6个emoji..." style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 12px 15px; color: #f5f5f5; font-size: 24px;" />
+          <div id="emojiValidationMsg" style="margin-top: 8px; font-size: 13px; color: #ff4444; min-height: 18px;"></div>
+          <!-- Emoji 分类面板 -->
+          <div id="emojiPicker" class="emoji-picker">
+            <div class="emoji-picker-tabs" id="emojiPickerTabs"></div>
+            <div class="emoji-picker-controls">
+              <input id="emojiPickerSearch" type="text" placeholder="搜索表情..." aria-label="搜索表情" />
+              <div class="emoji-picker-pager">
+                <button id="emojiPagerPrev" type="button">‹</button>
+                <span id="emojiPagerInfo">1 / 1</span>
+                <button id="emojiPagerNext" type="button">›</button>
+              </div>
+            </div>
+            <div class="emoji-picker-grid" id="emojiPickerGrid"></div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+          <button onclick="closeEmojiCreatePage()" style="padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #ccc; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">取消</button>
+          <button id="publishPuzzleBtn" onclick="publishPuzzleUI()" disabled style="padding: 12px 24px; background: var(--avatar-glow-color); border: 1px solid var(--avatar-border-color); color: var(--avatar-border-color); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease, background 2s ease, border-color 2s ease; opacity: 0.5;">发布题目</button>
         </div>
       </div>
 
-      <div style="display: flex; gap: 12px; justify-content: flex-end;">
-        <button onclick="closeEmojiCreatePage()" style="padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #ccc; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">取消</button>
-        <button id="publishPuzzleBtn" onclick="publishPuzzleUI()" disabled style="padding: 12px 24px; background: var(--avatar-glow-color); border: 1px solid var(--avatar-border-color); color: var(--avatar-border-color); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease, background 2s ease, border-color 2s ease; opacity: 0.5;">发布题目</button>
+      <div id="stillCreateSection" style="display:none;">
+        <div style="margin-bottom: 24px;">
+          <label style="display:block; font-size:14px; margin-bottom:10px; color:#ccc;">剧照图片 <span style="color:#ff4444;">*</span></label>
+          <input type="file" id="stillImageInput" accept="image/*" style="margin-bottom:10px;" />
+          <small style="display:block; color:#888; margin-top:4px;">上传后将自动压缩：最长边 1280px（可能降到 1024），目标 200–600KB，硬上限 800KB；会额外生成 480px 缩略图</small>
+        </div>
+
+        <div id="stillPreviewContainer" class="still-preview" style="margin-bottom:20px;">
+          <img id="stillPreviewImage" alt="still preview" />
+          <div id="stillGridOverlay" class="still-grid"></div>
+          <div class="still-preview-hint">点击格子切换初始揭晓，至少 3 个</div>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="display:block; font-size:14px; margin-bottom:10px; color:#ccc;">提示（可选）</label>
+          <input type="text" id="stillHintInput" placeholder="写一个提示，留空则无提示" style="width:100%; background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.2); border-radius:8px; padding:12px 15px; color:#f5f5f5; font-size:14px;" />
+        </div>
+
+        <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top:20px;">
+          <button onclick="closeEmojiCreatePage()" style="padding: 12px 24px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #ccc; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">取消</button>
+          <button id="publishStillBtn" onclick="publishStillPuzzleUI()" disabled style="padding: 12px 24px; background: var(--avatar-glow-color); border: 1px solid var(--avatar-border-color); color: var(--avatar-border-color); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease, background 2s ease, border-color 2s ease; opacity:0.5;">发布剧照题</button>
+        </div>
       </div>
     </div>
   </div>
@@ -493,12 +524,29 @@
         </div>
         <span class="modal-close" onclick="closeEmojiHallPage()">&times;</span>
       </div>
-      <div class="emoji-hall-tabs">
-        <button id="hallTabOpenBtn" class="emoji-hall-tab-btn active" onclick="switchHallTab('open')">未猜出</button>
-        <button id="hallTabSolvedBtn" class="emoji-hall-tab-btn" onclick="switchHallTab('solved')">已猜出</button>
+      <div class="quiz-type-tabs" style="margin-bottom:14px; display:flex; gap:10px; justify-content:center;">
+        <button id="hallTabEmoji" class="quiz-type-tab-btn active" onclick="switchHallQuizType('emoji')">Emoji</button>
+        <button id="hallTabStill" class="quiz-type-tab-btn" onclick="switchHallQuizType('still')">剧照</button>
       </div>
-      <div id="emojiHallList" class="emoji-hall-list">
-        <!-- 题目列表动态插入 -->
+
+      <div id="emojiHallSection">
+        <div class="emoji-hall-tabs">
+          <button id="hallTabOpenBtn" class="emoji-hall-tab-btn active" onclick="switchHallTab('open')">未猜出</button>
+          <button id="hallTabSolvedBtn" class="emoji-hall-tab-btn" onclick="switchHallTab('solved')">已猜出</button>
+        </div>
+        <div id="emojiHallList" class="emoji-hall-list">
+          <!-- 题目列表动态插入 -->
+        </div>
+      </div>
+
+      <div id="stillHallSection" style="display:none;">
+        <div class="emoji-hall-tabs">
+          <button id="stillHallTabOpenBtn" class="emoji-hall-tab-btn active" onclick="switchStillHallTab('open')">未猜出</button>
+          <button id="stillHallTabSolvedBtn" class="emoji-hall-tab-btn" onclick="switchStillHallTab('solved')">已猜出</button>
+        </div>
+        <div id="stillHallList" class="emoji-hall-list">
+          <!-- 剧照题目列表 -->
+        </div>
       </div>
     </div>
   </div>
@@ -513,6 +561,16 @@
     </div>
   </div>
 
+  <!-- 剧照玩法 - 猜题弹窗 -->
+  <div class="emoji-guess-overlay" id="stillGuessOverlay" style="display:none;">
+    <div class="emoji-guess-modal">
+      <span class="modal-close" onclick="closeStillGuessModal()">&times;</span>
+      <div id="stillGuessContent">
+        <!-- 剧照猜题内容 -->
+      </div>
+    </div>
+  </div>
+
   <!-- Emoji游戏 - 排行榜页 -->
   <div class="emoji-leaderboard-overlay" id="emojiLeaderboardOverlay" style="display:none;">
     <div class="emoji-leaderboard-page">
@@ -521,18 +579,39 @@
         <span class="modal-close" onclick="closeEmojiLeaderboard()">&times;</span>
       </div>
 
-      <!-- Tab 切换按钮 -->
-      <div class="leaderboard-tabs" style="display: flex; gap: 12px; margin-bottom: 24px; justify-content: center;">
-        <button id="guessTabBtn" class="leaderboard-tab-btn active" onclick="switchLeaderboardTab('guess')" style="padding: 10px 24px; background: var(--avatar-glow-color); border: 2px solid var(--avatar-border-color); color: var(--avatar-border-color); border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 600; transition: all 0.3s ease;">
-          猜对榜
-        </button>
-        <button id="influenceTabBtn" class="leaderboard-tab-btn" onclick="switchLeaderboardTab('influence')" style="padding: 10px 24px; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2); color: #ccc; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 600; transition: all 0.3s ease;">
-          影响力榜
-        </button>
+      <div class="quiz-type-tabs" style="display:flex; gap:10px; margin-bottom:16px; justify-content:center;">
+        <button id="leaderboardTabEmoji" class="quiz-type-tab-btn active" onclick="switchLeaderboardQuizType('emoji')">Emoji</button>
+        <button id="leaderboardTabStill" class="quiz-type-tab-btn" onclick="switchLeaderboardQuizType('still')">剧照</button>
       </div>
 
-      <div id="emojiLeaderboardList" class="emoji-leaderboard-list">
-        <!-- 排行榜列表动态插入 -->
+      <!-- Tab 切换按钮 -->
+      <div id="emojiLeaderboardSection">
+        <div class="leaderboard-tabs" style="display: flex; gap: 12px; margin-bottom: 24px; justify-content: center;">
+          <button id="guessTabBtn" class="leaderboard-tab-btn active" onclick="switchLeaderboardTab('guess')" style="padding: 10px 24px; background: var(--avatar-glow-color); border: 2px solid var(--avatar-border-color); color: var(--avatar-border-color); border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 600; transition: all 0.3s ease;">
+            猜对榜
+          </button>
+          <button id="influenceTabBtn" class="leaderboard-tab-btn" onclick="switchLeaderboardTab('influence')" style="padding: 10px 24px; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2); color: #ccc; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 600; transition: all 0.3s ease;">
+            影响力榜
+          </button>
+        </div>
+
+        <div id="emojiLeaderboardList" class="emoji-leaderboard-list">
+          <!-- 排行榜列表动态插入 -->
+        </div>
+      </div>
+
+      <div id="stillLeaderboardSection" style="display:none;">
+        <div class="leaderboard-tabs" style="display: flex; gap: 12px; margin-bottom: 24px; justify-content: center;">
+          <button id="stillGuessTabBtn" class="leaderboard-tab-btn active" onclick="switchStillLeaderboardTab('guess')" style="padding: 10px 24px; background: var(--avatar-glow-color); border: 2px solid var(--avatar-border-color); color: var(--avatar-border-color); border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 600; transition: all 0.3s ease;">
+            猜对榜
+          </button>
+          <button id="stillInfluenceTabBtn" class="leaderboard-tab-btn" onclick="switchStillLeaderboardTab('influence')" style="padding: 10px 24px; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2); color: #ccc; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 600; transition: all 0.3s ease;">
+            影响力榜
+          </button>
+        </div>
+        <div id="stillLeaderboardList" class="emoji-leaderboard-list">
+          <!-- 剧照排行榜 -->
+        </div>
       </div>
     </div>
   </div>
@@ -561,6 +640,8 @@
   <script src="./js/danmaku.js"></script>
   <script src="./js/emojiQuiz.js"></script>
   <script src="./js/emojiQuizUI.js"></script>
+  <script src="./js/stillQuiz.js"></script>
+  <script src="./js/stillQuizUI.js"></script>
   <script>
     // 初始化
     document.addEventListener('DOMContentLoaded', function(){
@@ -570,6 +651,7 @@
       if (window.initUsersSidebarTab) window.initUsersSidebarTab();
       if (window.initTimeTheme) window.initTimeTheme();
       if (window.initEmojiQuizUI) window.initEmojiQuizUI();
+      if (window.initStillQuizUI) window.initStillQuizUI();
     });
   </script>
 </body>

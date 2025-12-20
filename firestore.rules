@@ -99,5 +99,63 @@ service cloud.firestore {
       // 禁止删除统计记录
       allow delete: if false;
     }
+
+    // ============ 剧照猜电影（still）相关集合 ============
+
+    // still_puzzles 集合：剧照猜电影题目
+    match /still_puzzles/{puzzleId} {
+      // 读取权限：所有人可以读取未删除的题目
+      allow read: if resource.data.is_deleted == false;
+
+      // 创建权限
+      allow create: if request.resource.data.status == 'open' &&
+                       request.resource.data.is_deleted == false &&
+                       request.resource.data.answer_norm is string &&
+                       request.resource.data.answer_display is string &&
+                       request.resource.data.author_id is string &&
+                       request.resource.data.author_name is string &&
+                       request.resource.data.image_url is string &&
+                       request.resource.data.thumb_url is string &&
+                       request.resource.data.grid_revealed is list &&
+                       request.resource.data.grid_revealed.size() == 12 &&
+                       request.resource.data.grid_revealed.where(g -> g == true).size() >= 3;
+
+      // 更新权限：两种情况允许更新
+      allow update: if (
+        // 情况1: 猜题成功 - 将 open 改为 solved
+        (resource.data.status == 'open' &&
+         request.resource.data.status == 'solved' &&
+         request.resource.data.solved_by_user_id is string &&
+         // 保证关键字段不被篡改
+         resource.data.author_id == request.resource.data.author_id &&
+         resource.data.image_url == request.resource.data.image_url &&
+         resource.data.thumb_url == request.resource.data.thumb_url &&
+         resource.data.grid_revealed == request.resource.data.grid_revealed &&
+         resource.data.answer_norm == request.resource.data.answer_norm &&
+         resource.data.is_deleted == request.resource.data.is_deleted)
+        ||
+        // 情况2: 软删除题目（仅 open 状态）
+        (resource.data.status == 'open' &&
+         request.resource.data.is_deleted == true &&
+         resource.data.status == request.resource.data.status &&
+         resource.data.image_url == request.resource.data.image_url &&
+         resource.data.thumb_url == request.resource.data.thumb_url &&
+         resource.data.grid_revealed == request.resource.data.grid_revealed &&
+         resource.data.answer_norm == request.resource.data.answer_norm)
+      );
+
+      // 禁止物理删除
+      allow delete: if false;
+    }
+
+    // still_user_stats 集合：剧照玩法统计
+    match /still_user_stats/{userId} {
+      allow read: if true;
+      allow create: if request.resource.data.user_id is string &&
+                       request.resource.data.correct_guess_count >= 0;
+      allow update: if request.resource.data.user_id == resource.data.user_id &&
+                       request.resource.data.correct_guess_count >= resource.data.correct_guess_count;
+      allow delete: if false;
+    }
   }
 }
