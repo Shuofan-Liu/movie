@@ -169,9 +169,8 @@
   function pulseQuote() {
     const petEl = $(petId);
     if (!petEl) return;
-    hopTwice();
     const quote = quotes.length ? quotes[Math.floor(Math.random() * quotes.length)] : 'Keep growing.';
-    showBubble(quote);
+    hopTwice(() => showBubble(quote));
   }
 
   function randomizeVelocity() {
@@ -202,7 +201,7 @@
     bubble.style.top = `${top}px`;
   }
 
-  function hopTwice() {
+  function hopTwice(done) {
     const petEl = $(petId);
     if (!petEl) return;
     state.rot = 0;
@@ -214,6 +213,7 @@
     petEl.classList.add('potato-hop');
     petEl.addEventListener('animationend', () => {
       petEl.classList.remove('potato-hop');
+      if (typeof done === 'function') done();
     }, { once: true });
   }
 
