@@ -16,37 +16,39 @@
 
   // ============ 模态框控制 ============
   
+  const $id = (id) => document.getElementById(id);
+
   window.showLoginModal = function(){
-    document.getElementById('loginModalOverlay').classList.add('active');
-    document.getElementById('loginModal').classList.add('active');
+    $id('loginModalOverlay')?.classList.add('active');
+    $id('loginModal')?.classList.add('active');
     showLoginChoice();
   }
 
   window.closeLoginModal = function(){
-    document.getElementById('loginModalOverlay').classList.remove('active');
-    document.getElementById('loginModal').classList.remove('active');
-    // 重置表单
-    document.getElementById('loginChoice').classList.remove('hidden');
-    document.getElementById('loginForm').classList.add('hidden');
-    document.getElementById('registerForm').classList.add('hidden');
+    $id('loginModalOverlay')?.classList.remove('active');
+    $id('loginModal')?.classList.remove('active');
+    // 重置表单（存在才操作，避免缺失节点时报错）
+    $id('loginChoice')?.classList.remove('hidden');
+    $id('loginForm')?.classList.add('hidden');
+    $id('registerForm')?.classList.add('hidden');
   }
 
   window.showLoginChoice = function(){
-    document.getElementById('loginChoice').classList.remove('hidden');
-    document.getElementById('loginForm').classList.add('hidden');
-    document.getElementById('registerForm').classList.add('hidden');
+    $id('loginChoice')?.classList.remove('hidden');
+    $id('loginForm')?.classList.add('hidden');
+    $id('registerForm')?.classList.add('hidden');
   }
 
   window.showLoginForm = function(){
-    document.getElementById('loginChoice').classList.add('hidden');
-    document.getElementById('loginForm').classList.remove('hidden');
-    document.getElementById('registerForm').classList.add('hidden');
+    $id('loginChoice')?.classList.add('hidden');
+    $id('loginForm')?.classList.remove('hidden');
+    $id('registerForm')?.classList.add('hidden');
   }
 
   window.showRegisterForm = function(){
-    document.getElementById('loginChoice').classList.add('hidden');
-    document.getElementById('loginForm').classList.add('hidden');
-    document.getElementById('registerForm').classList.remove('hidden');
+    $id('loginChoice')?.classList.add('hidden');
+    $id('loginForm')?.classList.add('hidden');
+    $id('registerForm')?.classList.remove('hidden');
   }
 
   // ============ 头像选择器 ============

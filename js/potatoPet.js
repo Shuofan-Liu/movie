@@ -426,11 +426,16 @@
       state.profile.totalFrames = (state.profile.totalFrames || 0) + 1;
       state.profile.lastFrameDay = day;
 
+      const totalFrames = state.profile.totalFrames || 0;
+
+      // 连续 24 天留帧：爱心土豆
       if (!state.profile.heartUnlocked && state.profile.streak >= 24) {
         state.profile.heartUnlocked = true;
         state.profile.variant = 'heart';
         toast('恭喜，解锁爱心土豆！', 'success');
-      } else if (state.profile.variant === 'sprout' && state.profile.streak >= 1) {
+      }
+      // 累计 24 天留帧：成熟土豆（非连续也算）
+      else if (state.profile.variant === 'sprout' && totalFrames >= 24) {
         state.profile.variant = 'normal';
       }
 
@@ -439,6 +444,9 @@
       // 简单眨眼+光效
       state.eyeMode = 'closed';
       setTimeout(() => { state.eyeMode = 'open'; updateVisual(); }, 220);
+      // 拍照时身体回正，位置同步
+      state.rot = 0;
+      positionPet();
       updateVisual();
       showCameraFlash();
       pulseQuote();
