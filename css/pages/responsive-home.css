@@ -1,4 +1,4 @@
-/* Pages: page-level and responsive overrides */
+/* Pages/Home: responsive breakpoints and overrides for the main page */
 
 @media (max-width: 1023px) {
   /* 主页元素 */

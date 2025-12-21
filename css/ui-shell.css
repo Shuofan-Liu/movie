@@ -1,0 +1,184 @@
+/* UI Shell: user entry, badges, dropdowns, function menus, utility buttons */
+
+/* 左上角用户入口 */
+.user-corner { position: fixed; top: 30px; left: 30px; z-index: 1000; }
+.corner-flame, .corner-avatar { width: 65px; height: 65px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; backdrop-filter: blur(10px); }
+.corner-flame { border: 2px solid rgba(255,68,68,0.6); background: radial-gradient(circle at center, rgba(255,200,100,0.4) 0%, rgba(255,100,68,0.25) 50%, rgba(255,50,50,0.1) 100%); }
+.corner-avatar { border: 2px solid var(--avatar-border-color); background: var(--avatar-glow-color); position: relative; box-shadow: 0 0 20px var(--avatar-glow-color); transition: all 2s ease; }
+.corner-flame:hover { border-color: #ff4444; transform: scale(1.1); box-shadow: 0 0 30px rgba(255,68,68,0.5); background: radial-gradient(circle at center, rgba(255,220,120,0.5) 0%, rgba(255,120,80,0.35) 50%, rgba(255,68,68,0.2) 100%); }
+.corner-avatar:hover { border-color: var(--avatar-border-color); transform: scale(1.1); box-shadow: 0 0 30px var(--avatar-glow-color); background: var(--avatar-glow-color); opacity: 0.8; }
+.corner-flame svg { width: 35px; height: 35px; fill: #ff4444; }
+.corner-avatar { position: relative; }
+.corner-avatar-img { width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; }
+.corner-badge { position: absolute; top: -5px; right: -5px; background: var(--avatar-border-color); color: #fff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; border: none; box-shadow: 0 0 10px var(--avatar-glow-color); transition: all 2s ease; }
+
+/* 关系徽章通用样式 */
+.relation-chip { display: inline-flex; align-items: center; justify-content: center; gap: 4px; background: rgba(20,20,20,0.8); color: #fff; border: none; border-radius: 999px; padding: 4px 8px; font-size: 16px; line-height: 1; position: relative; box-shadow: 0 0 var(--badge-glow-size) var(--badge-glow-color); transition: box-shadow 2s ease; }
+.relation-chip-count { font-size: 11px; color: #fff; background: var(--avatar-border-color); border-radius: 50%; padding: 2px 0px; min-width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; line-height: 1; transition: background 2s ease; box-sizing: border-box; }
+.relation-chip-clickable { cursor: pointer; }
+
+/* 镶嵌在头像右下角的关系徽章（与右上角消息角标定位方式一致） */
+.avatar-with-badge { position: relative; display: inline-flex; }
+.relation-chip-embedded { position: absolute; right: -14px; bottom: -8px; transform: scale(0.75); padding: 0 !important; pointer-events: none; border: none !important; background: transparent !important; border-radius: 0 !important; box-shadow: 0 0 var(--badge-glow-size) var(--badge-glow-color) !important; transition: box-shadow 2s ease !important; }
+
+/* 主页面左上角头像徽章：调整位置和大小 */
+#cornerRelationBadge .relation-chip-embedded { right: 0px; bottom: 2px; transform: scale(0.85); }
+
+/* 右侧用户列表头像徽章：调整位置和大小 */
+.user-card-avatar .relation-chip-embedded { right: -18px; transform: scale(0.95); }
+
+/* 用户下拉菜单 */
+.user-dropdown { position: fixed; top: 105px; left: 30px; width: 280px; max-height: 450px; background: rgba(20,20,20,0.98); border: 2px solid var(--avatar-border-color); border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 999; display: none; backdrop-filter: blur(15px); overflow-y: auto; -webkit-overflow-scrolling: touch; transition: border-color 2s ease; }
+.user-dropdown.active { display: block; animation: dropdownSlide 0.3s ease-out; }
+
+.user-dropdown-header { display: flex; align-items: center; gap: 15px; padding: 20px; border-bottom: 1px solid var(--avatar-border-color); transition: border-color 2s ease; }
+.dropdown-avatar { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--avatar-border-color); display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 0 15px var(--avatar-glow-color); transition: all 2s ease; }
+.dropdown-info { flex: 1; }
+.dropdown-nickname { font-size: 18px; font-weight: 600; color: var(--avatar-border-color); margin-bottom: 4px; transition: color 2s ease; }
+.dropdown-style { font-size: 13px; color: #888; }
+.user-dropdown-body { padding: 15px 20px; max-height: 150px; overflow-y: auto; }
+.dropdown-info-item { margin-bottom: 10px; font-size: 13px; color: #ccc; }
+.dropdown-info-item strong { color: var(--avatar-border-color); margin-right: 5px; transition: color 2s ease; }
+.dropdown-badges { display: flex; gap: 8px; margin-top: 12px; font-size: 20px; }
+.dropdown-badges > span { filter: drop-shadow(0 0 var(--badge-glow-size) var(--badge-glow-color)); transition: filter 2s ease; }
+.user-dropdown-actions { padding: 15px; border-top: 1px solid var(--avatar-border-color); display: flex; flex-direction: column; gap: 8px; transition: border-color 2s ease; }
+.dropdown-btn { background: var(--avatar-glow-color); border: 1px solid var(--avatar-border-color); color: var(--avatar-border-color); padding: 10px 15px; border-radius: 8px; cursor: pointer; font-size: 14px; transition: all 0.3s ease, background 2s ease, border-color 2s ease, color 2s ease; text-align: left; width: 100%; }
+.dropdown-btn:hover { background: var(--avatar-glow-color); opacity: 0.8; transform: translateX(3px); }
+.dropdown-btn.danger { background: rgba(255,0,0,0.2); border-color: rgba(255,68,68,0.4); color: #ff4444; }
+.dropdown-btn.danger:hover { background: rgba(255,0,0,0.3); }
+
+/* 左下角功能菜单 */
+.function-menu-container {
+  position: fixed;
+  bottom: 40px;
+  left: 30px;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* 主功能键 */
+.main-function-button {
+  width: 65px;
+  height: 65px;
+  background: var(--avatar-glow-color);
+  border: 2px solid var(--avatar-border-color);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease, background 2s ease, border-color 2s ease, box-shadow 2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.main-function-button:hover {
+  opacity: 0.8;
+  transform: scale(1.1);
+  box-shadow: 0 0 30px var(--avatar-glow-color);
+}
+
+.main-function-button svg {
+  width: 35px;
+  height: 35px;
+  fill: var(--avatar-border-color);
+  transition: fill 2s ease;
+}
+
+/* 子功能按钮容器 */
+.sub-function-buttons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-20px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sub-function-buttons.expanded {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+/* 子功能按钮 */
+.sub-function-button {
+  position: relative;
+  width: 65px;
+  height: 65px;
+  background: var(--avatar-glow-color);
+  border: 2px solid var(--avatar-border-color);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease, background 2s ease, border-color 2s ease, box-shadow 2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.sub-function-button:hover {
+  opacity: 0.8;
+  transform: scale(1.1);
+  box-shadow: 0 0 30px var(--avatar-glow-color);
+}
+
+.sub-function-button svg {
+  width: 32px;
+  height: 32px;
+  fill: var(--avatar-border-color);
+  transition: fill 2s ease;
+}
+
+/* emoji大厅徽章 */
+.emoji-hall-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--avatar-border-color);
+  color: #fff;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  border: 2px solid #fff;
+  box-shadow: 0 0 10px var(--avatar-glow-color);
+  transition: all 2s ease;
+}
+
+/* 火焰按钮 */
+.flame-icon-button { 
+  position: fixed; bottom: 40px; right: 220px; width: 70px; height: 70px; 
+  background: linear-gradient(135deg, rgba(255,100,0,0.2), rgba(255,50,0,0.3)); 
+  border: 2px solid rgba(255,100,0,0.6); border-radius: 50%; cursor: pointer; z-index: 999; 
+  display: flex; align-items: center; justify-content: center; 
+  transition: all 0.3s ease; backdrop-filter: blur(10px);
+  animation: flameGlow 2s infinite alternate;
+}
+
+.flame-icon-button:hover { 
+  background: linear-gradient(135deg, rgba(255,100,0,0.4), rgba(255,50,0,0.5)); 
+  border-color: #ff6600; transform: scale(1.1); 
+  box-shadow: 0 0 50px rgba(255,100,0,1); 
+}
+.flame-icon-button svg { width: 35px; height: 35px; fill: #ff6600; }
+
+/* 用户列表按钮 */
+.users-icon-button {
+  position: fixed; bottom: 40px; right: 310px; width: 70px; height: 70px;
+  background: rgba(100,150,255,0.15); border: 2px solid rgba(100,150,255,0.5);
+  border-radius: 50%; cursor: pointer; z-index: 999;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease; backdrop-filter: blur(10px);
+}
+.users-icon-button:hover {
+  background: rgba(100,150,255,0.3); border-color: #6496ff;
+  transform: scale(1.1); box-shadow: 0 0 30px rgba(100,150,255,0.6);
+}
+.users-icon-button svg { width: 35px; height: 35px; fill: #6496ff; }

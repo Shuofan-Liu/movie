@@ -1,0 +1,136 @@
+/* Potato Pet: draggable potato companion styles */
+
+/* 土豆桌宠 */
+.potato-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+}
+
+
+.potato-pet {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  transform-origin: center;
+  cursor: grab;
+  pointer-events: auto;
+  transition: transform 0.18s ease, opacity 0.3s ease;
+  position: relative;
+}
+
+.potato-pet:active {
+  cursor: grabbing;
+}
+
+.potato-pet:hover {
+  filter: drop-shadow(0 14px 34px rgba(255, 225, 170, 0.68));
+}
+
+.potato-pet svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  image-rendering: pixelated;
+}
+
+.potato-body,
+.potato-eyes,
+.potato-sprout {
+  transition: opacity 0.25s ease;
+}
+
+.potato-pet[data-variant="seed"] .normal-body,
+.potato-pet[data-variant="seed"] .sprout-body,
+.potato-pet[data-variant="seed"] .heart-body,
+.potato-pet[data-variant="seed"] .potato-sprout {
+  display: none;
+}
+
+.potato-pet[data-variant="sprout"] .seed-body,
+.potato-pet[data-variant="sprout"] .normal-body,
+.potato-pet[data-variant="sprout"] .heart-body {
+  display: none;
+}
+
+.potato-pet[data-variant="normal"] .seed-body,
+.potato-pet[data-variant="normal"] .sprout-body,
+.potato-pet[data-variant="normal"] .heart-body {
+  display: none;
+}
+
+.potato-pet[data-variant="heart"] .seed-body,
+.potato-pet[data-variant="heart"] .sprout-body,
+.potato-pet[data-variant="heart"] .normal-body {
+  display: none;
+}
+
+.potato-sprout {
+  display: none;
+}
+
+.potato-pet[data-variant="sprout"] .potato-sprout {
+  display: block;
+}
+
+.potato-pet[data-eyes="open"] .eyes-closed {
+  display: none;
+}
+
+.potato-pet[data-eyes="closed"] .eyes-open {
+  display: none;
+}
+
+.potato-highlight {
+  mix-blend-mode: screen;
+}
+
+.potato-bubble {
+  position: absolute;
+  max-width: 220px;
+  padding: 10px 12px;
+  background: rgba(30, 20, 10, 0.92);
+  color: #ffe9c7;
+  border: 2px solid rgba(255, 220, 150, 0.6);
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.4;
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,0.35));
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.potato-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 24px;
+  width: 14px;
+  height: 10px;
+  background: inherit;
+  border: 2px solid rgba(255, 220, 150, 0.6);
+  border-top: none;
+  border-left: none;
+  transform: skewX(-14deg);
+  border-bottom-right-radius: 4px;
+}
+
+.potato-bubble.show {
+  opacity: 1;
+  transform: translateY(-10px);
+}
+
+
+
+.potato-bounce {
+  animation: potatoBounce 0.35s ease;
+  filter: drop-shadow(0 8px 20px rgba(255, 220, 150, 0.4));
+}
+
+.potato-hop {
+  animation: potatoHop 0.28s ease-out 0s 2;
+  filter: drop-shadow(0 10px 22px rgba(255, 220, 150, 0.45));
+}

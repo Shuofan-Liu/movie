@@ -1,0 +1,506 @@
+/* Modals & Forms: dialogs, auth, user profiles, admin/relationship prompts */
+
+/* 弹窗 */
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; overflow-y: auto; }
+.modal-content { max-width: 700px; margin: 100px auto; padding: 60px; background: #0a0a0a; border: 1px solid var(--avatar-border-color); position: relative; transition: border-color 2s ease; }
+.modal-close { position: absolute; top: 20px; right: 30px; font-size: 32px; cursor: pointer; color: #888; transition: color 0.3s; }
+.modal-close:hover { color: var(--avatar-border-color); }
+.modal-name { font-family: 'Playfair Display', serif; font-size: 48px; margin-bottom: 20px; color: var(--avatar-border-color); transition: color 2s ease; }
+.modal-meta { font-size: 16px; color: #999; margin-bottom: 30px; line-height: 1.8; }
+.modal-bio { font-size: 16px; line-height: 1.8; color: #ccc; }
+
+/* 管理后台面板 */
+.admin-panel { position: fixed; top: 100px; right: 20px; width: 320px; background: rgba(10,10,10,0.95); border: 2px solid var(--avatar-border-color, #d4af37); border-radius: 8px; z-index: 950; display: none; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
+.admin-panel.active { display: block; animation: slideDown 0.3s ease-out; }
+
+.admin-panel-header { padding: 16px; border-bottom: 1px solid var(--avatar-glow-color, rgba(212,175,55,0.2)); display: flex; justify-content: space-between; align-items: center; }
+.admin-panel-header h3 { font-size: 16px; color: var(--avatar-border-color); margin: 0; font-family: 'Playfair Display', serif; letter-spacing: 1px; }
+.admin-panel-close { cursor: pointer; color: #888; font-size: 20px; transition: color 0.3s; }
+.admin-panel-close:hover { color: var(--avatar-border-color); }
+.admin-panel-content { padding: 16px; }
+.admin-section { margin-bottom: 16px; }
+.admin-section h4 { font-size: 13px; color: #ccc; margin-bottom: 12px; letter-spacing: 1px; opacity: 0.8; }
+.admin-form-group { margin-bottom: 12px; display: flex; flex-direction: column; }
+.admin-form-group label { font-size: 12px; color: #999; margin-bottom: 6px; }
+.admin-form-group input { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #f5f5f5; padding: 8px; font-size: 12px; font-family: 'Lato', sans-serif; border-radius: 4px; transition: border-color 0.3s; }
+.admin-form-group input:focus { outline: none; border-color: var(--avatar-border-color); }
+.admin-panel-btn { background: var(--avatar-glow-color); border: 1px solid var(--avatar-border-color); color: var(--avatar-border-color); padding: 10px 16px; font-size: 12px; font-family: 'Lato', sans-serif; cursor: pointer; border-radius: 4px; letter-spacing: 1px; transition: all 0.3s, background 2s ease, border-color 2s ease, color 2s ease; }
+.admin-panel-btn:hover { background: var(--avatar-border-color); color: #0a0a0a; font-weight: bold; }
+.admin-panel-btn:active { transform: scale(0.98); }
+.admin-panel-msg { margin-top: 12px; padding: 8px; background: var(--avatar-glow-color, rgba(212,175,55,0.1)); border-left: 3px solid var(--avatar-border-color, #d4af37); font-size: 12px; color: #ccc; border-radius: 2px; }
+.admin-panel-msg.error { border-left-color: #ff4444; background: rgba(255,68,68,0.1); color: #ff8888; }
+
+/* 登录/注册模态框 */
+.login-modal-overlay {
+  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.9); z-index: 1500;
+}
+.login-modal-overlay.active { display: block; }
+
+.login-modal {
+  display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;
+  background: rgba(20,20,20,0.98); border: 2px solid var(--avatar-border-color);
+  padding: 40px; z-index: 1501; border-radius: 8px;
+  box-shadow: 0 10px 60px rgba(0,0,0,0.8);
+  -webkit-overflow-scrolling: touch;
+  transition: border-color 2s ease;
+}
+.login-modal.active { display: block; animation: modalSlideIn 0.4s ease-out; }
+
+
+.login-choice {
+  text-align: center;
+}
+.login-choice h2 {
+  font-family: 'Playfair Display', serif; font-size: 32px; margin-bottom: 32px;
+  color: var(--avatar-border-color); letter-spacing: 2px; transition: color 2s ease;
+}
+.choice-button {
+  display: block; width: 100%; background: var(--avatar-glow-color);
+  border: 2px solid var(--avatar-border-color); color: var(--avatar-border-color); padding: 20px;
+  font-size: 18px; font-family: 'Lato', sans-serif; cursor: pointer;
+  margin-bottom: 16px; border-radius: 8px; letter-spacing: 1px;
+  transition: all 0.3s ease, background 2s ease, border-color 2s ease, color 2s ease, box-shadow 2s ease;
+}
+.choice-button:hover {
+  background: var(--avatar-glow-color); opacity: 0.8; transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--avatar-glow-color);
+}
+
+.auth-form h2 {
+  font-family: 'Playfair Display', serif; font-size: 32px;
+  margin-bottom: 24px; color: var(--avatar-border-color); text-align: center; letter-spacing: 2px; transition: color 2s ease;
+}
+.auth-form .form-group {
+  margin-bottom: 20px;
+}
+.auth-form .form-group label {
+  display: block; font-size: 14px; margin-bottom: 8px;
+  color: #ccc; letter-spacing: 0.5px;
+}
+.auth-form .form-group input, .auth-form .form-group textarea {
+  width: 100%; background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.2); color: #f5f5f5;
+  font-size: 14px; font-family: 'Lato', sans-serif;
+  padding: 12px; border-radius: 4px; transition: border-color 0.3s;
+}
+.auth-form .form-group input:focus, .auth-form .form-group textarea:focus {
+  outline: none; border-color: var(--avatar-border-color);
+}
+.auth-form .form-group small {
+  display: block; margin-top: 6px; font-size: 12px; color: #888;
+}
+
+.submit-button, .back-button {
+  width: 100%; padding: 14px; font-size: 16px; font-family: 'Lato', sans-serif;
+  cursor: pointer; border-radius: 6px; letter-spacing: 1px;
+  transition: all 0.3s ease; margin-top: 12px;
+}
+.submit-button {
+  background: var(--avatar-border-color); color: #000; border: none; font-weight: 600; transition: all 0.3s ease, background 2s ease, box-shadow 2s ease;
+}
+.submit-button:hover {
+  background: var(--avatar-border-color); opacity: 0.9; transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--avatar-glow-color);
+}
+.back-button {
+  background: transparent; color: #ccc; border: 1px solid rgba(255,255,255,0.3);
+}
+.back-button:hover {
+  background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.5);
+}
+
+/* 头像选择器 */
+.avatar-selector {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 15px; margin-top: 12px; padding: 20px;
+  background: rgba(0,0,0,0.5); border-radius: 12px;
+  border: 1px solid var(--avatar-border-color); transition: border-color 2s ease;
+}
+.avatar-option {
+  width: 70px; height: 70px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 38px;
+  cursor: pointer;
+  border: 2px solid rgba(255,255,255,0.3); border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  transition: all 0.3s ease;
+  position: relative;
+}
+.avatar-option:hover {
+  transform: scale(1.15);
+  border-color: var(--avatar-border-color);
+  background: var(--avatar-glow-color);
+  box-shadow: 0 0 25px var(--avatar-glow-color);
+}
+.avatar-option.selected {
+  border-color: var(--avatar-border-color); border-width: 3px;
+  background: var(--avatar-glow-color);
+  transform: scale(1.15);
+  box-shadow: 0 0 40px var(--avatar-glow-color);
+}
+.avatar-option.selected::after {
+  content: '✓'; position: absolute; bottom: -8px; right: -8px;
+  background: var(--avatar-border-color);
+  color: #fff; width: 24px; height: 24px;
+  border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-size: 14px; font-weight: bold;
+  border: 2px solid #fff; box-shadow: 0 0 15px var(--avatar-glow-color);
+  transition: all 2s ease;
+}
+
+/* 首字母默认头像 */
+.default-avatar {
+  width: 80px; height: 80px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; font-weight: bold; color: var(--avatar-border-color);
+  text-transform: uppercase;
+  background: transparent;
+  transition: color 2s ease;
+}
+
+/* 顶部左侧头像容器内的默认字母头像：适配容器尺寸，去掉内边框 */
+.corner-avatar-img .default-avatar {
+  width: 100%;
+  height: 100%;
+  border: none;
+  backdrop-filter: none;
+}
+
+/* 用户页面模态框 */
+.user-modal-overlay {
+  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.9); z-index: 1500;
+}
+.user-modal-overlay.active { display: block; }
+
+.user-modal {
+  display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 90vw; max-width: 680px; height: 85vh; max-height: 85vh; overflow-y: auto;
+  background: rgba(20,20,20,0.98); border: 2px solid var(--avatar-border-color);
+  padding: 40px; z-index: 1501; border-radius: 8px;
+  box-shadow: 0 10px 60px rgba(0,0,0,0.8);
+  -webkit-overflow-scrolling: touch;
+  transition: border-color 2s ease;
+}
+.user-modal.active { display: block; animation: modalSlideIn 0.4s ease-out; }
+.user-close {
+  font-size: 28px;
+  font-weight: bold;
+  color: #888;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+.user-close:hover { color: var(--avatar-border-color); }
+
+/* 用户详情左右切换按钮（固定定位到视口，不受模态框overflow影响） */
+.user-chevron {
+  display: none; position: fixed; top: 50%; transform: translateY(-50%);
+  width: 48px; height: 48px; align-items: center; justify-content: center;
+  background: rgba(20,20,20,0.95); border: 2px solid var(--avatar-border-color);
+  border-radius: 50%; color: var(--avatar-border-color); cursor: pointer; z-index: 1502; transition: all 0.2s ease, border-color 2s ease, color 2s ease, background 2s ease, box-shadow 2s ease;
+  backdrop-filter: blur(10px); font-size: 22px; font-weight: bold;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+}
+.user-modal.active ~ .user-chevron { display: flex; }
+.user-chevron:hover {
+  background: var(--avatar-glow-color); box-shadow: 0 0 24px var(--avatar-glow-color);
+  transform: translateY(-50%) scale(1.15); border-color: var(--avatar-border-color);
+}
+.user-chevron.prev { left: calc(50% - 340px - 60px); }
+.user-chevron.next { right: calc(50% - 340px - 60px); }
+
+/* ========================================
+   大屏幕优化 - min-width: 1200px
+   ======================================== */
+
+
+.user-content {
+  color: #f5f5f5;
+  min-height: 450px;
+}
+.user-header {
+  display: flex; align-items: center; gap: 20px; margin-bottom: 30px;
+  padding-bottom: 20px; border-bottom: 1px solid var(--avatar-border-color); transition: border-color 2s ease;
+}
+.user-avatar-display {
+  width: 100px; height: 100px; aspect-ratio: 1 / 1;
+  border: 2px solid var(--avatar-border-color); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; flex-shrink: 0;
+  transition: border-color 2s ease;
+}
+.user-avatar-display img,
+.dropdown-avatar img,
+.user-card-avatar img,
+.corner-avatar-img img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.dropdown-avatar,
+.user-card-avatar,
+.corner-avatar,
+.corner-flame { aspect-ratio: 1 / 1; flex-shrink: 0; }
+.user-avatar-display .avatar-emoji {
+  font-size: 50px;
+}
+.user-avatar-display .default-avatar {
+  width: 100px; height: 100px; font-size: 40px;
+}
+.user-info h2 {
+  font-family: 'Playfair Display', serif; font-size: 32px;
+  color: var(--avatar-border-color); margin-bottom: 8px; transition: color 2s ease;
+}
+.user-badges {
+  display: flex; gap: 8px; margin-top: 10px;
+}
+.badge-icon-small {
+  font-size: 24px;
+}
+
+.user-section {
+  margin-bottom: 30px;
+}
+.user-section h3 {
+  font-size: 18px; color: var(--avatar-border-color); margin-bottom: 12px;
+  font-family: 'Playfair Display', serif; letter-spacing: 1px; transition: color 2s ease;
+}
+.user-section p {
+  font-size: 14px; line-height: 1.6; color: #ccc;
+}
+.view-messages-btn, .back-to-profile-btn {
+  padding: 8px 16px; background: var(--avatar-glow-color); border: 1px solid var(--avatar-border-color);
+  color: var(--avatar-border-color); border-radius: 6px; cursor: pointer; font-size: 13px;
+  transition: all 0.2s ease, background 2s ease, border-color 2s ease, color 2s ease; margin-left: 12px;
+}
+.view-messages-btn:hover, .back-to-profile-btn:hover {
+  background: var(--avatar-glow-color); opacity: 0.8; border-color: var(--avatar-border-color);
+}
+.user-images {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;
+}
+.user-images img {
+  width: 150px; height: 150px; object-fit: cover; border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.2); cursor: pointer;
+  transition: transform 0.3s ease;
+}
+.user-images img:hover {
+  transform: scale(1.05); border-color: var(--avatar-border-color);
+}
+
+.user-actions {
+  display: flex; gap: 12px; margin-top: 20px;
+}
+.user-action-btn {
+  padding: 10px 20px; font-size: 14px; font-family: 'Lato', sans-serif;
+  cursor: pointer; border-radius: 6px; letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+.edit-btn {
+  background: var(--avatar-glow-color); border: 1px solid var(--avatar-border-color); color: var(--avatar-border-color); transition: all 0.3s ease, background 2s ease, border-color 2s ease, color 2s ease;
+}
+.edit-btn:hover {
+  background: var(--avatar-border-color); color: #000;
+}
+.delete-btn {
+  background: rgba(255,0,0,0.2); border: 1px solid #ff4444; color: #ff4444;
+}
+.delete-btn:hover {
+  background: #ff4444; color: #fff;
+}
+
+/* 用户列表页面 */
+.users-page-overlay {
+  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.9); z-index: 1500;
+}
+.users-page-overlay.active { display: block; }
+
+.users-page {
+  display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  max-width: 1200px; width: 90%; max-height: 90vh; overflow-y: auto;
+  background: rgba(20,20,20,0.98); border: 2px solid var(--avatar-border-color);
+  padding: 40px; z-index: 1501; border-radius: 8px;
+  box-shadow: 0 10px 60px rgba(0,0,0,0.8);
+  -webkit-overflow-scrolling: touch;
+  transition: border-color 2s ease;
+}
+.users-page.active { display: block; animation: modalSlideIn 0.4s ease-out; }
+
+.users-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 30px; padding-bottom: 20px;
+  border-bottom: 1px solid var(--avatar-border-color); transition: border-color 2s ease;
+}
+.users-header h2 {
+  font-family: 'Playfair Display', serif; font-size: 36px;
+  color: var(--avatar-border-color); letter-spacing: 2px; transition: color 2s ease;
+}
+
+.users-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 14px;
+}
+.user-card {
+  text-align: center; padding: 12px; background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;
+  cursor: pointer; transition: all 0.3s ease;
+}
+.user-card:hover {
+  background: var(--avatar-glow-color); border-color: var(--avatar-border-color);
+  transform: translateY(-4px); box-shadow: 0 6px 16px var(--avatar-glow-color);
+}
+.user-card-avatar {
+  width: 68px; height: 68px;
+  border: 2px solid var(--avatar-border-color); border-radius: 50%;
+  margin: 0 auto 10px;
+  display: flex; align-items: center; justify-content: center;
+  overflow: visible;
+  position: relative;
+  transition: border-color 2s ease;
+}
+.user-card-avatar .avatar-emoji {
+  font-size: 32px;
+}
+.user-card-avatar .default-avatar {
+  width: 68px; height: 68px; font-size: 26px;
+}
+.user-card-name {
+  font-size: 14px; color: #f5f5f5; font-weight: 600;
+  margin-bottom: 4px; letter-spacing: 0.3px;
+}
+.user-card-id {
+  font-size: 10px; color: #666; font-family: monospace;
+  margin-bottom: 3px;
+}
+.user-card-badges {
+  display: flex; gap: 3px; justify-content: center; margin-top: 6px;
+}
+
+/* 右侧标签按钮 */
+.users-sidebar-tab {
+  position: fixed; top: 50%; right: 0; transform: translateY(-50%);
+  width: 28px; height: 78px; display: flex; align-items: center; justify-content: center;
+  background: var(--avatar-glow-color); border: 2px solid var(--avatar-border-color);
+  color: var(--avatar-border-color); font-size: 12px;
+  border-top-left-radius: 10px; border-bottom-left-radius: 10px;
+  cursor: pointer; z-index: 1402; box-shadow: 0 0 10px var(--avatar-glow-color);
+  transition: right 0.25s cubic-bezier(0.4,0,0.2,1), border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 2s ease;
+}
+.users-sidebar-tab:hover { border-color: var(--avatar-border-color); box-shadow: 0 0 14px var(--avatar-glow-color); background: var(--avatar-glow-color); opacity: 0.85; color: var(--avatar-border-color); }
+.sidebar-users-grid { padding: 12px; display: grid; grid-template-columns: 1fr; gap: 10px; }
+
+/* 管理员密码弹窗 */
+.admin-prompt-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; backdrop-filter: blur(5px); }
+.admin-prompt-overlay.active { display: block; }
+.admin-prompt { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 350px; background: rgba(20,20,20,0.98); border: 2px solid var(--avatar-border-color); border-radius: 12px; padding: 30px; z-index: 2001; transition: border-color 2s ease; }
+.admin-prompt.active { display: block; animation: modalSlideIn 0.3s ease-out; }
+.admin-prompt h3 { font-size: 20px; color: var(--avatar-border-color); margin-bottom: 20px; text-align: center; transition: color 2s ease; }
+.admin-prompt input { width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #f5f5f5; font-size: 16px; margin-bottom: 20px; }
+.admin-prompt-buttons { display: flex; gap: 10px; }
+.admin-prompt-buttons button { flex: 1; padding: 10px; background: var(--avatar-glow-color); border: 1px solid var(--avatar-border-color); color: var(--avatar-border-color); border-radius: 8px; cursor: pointer; font-size: 14px; transition: all 0.3s ease, background 2s ease, border-color 2s ease, color 2s ease; }
+.admin-prompt-buttons button:hover { background: var(--avatar-glow-color); opacity: 0.8; }
+
+/* 关系申请弹窗 */
+.relationship-prompt-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; backdrop-filter: blur(5px); }
+.relationship-prompt-overlay.active { display: block; }
+.relationship-prompt { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 420px; background: rgba(20,20,20,0.98); border: 2px solid var(--avatar-border-color); border-radius: 12px; padding: 30px; z-index: 2001; max-height: 90vh; overflow-y: auto; -webkit-overflow-scrolling: touch; transition: border-color 2s ease; }
+.relationship-prompt.active { display: block; animation: modalSlideIn 0.3s ease-out; }
+.relationship-prompt h3 { font-size: 20px; color: var(--avatar-border-color); margin-bottom: 16px; text-align: center; transition: color 2s ease; }
+
+/* 关系类型选择按钮 */
+.relationship-type-btn { 
+  padding: 16px; 
+  background: rgba(255,255,255,0.03); 
+  border: 2px solid rgba(255,255,255,0.1); 
+  border-radius: 10px; 
+  color: #f5f5f5; 
+  cursor: pointer; 
+  transition: all 0.3s ease; 
+  text-align: center; 
+  font-family: 'Lato', sans-serif;
+}
+.relationship-type-btn:hover {
+  background: var(--avatar-glow-color);
+  border-color: var(--avatar-border-color);
+}
+.relationship-type-btn.selected {
+  background: var(--avatar-glow-color);
+  border-color: var(--avatar-border-color);
+  box-shadow: 0 0 15px var(--avatar-glow-color);
+}
+
+/* 我的留言页面 */
+.my-messages-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1500; }
+.my-messages-overlay.active { display: block; }
+.my-messages-page { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90vw; max-width: 800px; height: 85vh; max-height: 85vh; overflow-y: auto; background: rgba(20,20,20,0.98); border: 2px solid var(--avatar-border-color); padding: 40px; z-index: 1501; border-radius: 12px; -webkit-overflow-scrolling: touch; transition: border-color 2s ease; }
+.my-messages-page.active { display: block; animation: modalSlideIn 0.4s ease-out; }
+.messages-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: none; transition: border-color 2s ease; }
+.messages-header h2 { font-family: 'Playfair Display', serif; font-size: 32px; color: var(--avatar-border-color); margin: 0; transition: color 2s ease; }
+.messages-list { display: flex; flex-direction: column; gap: 20px; }
+.message-item { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 20px; transition: all 0.3s ease; }
+.message-item:hover { background: var(--avatar-glow-color); border-color: var(--avatar-border-color); }
+.relationship-row { display: flex; align-items: center; gap: 12px; }
+.relationship-row .message-from { margin-bottom: 0; }
+.relationship-title { flex: 1; color: var(--avatar-border-color); font-size: 14px; display: flex; align-items: center; gap: 8px; transition: color 2s ease; }
+.relationship-tip { color: var(--avatar-border-color); font-size: 12px; transition: color 2s ease; }
+.message-from { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; cursor: pointer; }
+.message-from:hover .message-from-name { color: var(--avatar-border-color); }
+.message-from-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--avatar-border-color); display: flex; align-items: center; justify-content: center; font-size: 20px; transition: border-color 2s ease; }
+.message-from-name { font-size: 16px; font-weight: 600; color: #f5f5f5; }
+.message-content { font-size: 15px; color: #ccc; line-height: 1.6; margin-bottom: 8px; padding-left: 52px; }
+.message-time { font-size: 12px; color: #888; padding-left: 52px; }
+
+/* 通用确认对话框 */
+.confirm-dialog-overlay {
+  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.85); z-index: 2000;
+  backdrop-filter: blur(4px);
+}
+.confirm-dialog-overlay.active { display: block; animation: fadeIn 0.2s ease-out; }
+
+.confirm-dialog {
+  display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  background: rgba(20,20,20,0.98); border: 2px solid var(--avatar-border-color);
+  border-radius: 12px; padding: 30px; width: 90vw; max-width: 500px;
+  z-index: 2001; box-shadow: 0 10px 60px rgba(0,0,0,0.9);
+  transition: border-color 2s ease;
+}
+.confirm-dialog.active { display: block; animation: modalSlideIn 0.3s ease-out; }
+
+/* 猜题弹窗覆盖层 */
+.emoji-guess-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.95);
+  z-index: 1002;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+.emoji-guess-modal {
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: rgba(20,20,20,0.95);
+  border: 1px solid var(--avatar-border-color);
+  border-radius: 12px;
+  padding: 40px;
+  position: relative;
+  animation: slideIn 0.3s ease-out;
+  transition: border-color 2s ease;
+}
+#guessAnswerInput:focus {
+  outline: none;
+  border-color: var(--avatar-border-color) !important;
+  box-shadow: 0 0 15px var(--avatar-glow-color);
+}

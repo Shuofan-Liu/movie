@@ -1,6 +1,14 @@
-/* Aggregator: keep legacy imports pointing to split CSS bundles */
+/* Aggregator: load split CSS bundles in dependency order */
 @import url('./base.css');
-@import url('./layout.css');
-@import url('./components.css');
-@import url('./effects.css');
-@import url('./pages/home.css');
+@import url('./layers.css');
+@import url('./hero.css');
+@import url('./ui-shell.css');
+@import url('./modals-forms.css');
+@import url('./quiz.css');
+@import url('./guestbook-wall.css');
+@import url('./notifications.css');
+@import url('./danmaku.css');
+@import url('./emoji-game.css');
+@import url('./potato-pet.css');
+@import url('./animations.css');
+@import url('./pages/responsive-home.css');
