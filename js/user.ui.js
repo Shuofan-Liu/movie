@@ -56,6 +56,26 @@
     }
   }
 
+  // 批量获取各用户的已建立关系，供用户列表展示徽章使用
+  async function fetchAcceptedRelationsForUsers(userIds){
+    if (!window.getRelationshipsForUser) return {};
+    const ids = Array.isArray(userIds) ? userIds.filter(Boolean) : [];
+    const pairs = await Promise.all(ids.map(async uid=>{
+      try {
+        const rels = await window.getRelationshipsForUser(uid);
+        const accepted = (rels||[]).filter(r=>r.status === 'accepted').sort((a,b)=> relTimestampMs(a) - relTimestampMs(b));
+        return [uid, accepted];
+      } catch (err) {
+        console.warn('[relations] failed to load for user', uid, err);
+        return [uid, []];
+      }
+    }));
+    return pairs.reduce((map,[uid,list])=>{
+      map[uid] = list || [];
+      return map;
+    }, {});
+  }
+
   async function refreshAcceptedRelations(){
     if (!window.currentUser || !window.getRelationshipsForUser) {
       acceptedRelationsCache = [];
@@ -387,6 +407,7 @@
     window.allUsersCache = users;
     const acceptedList = await refreshAcceptedRelations();
     const relMap = acceptedRelationsMap;
+    const allAcceptedMap = await fetchAcceptedRelationsForUsers((users||[]).map(u=>u.id));
 
     if (!users || users.length === 0) {
       document.getElementById('usersSidebarGrid').innerHTML = '<p style="text-align:center;color:#888;padding:40px;">还没有用户注册</p>';
@@ -402,11 +423,13 @@
         }
 
         const styleTag = user.userStyle ? `<div style="font-size:11px;color:#888;margin-top:4px;">${user.userStyle}</div>` : '';
-        let relList = (user.id === (window.currentUser && window.currentUser.id))
-          ? acceptedList
-          : (relMap && relMap[user.id]) ? relMap[user.id] : [];
-        if (user.id === (window.currentUser && window.currentUser.id) && relList.length > 1 && typeof window.__currentRelationBadgeIndex === 'number') {
-          relList = [relList[window.__currentRelationBadgeIndex % relList.length]];
+        let relList = (allAcceptedMap && allAcceptedMap[user.id]) ? allAcceptedMap[user.id] : [];
+        if (user.id === (window.currentUser && window.currentUser.id)) {
+          if (relList.length > 1 && typeof window.__currentRelationBadgeIndex === 'number') {
+            relList = [relList[window.__currentRelationBadgeIndex % relList.length]];
+          }
+        } else if (relList.length > 1) {
+          relList = [relList[0]]; // 其他用户暂默认展示第一段关系
         }
         const badgeHtml = renderRelationChip(relList, 'relation-chip-embedded');
         const avatarHtml = badgeHtml
