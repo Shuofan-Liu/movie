@@ -1,0 +1,25 @@
+/* Layout: global backgrounds, layers, structure */
+
+/* 电影海报背景层 */
+.film-strip-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: var(--film-opacity); display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(4, 1fr); grid-auto-flow: row dense; grid-auto-rows: 1fr; gap: 0; overflow: hidden; transition: opacity 2s ease; }
+.film-frame { position: relative; overflow: hidden; background: #000; }
+.film-frame img { width: 100%; height: 100%; object-fit: contain; object-position: center; opacity: 0.8; filter: var(--film-filter); transition: transform 0.3s ease, filter 2s ease; -webkit-user-drag: none; -webkit-touch-callout: none; user-select: none; pointer-events: none; }
+.film-frame:hover img { transform: scale(1.05); opacity: 1; }
+
+/* 导演滚动层 */
+.directors-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; overflow: hidden; pointer-events: none; display: flex; justify-content: center; align-items: flex-start; }
+.credits-scroll { position: absolute; width: 100%; animation: scrollUp 90s linear infinite; pointer-events: auto; will-change: transform; }
+
+.director-row { display: flex; justify-content: center; align-items: flex-start; gap: 60px; margin-bottom: 80px; padding: 0 40px; }
+.director-name { flex: 0 1 auto; max-width: 28%; cursor: pointer; pointer-events: auto; transition: all 2s ease; text-align: center; font-family: 'Playfair Display', serif; letter-spacing: 1px; position: relative; color: var(--director-base-color); }
+.director-name:hover { color: var(--director-hover-color); transform: scale(1.15); text-shadow: 0 0 20px rgba(212, 175, 55, 0.5); }
+.director-name.size-xl { font-size: 42px; font-weight: 700; }
+.director-name.size-l { font-size: 32px; font-weight: 600; }
+.director-name.size-m { font-size: 24px; font-weight: 400; font-family: 'Lato', sans-serif; }
+.director-name.size-s { font-size: 18px; font-weight: 300; font-family: 'Lato', sans-serif; opacity: 0.8; }
+
+/* 悬停信息卡片 */
+.director-info-card { position: absolute; background: rgba(0,0,0,0.95); border: 1px solid var(--avatar-border-color); padding: 16px 20px; border-radius: 4px; min-width: 250px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease, border-color 2s ease; z-index: 100; font-family: 'Lato', sans-serif; left: 50%; transform: translateX(-50%); top: 100%; margin-top: 15px; white-space: nowrap; }
+.director-name:hover .director-info-card { opacity: 1; }
+.info-line { margin-bottom: 6px; font-size: 13px; color: #ccc; }
+.info-line.masterpiece { color: var(--avatar-border-color); font-style: italic; margin-top: 8px; transition: color 2s ease; }

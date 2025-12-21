@@ -1,0 +1,19 @@
+/* Base: resets, fonts, variables, utilities */
+
+/* 时间感知CSS变量 - 由timeTheme.js动态更新 */
+:root {
+  --avatar-border-color: #d4af37;
+  --avatar-glow-color: rgba(212,175,55,0.4);
+  --film-opacity: 0.3;
+  --film-filter: brightness(1) saturate(1);
+  --director-base-color: #f5f5f5;
+  --director-hover-color: #d4af37;
+  --badge-glow-color: rgba(212,175,55,0.4);
+  --badge-glow-size: 10px;
+}
+
+/* 基础重置 */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Lato', sans-serif; background: #000; color: #f5f5f5; overflow-x: hidden; user-select: none; -webkit-user-select: none; }
+input, textarea, button, select, [contenteditable="true"] { user-select: text; -webkit-user-select: text; }
+.hidden { display: none !important; }
