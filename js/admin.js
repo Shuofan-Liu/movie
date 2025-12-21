@@ -52,8 +52,8 @@
     if (userBar) userBar.style.display = 'block';
   }
 
-  // 注意：不要覆盖 user.js 中的 logoutUser 函数
-  // window.logoutUser 由 user.js 提供
+  // 注意：不要覆盖用户模块中的 logoutUser 函数
+  // window.logoutUser 由 user.ui.js 提供
 
   window.toggleAdminPanel = function(){
     const panel = el('adminPanel');
