@@ -378,13 +378,17 @@
 
   async function loadProfile(userId) {
     const existing = await storage.loadProfile(userId);
+    const nickname = currentNickname();
     state.profile = existing || defaultProfile(userId);
-    if (currentNickname() && state.profile.nickname !== currentNickname()) {
-      state.profile.nickname = currentNickname();
-      await storage.saveProfile(userId, state.profile);
+
+    let shouldPersist = !existing;
+    if (nickname && state.profile.nickname !== nickname) {
+      state.profile.nickname = nickname;
+      shouldPersist = true;
     }
     const grew = maybeGrowSeed();
-    if (grew) await storage.saveProfile(userId, state.profile);
+    if (grew) shouldPersist = true;
+    if (shouldPersist) await storage.saveProfile(userId, state.profile);
     state.pos = { ...(state.profile.pos || {}) };
     state.vel = { ...(state.profile.vel || { x: 0, y: 30 }) };
     state.rot = state.profile.rot || 0;
